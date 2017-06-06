@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/nav_Assignments"
+            android:icon="@mipmap/ic_list_black_24dp"
+            android:title="Show TODO + Assignments" />
+
+        <item
+            android:id="@+id/nav_Add"
+            android:icon="@mipmap/ic_add_black_24dp"
+            android:title="Add new TODO + Assignment" />
+
+        <item
+            android:id="@+id/nav_Update"
+            android:icon="@mipmap/ic_update_black_24dp"
+            android:title="Update stauts of TODO" />
+    </group>
+</menu>

@@ -1,0 +1,60 @@
+<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/drawerLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.salas.javiert.magicmirror.MainActivity">
+
+
+    <LinearLayout
+        android:id="@+id/frame"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <include
+            layout="@layout/navigation_action"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1"
+            android:text="Who even cares about hardcoded strings anyways"
+            android:textAlignment="center"
+            android:textSize="24dp"
+
+            />
+        <!--
+                    <com.salas.javiert.magicmirror.Views.CustomView
+                        android:id="@+id/customView"
+                        app:square_color="@color/squareColor"
+                        app:square_size="@dimen/square_size"
+                        android:layout_width="match_parent"
+                        android:layout_height="150dp" />
+
+
+                    <Button
+                        android:id="@+id/bSwap"
+                        android:layout_width="wrap_content"
+                        android:text="SWAP COLOR"
+                        android:layout_height="wrap_content" />
+                        -->
+    </LinearLayout>
+
+
+    <android.support.design.widget.NavigationView
+        android:id="@+id/navigation_view"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        app:headerLayout="@layout/navigation_header"
+        app:menu="@menu/navigation_menu">
+
+    </android.support.design.widget.NavigationView>
+</android.support.v4.widget.DrawerLayout>

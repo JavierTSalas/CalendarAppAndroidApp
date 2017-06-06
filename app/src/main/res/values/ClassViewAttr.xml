@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="ClassView">
+        <attr name="showText" format="boolean" />
+        <attr name="expanded" format="boolean" />
+        <attr name="hasImage" format="boolean" />
+    </declare-styleable>
+</resources>
