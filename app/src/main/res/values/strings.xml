@@ -3,6 +3,14 @@
 
     <string name="open">Open navigation drawer</string>
     <string name="close">Close navigation drawer</string>
-    <string name="app_nav">Mirror Control V0.0.1</string>
+    <string name="app_nav">Mirror Control V0.0.2</string>
 
+    <string-array name="class_list">
+        <item>Non School Activitiy</item>
+        <item>Computer Organization I</item>
+        <item>French Reading and Conversation</item>
+        <item>Discrete Mathematics</item>
+        <item>General Physics B</item>
+        <item>General Physics B Lab</item>
+    </string-array>
 </resources>
