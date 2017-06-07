@@ -51,7 +51,7 @@ public class assignment_class {
         Log.d("Classes", "assignment_class: built");
     }
 
-    //TODO: Make this return a Date so that a countdown can be initialized
+    //TODO: Make this return a Date so that a countdown can be initialized by the ChildView. Furthermore passing this as a string as a date can be changed easier  if need be
     public assignment_class(String s) {
         this.ass_name = s;
         Log.d("Classes", "assignment_class: built");
