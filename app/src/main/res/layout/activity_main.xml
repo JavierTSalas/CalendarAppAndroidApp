@@ -30,6 +30,12 @@
             android:textSize="24dp"
 
             />
+
+        <Button
+            android:id="@+id/bTest"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Button" />
         <!--
                     <com.salas.javiert.magicmirror.Views.CustomView
                         android:id="@+id/customView"

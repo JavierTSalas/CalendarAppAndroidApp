@@ -6,6 +6,7 @@ import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.SyncHttpClient;
+import com.loopj.android.http.TextHttpResponseHandler;
 
 /**
  * Created by javi6 on 5/26/2017.
@@ -14,7 +15,8 @@ import com.loopj.android.http.SyncHttpClient;
 
 public class DatabaseRestClient {
 
-    private static final String BASE_URL = "http://192.168.56.1/learning/";
+    // private static final String BASE_URL = "http://192.168.56.1/learning/";
+    private static final String BASE_URL = "http://10.0.0.21/learning/";
     private static final String TAG = "DATEBASE CONNECTION ";
     private static AsyncHttpClient client = new SyncHttpClient();
 
@@ -27,7 +29,7 @@ public class DatabaseRestClient {
         }
     }
 
-    public static void post(String url, RequestParams params, JsonHttpResponseHandler responseHandler) {
+    public static void post(String url, RequestParams params, TextHttpResponseHandler responseHandler) {
         client.post(getAbsoluteUrl(url), params, responseHandler);
     }
 
