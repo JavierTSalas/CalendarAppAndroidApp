@@ -25,6 +25,7 @@ import com.salas.javiert.magicmirror.Resources.ExpandableChild.ParentViewClass;
 import com.salas.javiert.magicmirror.Resources.ExpandableChild.ViewHolder.TitleChildViewHolder;
 import com.salas.javiert.magicmirror.Resources.ExpandableChild.ViewHolder.TitleParentViewHolder;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
@@ -188,6 +189,22 @@ public class myExpandRecylerAdapter extends ExpandableRecyclerAdapter<TitleParen
 
 
                 Button Done = (Button) dialog.findViewById(R.id.bDone);
+                Done.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+
+                        // We have to convert etDate to Date
+                        SimpleDateFormat parser_date = new SimpleDateFormat("dd/MM/yyyy");
+                        try {
+                            myAssignment.due = parser_date.parse(etDate.toString());
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+
+
+                    }
+                });
                 Button Cancel = (Button) dialog.findViewById(R.id.bCancel);
                 Button Confirm = (Button) dialog.findViewById(R.id.bConfirm);
 
