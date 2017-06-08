@@ -1,5 +1,6 @@
 package com.salas.javiert.magicmirror;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -8,14 +9,17 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
+import com.loopj.android.http.RequestParams;
+import com.loopj.android.http.TextHttpResponseHandler;
 import com.salas.javiert.magicmirror.Fragments.AddFragment;
 import com.salas.javiert.magicmirror.Fragments.AssignmentsFragment;
 import com.salas.javiert.magicmirror.Fragments.UpdateFragment;
-import com.salas.javiert.magicmirror.Views.CustomView;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -23,8 +27,8 @@ public class MainActivity extends AppCompatActivity {
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mToggle;
     private NavigationView navigationView;
-    private CustomView mCustomView;
-
+    private Button mButton;
+    private InsertTask myTask;
     private Toolbar mToolbar;
 
     @Override
@@ -32,6 +36,16 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mButton = (Button) findViewById(R.id.bTest);
+        mButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                myTask = new InsertTask();
+                myTask.execute();
+            }
+        });
+
 
         navigationView = (NavigationView) findViewById(R.id.navigation_view);
 
@@ -79,6 +93,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
         mToolbar = (Toolbar) findViewById(R.id.nav_action);
         setSupportActionBar(mToolbar);
 
@@ -122,4 +137,43 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    public void InsertAssignment() {
+        RequestParams params = new RequestParams();
+        TextHttpResponseHandler response = new TextHttpResponseHandler() {
+            @Override
+            public void onFailure(int statusCode, cz.msebera.android.httpclient.Header[] headers, String responseString, Throwable throwable) {
+
+            }
+
+            @Override
+            public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, String responseString) {
+                Log.d("suc", responseString);
+            }
+        };
+        params.add("name1", "Test");
+
+        DatabaseRestClient.post("input.php", params, response);
+        Log.d("responses", "");
+    }
+
+    private class InsertTask extends AsyncTask<Void, Void, Void> {
+
+
+        @Override
+        protected void onPreExecute() {
+        }
+
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            InsertAssignment();
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+        }
+    }
 }
+
