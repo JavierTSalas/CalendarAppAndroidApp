@@ -189,15 +189,18 @@ public class myExpandRecylerAdapter extends ExpandableRecyclerAdapter<TitleParen
 
 
                 Button Done = (Button) dialog.findViewById(R.id.bDone);
-                Done.setOnClickListener(new View.OnClickListener() {
+
+                Button Cancel = (Button) dialog.findViewById(R.id.bCancel);
+                Button Confirm = (Button) dialog.findViewById(R.id.bConfirm);
+                Confirm.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
 
 
                         // We have to convert etDate to Date
-                        SimpleDateFormat parser_date = new SimpleDateFormat("dd/MM/yyyy");
+                        SimpleDateFormat parser_date = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
                         try {
-                            myAssignment.due = parser_date.parse(etDate.toString());
+                            myAssignment.due = parser_date.parse(etDate.toString() + " " + etTime + ":00");
                         } catch (ParseException e) {
                             e.printStackTrace();
                         }
@@ -205,9 +208,6 @@ public class myExpandRecylerAdapter extends ExpandableRecyclerAdapter<TitleParen
 
                     }
                 });
-                Button Cancel = (Button) dialog.findViewById(R.id.bCancel);
-                Button Confirm = (Button) dialog.findViewById(R.id.bConfirm);
-
 
                 Cancel.setOnClickListener(new View.OnClickListener() {
                     @Override
