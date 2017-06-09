@@ -2,6 +2,9 @@ package com.salas.javiert.magicmirror.Objects;
 
 import android.util.Log;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -74,6 +77,21 @@ public class assignment_class {
             daysBetween++;
         }
         return daysBetween;
+    }
+
+    public JSONObject toJSONObject() throws JSONException {
+        JSONObject ReturnObject = new JSONObject();
+        ReturnObject.put("id", ass_id);
+        ReturnObject.put("ass_name", ass_name);
+        ReturnObject.put("class_id", class_id);
+        SimpleDateFormat DateFormatDue = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat DateFormatDate = new SimpleDateFormat("yyyy-MM-dd");
+        ReturnObject.put("date_assigned", DateFormatDate.format(date_assigned));
+        ReturnObject.put("due", DateFormatDue.format(due));
+        ReturnObject.put("done", done.toString());
+        ReturnObject.put("weight", weight.toString());
+        ;
+        return ReturnObject;
     }
 
     @Override

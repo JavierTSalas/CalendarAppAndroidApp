@@ -5,8 +5,8 @@ import android.util.Log;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
+import com.loopj.android.http.ResponseHandlerInterface;
 import com.loopj.android.http.SyncHttpClient;
-import com.loopj.android.http.TextHttpResponseHandler;
 
 /**
  * Created by javi6 on 5/26/2017.
@@ -29,7 +29,7 @@ public class DatabaseRestClient {
         }
     }
 
-    public static void post(String url, RequestParams params, TextHttpResponseHandler responseHandler) {
+    public static void post(String url, RequestParams params, ResponseHandlerInterface responseHandler) {
         client.post(getAbsoluteUrl(url), params, responseHandler);
     }
 

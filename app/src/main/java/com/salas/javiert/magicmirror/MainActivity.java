@@ -20,6 +20,11 @@ import com.loopj.android.http.TextHttpResponseHandler;
 import com.salas.javiert.magicmirror.Fragments.AddFragment;
 import com.salas.javiert.magicmirror.Fragments.AssignmentsFragment;
 import com.salas.javiert.magicmirror.Fragments.UpdateFragment;
+import com.salas.javiert.magicmirror.Objects.assignment_class;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -137,8 +142,8 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void InsertAssignment() {
-        RequestParams params = new RequestParams();
+    public void InsertAssignment() throws JSONException {
+        assignment_class newAssign = new assignment_class(10, "Test123", 2, "2017-08-23", "2017-08-23 13:34:54", "0", 65);
         TextHttpResponseHandler response = new TextHttpResponseHandler() {
             @Override
             public void onFailure(int statusCode, cz.msebera.android.httpclient.Header[] headers, String responseString, Throwable throwable) {
@@ -150,10 +155,14 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("suc", responseString);
             }
         };
-        params.add("name1", "Test");
+        JSONArray Assignments = new JSONArray();
+        Assignments.put(newAssign.toJSONObject());
+        JSONObject ParamObject = new JSONObject();
+        ParamObject.put("Assignments", Assignments);
+        RequestParams paramOne = JsonHelper.toRequestParams(ParamObject);
 
-        DatabaseRestClient.post("input.php", params, response);
-        Log.d("responses", "");
+
+        DatabaseRestClient.post("input.php", paramOne, response);
     }
 
     private class InsertTask extends AsyncTask<Void, Void, Void> {
@@ -166,7 +175,11 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected Void doInBackground(Void... params) {
-            InsertAssignment();
+            try {
+                InsertAssignment();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
 
             return null;
         }
