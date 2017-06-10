@@ -15,7 +15,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.TextHttpResponseHandler;
 import com.salas.javiert.magicmirror.Fragments.AddFragment;
 import com.salas.javiert.magicmirror.Fragments.AssignmentsFragment;
@@ -25,6 +24,10 @@ import com.salas.javiert.magicmirror.Objects.assignment_class;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.UnsupportedEncodingException;
+
+import cz.msebera.android.httpclient.entity.StringEntity;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -142,7 +145,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void InsertAssignment() throws JSONException {
+    public void InsertAssignment() throws JSONException, UnsupportedEncodingException {
         assignment_class newAssign = new assignment_class(10, "Test123", 2, "2017-08-23", "2017-08-23 13:34:54", "0", 65);
         TextHttpResponseHandler response = new TextHttpResponseHandler() {
             @Override
@@ -159,10 +162,12 @@ public class MainActivity extends AppCompatActivity {
         Assignments.put(newAssign.toJSONObject());
         JSONObject ParamObject = new JSONObject();
         ParamObject.put("Assignments", Assignments);
-        RequestParams paramOne = JsonHelper.toRequestParams(ParamObject);
+        StringEntity myEntitiy = new StringEntity(ParamObject.toString());
+        myEntitiy.setContentEncoding("UTF-8");
+        myEntitiy.setContentType("application/json");
 
 
-        DatabaseRestClient.post("input.php", paramOne, response);
+        DatabaseRestClient.post(this, "input.php", myEntitiy, "application/x-www-form-urlencoded", response);
     }
 
     private class InsertTask extends AsyncTask<Void, Void, Void> {
@@ -178,6 +183,8 @@ public class MainActivity extends AppCompatActivity {
             try {
                 InsertAssignment();
             } catch (JSONException e) {
+                e.printStackTrace();
+            } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
 

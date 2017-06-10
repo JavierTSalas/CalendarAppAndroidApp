@@ -1,5 +1,6 @@
 package com.salas.javiert.magicmirror;
 
+import android.content.Context;
 import android.util.Log;
 
 import com.loopj.android.http.AsyncHttpClient;
@@ -8,6 +9,8 @@ import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.ResponseHandlerInterface;
 import com.loopj.android.http.SyncHttpClient;
 
+import cz.msebera.android.httpclient.HttpEntity;
+
 /**
  * Created by javi6 on 5/26/2017.
  * Reference: http://www.withhari.com/http-request-android/ 5/27/2017
@@ -15,8 +18,8 @@ import com.loopj.android.http.SyncHttpClient;
 
 public class DatabaseRestClient {
 
-    // private static final String BASE_URL = "http://192.168.56.1/learning/";
-    private static final String BASE_URL = "http://10.0.0.21/learning/";
+    private static final String BASE_URL = "http://192.168.56.1/learning/";
+    //private static final String BASE_URL = "http://10.0.0.21/learning/";
     private static final String TAG = "DATEBASE CONNECTION ";
     private static AsyncHttpClient client = new SyncHttpClient();
 
@@ -29,8 +32,8 @@ public class DatabaseRestClient {
         }
     }
 
-    public static void post(String url, RequestParams params, ResponseHandlerInterface responseHandler) {
-        client.post(getAbsoluteUrl(url), params, responseHandler);
+    public static void post(Context context, String url, HttpEntity params, String contentType, ResponseHandlerInterface responseHandler) {
+        client.post(context, getAbsoluteUrl(url), params, contentType, responseHandler);
     }
 
     private static String getAbsoluteUrl(String relativeUrl) {
