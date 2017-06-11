@@ -66,6 +66,51 @@ public class assignment_class {
         Log.d("Classes", "assignment_class: built");
     }
 
+    public assignment_class(Integer ass_id, CharSequence ass_name, Integer class_id, Date date_assigned, Date due, Boolean done, Integer weight) {
+        this.ass_id = ass_id;
+        this.ass_name = ass_name;
+        this.class_id = class_id;
+        this.date_assigned = date_assigned;
+        this.due = due;
+        this.done = done;
+        this.weight = weight;
+    }
+
+    //We use this for comparing two assignment_classes and create
+    public assignment_class(assignment_class BaseAssignment, assignment_class HeadAssignment) {
+        CharSequence ass_name = null;
+        Integer class_id = null;
+        Date date_assigned = null;
+        Date due = null;
+        Boolean done = null;
+        Integer weight = null;
+
+        //We need this regardless
+        Integer ass_id = BaseAssignment.ass_id;
+
+        //Compare the DifferenceAssignments
+        if (BaseAssignment.ass_name == HeadAssignment.ass_name)
+            ass_name = HeadAssignment.ass_name;
+        if (BaseAssignment.class_id == HeadAssignment.class_id)
+            class_id = HeadAssignment.class_id;
+        if (BaseAssignment.date_assigned == HeadAssignment.date_assigned)
+            date_assigned = HeadAssignment.date_assigned;
+        if (BaseAssignment.due == HeadAssignment.due)
+            due = HeadAssignment.due;
+        if (BaseAssignment.done == HeadAssignment.done)
+            done = HeadAssignment.done;
+        if (BaseAssignment.weight == HeadAssignment.weight)
+            weight = HeadAssignment.weight;
+
+        this.ass_id = ass_id;
+        this.ass_name = ass_name;
+        this.class_id = class_id;
+        this.date_assigned = date_assigned;
+        this.due = due;
+        this.done = done;
+        this.weight = weight;
+    }
+
     public static long hoursBetween(Date Due) {
         Calendar DueDate = Calendar.getInstance();
         DueDate.setTime(Due);
@@ -81,16 +126,25 @@ public class assignment_class {
 
     public JSONObject toJSONObject() throws JSONException {
         JSONObject ReturnObject = new JSONObject();
-        ReturnObject.put("id", ass_id);
-        ReturnObject.put("ass_name", ass_name);
-        ReturnObject.put("class_id", class_id);
-        SimpleDateFormat DateFormatDue = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        if (ass_id != null)
+            ReturnObject.put("ass_id", ass_id);
+        if (ass_name != null)
+            ReturnObject.put("ass_name", ass_name);
+        if (class_id != null)
+            ReturnObject.put("class_id", class_id);
         SimpleDateFormat DateFormatDate = new SimpleDateFormat("yyyy-MM-dd");
-        ReturnObject.put("date_assigned", DateFormatDate.format(date_assigned));
-        ReturnObject.put("due", DateFormatDue.format(due));
-        ReturnObject.put("done", done.toString());
-        ReturnObject.put("weight", weight.toString());
-        ;
+        if (date_assigned != null)
+            ReturnObject.put("date_assigned", DateFormatDate.format(date_assigned));
+        SimpleDateFormat DateFormatDue = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        if (due != null)
+            ReturnObject.put("due", DateFormatDue.format(due));
+        if (done != null)
+            ReturnObject.put("done", done.toString());
+        if (weight != null)
+            ReturnObject.put("weight", weight.toString());
+
+
+        Log.d("assignment_class", "Created a JSONObject with ass_id" + ass_id);
         return ReturnObject;
     }
 

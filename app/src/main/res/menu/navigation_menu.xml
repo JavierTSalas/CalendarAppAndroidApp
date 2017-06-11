@@ -17,5 +17,9 @@
             android:id="@+id/nav_Update"
             android:icon="@mipmap/ic_update_black_24dp"
             android:title="Update stauts of TODO" />
+        <item
+            android:id="@+id/nav_Queue"
+            android:icon="@mipmap/ic_update_black_24dp"
+            android:title="Queue (0)" />
     </group>
 </menu>

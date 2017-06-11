@@ -32,6 +32,7 @@ import cz.msebera.android.httpclient.entity.StringEntity;
 public class MainActivity extends AppCompatActivity {
 
 
+    public com.salas.javiert.magicmirror.Objects.myQueue myQueue;
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mToggle;
     private NavigationView navigationView;
@@ -132,6 +133,8 @@ public class MainActivity extends AppCompatActivity {
             // method invoked only when the actionBar is not null.
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
+
+
     }
 
     @Override
