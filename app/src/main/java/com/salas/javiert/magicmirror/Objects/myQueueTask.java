@@ -4,6 +4,8 @@ import android.util.Log;
 
 import org.json.JSONArray;
 
+import java.util.List;
+
 /**
  * Created by javi6 on 6/9/2017.
  */
@@ -16,6 +18,7 @@ public class myQueueTask {
     private myQueueItem.TABLE myTable;
     // This list will contain the list of the JSONObjects
     private JSONArray myList = new JSONArray();
+    private List<Object> myObjectList;
 
     public myQueueTask(myQueueItem Item) {
         myMode = Item.getMyMode();
@@ -34,13 +37,18 @@ public class myQueueTask {
         return myTable;
     }
 
-    public JSONArray getMyList() {
+    public JSONArray getJsonList() {
         return myList;
+    }
+
+    public List<?> getObjectList() {
+        return myObjectList;
     }
 
     public void append(myQueueItem Item) {
         if (MatchingEnums(Item)) {
             myList.put(Item.myJSONObject);
+            myObjectList.add(Item.getO());
         } else {
             Log.d("myQueueTask", "Append failed Enum mismatch");
         }
@@ -48,7 +56,7 @@ public class myQueueTask {
 
     @Override
     public String toString() {
-        String returnstring, myModeString, myTableString;
+        String myModeString, myTableString;
         myModeString = null;
         myTableString = null;
 
@@ -68,8 +76,8 @@ public class myQueueTask {
         if (myMode == myQueueItem.MODE.SET_DONE)
             myModeString = "SET_DONE";
 
-        returnstring = myModeString + "__" + myTableString;
-        return returnstring;
+        return myModeString + "__" + myTableString + '(' + myObjectList.size() + ')';
+
     }
 
     //TODO: Throw error when enum is NULL

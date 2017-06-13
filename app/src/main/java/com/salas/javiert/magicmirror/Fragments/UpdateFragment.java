@@ -109,7 +109,7 @@ public class UpdateFragment extends Fragment {
             // We need to populate these ParentViewClasses one at a time so lets work on the i index
             title = titles.get(i);
 
-            // Create the childList that will hold the children of each Parent (The asssignment name and due date)
+            // Create the childList that will hold the children of each Parent (The assignment name and due date)
             List<Object> childList = new ArrayList<>();
             childList.addAll(bigarray[i].getList());
             title.setChildObjectList(childList);

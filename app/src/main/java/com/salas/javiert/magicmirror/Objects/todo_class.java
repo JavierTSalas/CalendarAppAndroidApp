@@ -15,9 +15,9 @@ import java.util.Date;
 
 public class todo_class {
 
+    public CharSequence todo_name;
     private Integer todo_id;
     private Boolean school, done;
-    private String todo_name;
     private Date due;
 
     public todo_class(int todo_id, boolean school, boolean done, String todo_name, String due) {

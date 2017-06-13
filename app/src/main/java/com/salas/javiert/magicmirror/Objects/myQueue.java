@@ -11,6 +11,7 @@ import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.List;
 
 import cz.msebera.android.httpclient.entity.StringEntity;
 
@@ -19,39 +20,43 @@ import cz.msebera.android.httpclient.entity.StringEntity;
  */
 
 public class myQueue {
-    //TODO: Append myQueueItemLists based on ENUM (Make a function for this)
-    //TODO: Output different JSON for each ENUM
-    //TODO: Create a counter for elements? Probably don't need this as we can loop through the length of the JSON?
-    //TODO: If not, we can append it to the end of the enum name
-    //TODO:
 
+    private static myQueue instance = null;
 
-    private ArrayList<myQueueTask> Queues = new ArrayList();
+    private ArrayList<myQueueTask> QueueTaskList = new ArrayList();
 
     //This is the finalized form of the data that will be sent
     private ArrayList<information> actions = new ArrayList();
 
-    public myQueue() {
+    private myQueue() {
+    }
+
+    //Everytime you need an instance, call this
+    public static myQueue getInstance() {
+        if (instance == null)
+            instance = new myQueue();
+
+        return instance;
     }
 
     public void addQueueTask(myQueueTask Task) {
-        Queues.add(Task);
+        QueueTaskList.add(Task);
     }
 
     public void addQueueItem(myQueueItem Item) {
         int Position = findCorrectQueueTask(Item);
-        Queues.get(Position).append(Item);
+        QueueTaskList.get(Position).append(Item);
     }
 
     private int findCorrectQueueTask(myQueueItem item) {
-        for (int i = 0; i < Queues.size(); i++)
-            if (Queues.get(i).MatchingEnums(item)) {
-                Log.d("myQueue", "Was able to find a QueueTask with matching enums. Appening item");
+        for (int i = 0; i < QueueTaskList.size(); i++)
+            if (QueueTaskList.get(i).MatchingEnums(item)) {
+                Log.d("myQueue", "Was able to find a QueueTask with matching enums. Appending item");
                 return i;
             }
         addQueueTask(new myQueueTask(item));
         Log.d("myQueue", "Was not able to find a QueueTask with matchig enums. Creating new QueueTask with item");
-        return Queues.size();
+        return QueueTaskList.size();
     }
 
     //Populates the actions list with a information.java class that is unique (Due to the nature of myQueueTask) in action and table
@@ -78,7 +83,7 @@ public class myQueue {
 
 
         JSONObject ParamObject = new JSONObject();
-        ParamObject.put(QueueAction, Task.getMyList());
+        ParamObject.put(QueueAction, Task.getJsonList());
         StringEntity myEntitiy = new StringEntity(ParamObject.toString());
         myEntitiy.setContentEncoding("UTF-8");
         myEntitiy.setContentType("application/json");
@@ -102,6 +107,26 @@ public class myQueue {
 
         for (int i = 0; i < actions.size(); i++)
             DatabaseRestClient.post(context, actions.get(i).getUrl(), actions.get(i).getMyEntity(), "application/x-www-form-urlencoded", response);
+    }
+
+    public List<String> createListString() {
+        List<String> myStringList = new ArrayList<String>();
+        if (QueueTaskList.size() < 0) {
+
+
+            for (int index = 0; index < QueueTaskList.size(); index++) {
+                myStringList.add(QueueTaskList.get(index).toString());
+            }
+
+        } else {
+            myStringList.add("Nothing in queue");
+        }
+        return myStringList;
+
+    }
+
+    public ArrayList<myQueueTask> getList() {
+        return QueueTaskList;
     }
 
 

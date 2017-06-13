@@ -11,10 +11,12 @@ import org.json.JSONObject;
 
 public class myQueueItem {
     public JSONObject myJSONObject;
+    private Object o;
     private MODE myMode;
     private TABLE myTable;
 
     public myQueueItem(Object o) throws JSONException {
+        this.o = o;
         myTable = DeduceTable(o);
         myMode = MODE.NULL;
         myJSONObject = getJsonObject(o);
@@ -28,6 +30,10 @@ public class myQueueItem {
         return myTable;
     }
 
+    public Object getO() {
+        return o;
+    }
+
     //Return list, Logs if there is a error
     public JSONObject getJsonObject(Object o) throws JSONException {
         if (myTable == TABLE.ASSIGNMENTS)
@@ -36,6 +42,7 @@ public class myQueueItem {
             return ((occur_class) o).toJSONObject();
         if (myTable == TABLE.TODO)
             return ((todo_class) o).toJSONObject();
+
 
         return null;
     }
@@ -75,6 +82,16 @@ public class myQueueItem {
                 break;
         }
 
+    }
+
+    public String toString() {
+        if (myTable == TABLE.ASSIGNMENTS)
+            return ((assignment_class) o).ass_name.toString();
+        if (myTable == TABLE.OCCUR)
+            return ((occur_class) o).occur_name.toString();
+        if (myTable == TABLE.TODO)
+            return ((todo_class) o).todo_name.toString();
+        return null;
     }
 
     //Possible actions that the myQueueTask will do

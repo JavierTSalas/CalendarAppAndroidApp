@@ -14,7 +14,7 @@ import java.util.Date;
 
 public class occur_class {
     public Integer reoccur_id;
-    public CharSequence name;
+    public CharSequence occur_name;
     public Integer days_between;
     public Integer days_of_week;
     public Integer times;
@@ -24,7 +24,7 @@ public class occur_class {
 
     public occur_class(Integer reoccur_id, CharSequence name, Integer days_between, Integer days_of_week, Integer times, Date end_date, Date start_date, Date next_occurance) {
         this.reoccur_id = reoccur_id;
-        this.name = name;
+        this.occur_name = name;
         this.days_between = days_between;
         this.days_of_week = days_of_week;
         this.times = times;
@@ -39,8 +39,8 @@ public class occur_class {
         JSONObject ReturnObject = new JSONObject();
         if (reoccur_id != null)
             ReturnObject.put("reoccur_id", reoccur_id);
-        if (name != null)
-            ReturnObject.put("name", name);
+        if (occur_name != null)
+            ReturnObject.put("occur_name", occur_name);
         if (days_between != null)
             ReturnObject.put("days_between", days_between);
         if (days_of_week != null)
@@ -63,7 +63,7 @@ public class occur_class {
     public String toString() {
         return "occur_class{" +
                 "reoccur_id=" + reoccur_id +
-                ", name=" + name +
+                ", occur_name=" + occur_name +
                 ", days_between=" + days_between +
                 ", days_of_week=" + days_of_week +
                 ", times=" + times +

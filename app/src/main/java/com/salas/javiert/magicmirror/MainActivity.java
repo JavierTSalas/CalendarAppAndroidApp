@@ -18,6 +18,7 @@ import android.widget.Toast;
 import com.loopj.android.http.TextHttpResponseHandler;
 import com.salas.javiert.magicmirror.Fragments.AddFragment;
 import com.salas.javiert.magicmirror.Fragments.AssignmentsFragment;
+import com.salas.javiert.magicmirror.Fragments.QueueFragment;
 import com.salas.javiert.magicmirror.Fragments.UpdateFragment;
 import com.salas.javiert.magicmirror.Objects.assignment_class;
 
@@ -90,6 +91,12 @@ public class MainActivity extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(), "Update Selected", Toast.LENGTH_SHORT).show();
                         UpdateFragment update_fragment = new UpdateFragment();
                         fragmentTransaction.replace(R.id.frame, update_fragment);
+                        fragmentTransaction.commit();
+                        break;
+                    case R.id.nav_Queue:
+                        Toast.makeText(getApplicationContext(), "Update Selected", Toast.LENGTH_SHORT).show();
+                        QueueFragment queue_fragment = new QueueFragment();
+                        fragmentTransaction.replace(R.id.frame, queue_fragment);
                         fragmentTransaction.commit();
                         break;
                     default:
