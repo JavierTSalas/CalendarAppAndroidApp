@@ -4,6 +4,7 @@ import android.util.Log;
 
 import org.json.JSONArray;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -18,7 +19,8 @@ public class myQueueTask {
     private myQueueItem.TABLE myTable;
     // This list will contain the list of the JSONObjects
     private JSONArray myList = new JSONArray();
-    private List<Object> myObjectList;
+    private ArrayList<Object> myObjectList = new ArrayList<Object>() {
+    };
 
     public myQueueTask(myQueueItem Item) {
         myMode = Item.getMyMode();

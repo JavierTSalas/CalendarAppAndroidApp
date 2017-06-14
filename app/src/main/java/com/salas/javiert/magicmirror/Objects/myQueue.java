@@ -51,12 +51,14 @@ public class myQueue {
     private int findCorrectQueueTask(myQueueItem item) {
         for (int i = 0; i < QueueTaskList.size(); i++)
             if (QueueTaskList.get(i).MatchingEnums(item)) {
-                Log.d("myQueue", "Was able to find a QueueTask with matching enums. Appending item");
+                Log.d("myQueue", "Was able to find a QueueTask with matching enums at index." + i + " Appending item");
                 return i;
             }
         addQueueTask(new myQueueTask(item));
         Log.d("myQueue", "Was not able to find a QueueTask with matchig enums. Creating new QueueTask with item");
-        return QueueTaskList.size();
+        Log.d("myQueue", "Returning" + (QueueTaskList.size() - 1));
+
+        return QueueTaskList.size() - 1;
     }
 
     //Populates the actions list with a information.java class that is unique (Due to the nature of myQueueTask) in action and table
