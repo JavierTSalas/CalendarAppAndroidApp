@@ -3,11 +3,14 @@ package com.salas.javiert.magicmirror.Fragments;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -16,8 +19,8 @@ import com.loopj.android.http.JsonHttpResponseHandler;
 import com.salas.javiert.magicmirror.DatabaseRestClient;
 import com.salas.javiert.magicmirror.Objects.assignment_class;
 import com.salas.javiert.magicmirror.Objects.class_class;
+import com.salas.javiert.magicmirror.Objects.myQueue;
 import com.salas.javiert.magicmirror.R;
-import com.salas.javiert.magicmirror.Resources.Adapters.RecylerAdapter;
 import com.salas.javiert.magicmirror.Resources.Adapters.myExpandRecylerAdapter;
 import com.salas.javiert.magicmirror.Resources.ExpandableChild.ParentViewClass;
 import com.salas.javiert.magicmirror.Resources.ExpandableChild.TitleCreator;
@@ -41,7 +44,6 @@ public class UpdateFragment extends Fragment {
     class_class[] bigarray = new class_class[6];
     UpdateFragment.FetchAssignments myTask;
     List<assignment_class> ClassList;
-    private RecylerAdapter adapter;
 
     @Nullable
     @Override
@@ -55,11 +57,25 @@ public class UpdateFragment extends Fragment {
         return view;
     }
 
-
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         ((myExpandRecylerAdapter) mRecyclerView.getAdapter()).onSaveInstanceState(outState);
+
+    }
+
+    private void updateQueueCount() {
+
+        NavigationView navigationView = (NavigationView) getActivity().findViewById(R.id.navigation_view);
+
+        // get menu from navigationView
+        Menu menu = navigationView.getMenu();
+
+        // find MenuItem you want to change
+        MenuItem nav_camara = menu.findItem(R.id.nav_Queue);
+
+        // set new title to the MenuItem
+        nav_camara.setTitle("Queue(" + myQueue.getInstance().getTaskCount() + ")");
 
     }
 
@@ -70,14 +86,13 @@ public class UpdateFragment extends Fragment {
         if (myTask != null && myTask.getStatus() == AsyncTask.Status.RUNNING) {
             myTask.cancel(true);
         }
+        updateQueueCount();
         Log.d("Fragments", "UpdateFragment has been closed. Canceling AsyncTask()");
         super.onDetach();
     }
 
     private void PopulateRecyclerView() {
         Log.d("Async", "On postExec, populating Recyclerview");
-        adapter = new RecylerAdapter(getActivity(), ClassList);
-        mRecyclerView.setAdapter(adapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
 
@@ -86,9 +101,13 @@ public class UpdateFragment extends Fragment {
         adapter.setParentClickableViewAnimationDefaultDuration();
         adapter.setParentAndIconExpandOnClick(true);
 
+        Log.d("UF", adapter.toString());
+
+
+        mRecyclerView.swapAdapter(adapter, true);
+
         // Set the adapter
         mRecyclerView.setAdapter(adapter);
-
     }
 
     private List<ParentObject> initData() {

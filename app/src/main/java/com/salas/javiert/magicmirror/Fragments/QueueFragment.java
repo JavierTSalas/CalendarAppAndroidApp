@@ -1,26 +1,29 @@
 package com.salas.javiert.magicmirror.Fragments;
 
+import android.app.Activity;
+import android.content.Context;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.bignerdranch.expandablerecyclerview.Model.ParentObject;
-import com.salas.javiert.magicmirror.Objects.class_class;
 import com.salas.javiert.magicmirror.Objects.myQueue;
+import com.salas.javiert.magicmirror.Objects.myQueueTask;
 import com.salas.javiert.magicmirror.R;
-import com.salas.javiert.magicmirror.Resources.Adapters.RecylerAdapter;
 import com.salas.javiert.magicmirror.Resources.Adapters.myExpandRecylerAdapter;
 import com.salas.javiert.magicmirror.Resources.ExpandableChild.ParentViewClass;
 import com.salas.javiert.magicmirror.Resources.ExpandableChild.TitleCreator;
-
-import org.json.JSONArray;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,17 +35,14 @@ import java.util.List;
 public class QueueFragment extends Fragment {
 
     RecyclerView mRecyclerView;
-    JSONArray jArray_assignments, jArray_classes;
-    class_class[] bigarray = new class_class[6];
     QueueFragment.FetchAssignments myTask;
-    List<String> ListOfTitleStrings;
-    private RecylerAdapter adapter;
+    ArrayList<myQueueTask> ListOfTitleStrings;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.update_layout, container, false);
-        mRecyclerView = (RecyclerView) view.findViewById(R.id.RecyclerView);
+        View view = inflater.inflate(R.layout.queue_fragment, container, false);
+        mRecyclerView = (RecyclerView) view.findViewById(R.id.RecyclerView_Queue);
         myTask = new QueueFragment.FetchAssignments();
         myTask.execute();
 
@@ -59,20 +59,59 @@ public class QueueFragment extends Fragment {
     }
 
     @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        //TODO: Save the stuff that was just added in the queue,
+
+
+        //Load form Preferences
+        myQueue.getInstance().loadMyQueue(this.getContext());
+    }
+
+    @SuppressWarnings("deprecation")
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+
+
+            //Load form Preferences
+            myQueue.getInstance().loadMyQueue(this.getContext());
+        }
+    }
+
+    @Override
     public void onDetach() {
         //If we a no longer viewing this fragment we should cancel the AsyncTask
-        // myTask connects to the database and fetches and populates the RecyclerView
+        // myTask is an AsyncTask that connects to the database and fetches the information that populates the RecyclerView
         if (myTask != null && myTask.getStatus() == AsyncTask.Status.RUNNING) {
             myTask.cancel(true);
         }
-        Log.d("Fragments", "UpdateFragment has been closed. Canceling AsyncTask()");
+        mRecyclerView.destroyDrawingCache();
+        Log.d("Fragments", "QueueFragment has been closed. Canceling AsyncTask()");
+        updateQueueNavCount();
+        myQueue.getInstance().saveMyQueue(this.getContext());
         super.onDetach();
+    }
+
+    private void updateQueueNavCount() {
+
+        NavigationView navigationView = (NavigationView) getActivity().findViewById(R.id.navigation_view);
+
+        // get menu from navigationView
+        Menu menu = navigationView.getMenu();
+
+        // find MenuItem you want to change
+        MenuItem nav_camara = menu.findItem(R.id.nav_Queue);
+
+        // set new title to the MenuItem
+        nav_camara.setTitle("Queue(" + myQueue.getInstance().getTaskCount() + ")");
+
     }
 
     private void PopulateRecyclerView() {
         Log.d("Async", "On postExec, populating Recyclerview");
-        adapter = new RecylerAdapter(getActivity(), myQueue.getInstance().getList());
-        mRecyclerView.setAdapter(adapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
 
@@ -81,9 +120,11 @@ public class QueueFragment extends Fragment {
         adapter.setParentClickableViewAnimationDefaultDuration();
         adapter.setParentAndIconExpandOnClick(true);
 
+        Log.d("QF", adapter.toString());
+
+
         // Set the adapter
         mRecyclerView.setAdapter(adapter);
-
     }
 
     private List<ParentObject> initData() {
@@ -104,10 +145,11 @@ public class QueueFragment extends Fragment {
             // We need to populate these ParentViewClasses one at a time so lets work on the i index
             title = titles.get(i);
 
-            // Create the childList that will hold the children of each Parent (The asssignment occur_name and due date)
+            // Create the childList that will hold the children of each Parent (The assignment occur_name and due date)
             List<Object> childList = new ArrayList<>();
             try {
                 childList.addAll(myQueue.getInstance().getList().get(i).getObjectList());
+                Log.d("childList", myQueue.getInstance().getList().get(i).getObjectList() + " inserted into childList");
             } catch (IndexOutOfBoundsException e) {
                 Log.d("QueueFragment", "Nothing in queue, catching " + e.toString());
             }
@@ -123,28 +165,19 @@ public class QueueFragment extends Fragment {
     private void FillListStringOfClasses() {
         {
             for (int i = 0; i < myQueue.getInstance().getList().size(); i++) {
-                ListOfTitleStrings.add(myQueue.getInstance().getList().get(i).toString());
-                Log.d("ListOfTitleStrings", myQueue.getInstance().getList().get(i).toString() + " inserted into List<>");
+                ListOfTitleStrings.add(myQueue.getInstance().getList().get(i));
+                Log.d("ListOfTitleStrings", myQueue.getInstance().getList().get(i).toString() + " inserted into List<> (" + i + ") out of " + myQueue.getInstance().getList().size());
             }
         }
 
     }
 
-    private void startUpBigArray() {
-        // Set up bigarray so that we don't get nullpointerexceptions
-        // The benefit of doing this is that we already have the assignments grouped by class_id
-        for (int i = 0; i < bigarray.length; i++) {
-            bigarray[i] = new class_class(i);
-        }
-    }
 
     /* This AsyncTask does all of the work
     It's lifecycle is as follows:
     ---------onPreExecute---------
     Initialize ListOfTitleStrings to populate
-    Call startUpBigArray() to populate it with class_class
     ---------doInBackground---------
-    Calls FillBigArrayFormInternet - See function
     Calls FillListStringOfClasses - See function
     ---------onPostExecute---------
     Calls PopulateRecyclerView do all the work for the RecyclerView
@@ -155,7 +188,7 @@ public class QueueFragment extends Fragment {
         @Override
         protected void onPreExecute() {
             ListOfTitleStrings = new ArrayList<>();
-            startUpBigArray();
+
         }
 
 

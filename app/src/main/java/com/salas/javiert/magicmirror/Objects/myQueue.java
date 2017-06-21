@@ -1,8 +1,12 @@
 package com.salas.javiert.magicmirror.Objects;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.loopj.android.http.TextHttpResponseHandler;
 import com.salas.javiert.magicmirror.DatabaseRestClient;
 
@@ -10,6 +14,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,12 +56,12 @@ public class myQueue {
     private int findCorrectQueueTask(myQueueItem item) {
         for (int i = 0; i < QueueTaskList.size(); i++)
             if (QueueTaskList.get(i).MatchingEnums(item)) {
-                Log.d("myQueue", "Was able to find a QueueTask with matching enums. Appending item");
+                Log.d("myQueue", "Was able to find a QueueTask with matching enums." + i + " Appending item");
                 return i;
             }
         addQueueTask(new myQueueTask(item));
         Log.d("myQueue", "Was not able to find a QueueTask with matchig enums. Creating new QueueTask with item");
-        return QueueTaskList.size();
+        return (QueueTaskList.size() - 1); //Minus one since the size of a list is n+1 indexes
     }
 
     //Populates the actions list with a information.java class that is unique (Due to the nature of myQueueTask) in action and table
@@ -125,8 +130,52 @@ public class myQueue {
 
     }
 
+    public void loadMyQueue(Context context) {
+        SharedPreferences appSharedPrefs = PreferenceManager
+                .getDefaultSharedPreferences(context);
+        Gson gson = new Gson();
+        //TODO: Make this read "Please add an item to the queue"
+        String json = appSharedPrefs.getString("QUEUE_DATA", "");
+        Log.d("Loading", json);
+        Type type = new TypeToken<List<myQueueTask>>() {
+        }.getType();
+        ArrayList<myQueueTask> QUEUE_DATA_FROM_PREFERENCES = gson.fromJson(json, type);
+        myQueue.getInstance().setList(QUEUE_DATA_FROM_PREFERENCES);
+        Log.d("SharedPref", "Reading Queue to SharedPreferences");
+    }
+
+
+    public void saveMyQueue(Context context) {
+
+
+        SharedPreferences appSharedPrefs = PreferenceManager
+                .getDefaultSharedPreferences(context);
+        SharedPreferences.Editor prefsEditor = appSharedPrefs.edit();
+        Gson gson = new Gson();
+        ArrayList<myQueueTask> QUEUE_DATA_FROM_PREFERENCES = com.salas.javiert.magicmirror.Objects.myQueue.getInstance().getList();
+        String json = gson.toJson(QUEUE_DATA_FROM_PREFERENCES);
+        prefsEditor.putString("QUEUE_DATA", json);
+        Log.d("Saving", json);
+        prefsEditor.commit();
+        Log.d("SharedPref", "Saving Queue to SharedPreferences");
+    }
+
+    public int getTaskCount() {
+        int runningCount = 0;
+        for (int i = 0; i < QueueTaskList.size(); i++)
+            for (int j = 0; j < QueueTaskList.get(i).getObjectList().size(); j++)
+                runningCount++;
+
+        Log.d("myQueue", "Count of tasks: " + runningCount);
+        return runningCount;
+    }
+
     public ArrayList<myQueueTask> getList() {
         return QueueTaskList;
+    }
+
+    public void setList(ArrayList<myQueueTask> newList) {
+        this.QueueTaskList = newList;
     }
 
 

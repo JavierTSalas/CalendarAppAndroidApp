@@ -16,11 +16,12 @@ import java.util.List;
 
 public class TitleCreator {
     static TitleCreator _titleCreator;
-    private static List<?> ListOfObjects;
+    private static List<?> ListOfObjects, OldList;
     List<ParentViewClass> ClassNameArrayList;
 
     public TitleCreator(Context context) {
         ClassNameArrayList = new ArrayList<>();
+        OldList = ListOfObjects;
         if (DetermineType() == RecylerAdapter.typeOfObjectsList.ASSIGN_CLASS) {
             for (int i = 0; i < ListOfObjects.size(); i++) {
                 ParentViewClass ParentView = new ParentViewClass(((assignment_class) ListOfObjects.get(i)).ass_name.toString());
@@ -37,7 +38,7 @@ public class TitleCreator {
 
     public static TitleCreator get(Context context, List<?> classList) {
         ListOfObjects = classList;
-        if (_titleCreator == null)
+        if (_titleCreator == null || OldList != classList)
             _titleCreator = new TitleCreator(context);
 
         return _titleCreator;
@@ -52,8 +53,11 @@ public class TitleCreator {
             if (ListOfObjects.get(0) instanceof assignment_class)
                 return RecylerAdapter.typeOfObjectsList.ASSIGN_CLASS;
         }
-
-        Log.d("RecyclerAdapter", "Encountered a unknown class type. You're probably not seeing anything so go to RecyclerAdapter.java to define what you want to view ");
+        if (!ListOfObjects.isEmpty()) {
+            Log.d("ClassType", ListOfObjects.get(0).getClass().toString() + " has not been defined in TitleCreator.java");
+        } else {
+            Log.d("TitleCreator", "Encountered a unknown class type. You're probably not seeing anything so go to TitleCreator.java to define what you want to view ");
+        }
         return RecylerAdapter.typeOfObjectsList.NAN;
     }
 

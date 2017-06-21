@@ -4,6 +4,7 @@ import android.util.Log;
 
 import org.json.JSONArray;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -18,7 +19,7 @@ public class myQueueTask {
     private myQueueItem.TABLE myTable;
     // This list will contain the list of the JSONObjects
     private JSONArray myList = new JSONArray();
-    private List<Object> myObjectList;
+    private ArrayList<Object> myObjectList = new ArrayList<>();
 
     public myQueueTask(myQueueItem Item) {
         myMode = Item.getMyMode();
@@ -38,6 +39,9 @@ public class myQueueTask {
     }
 
     public JSONArray getJsonList() {
+        //TODO: Generate this list
+        // We generate it when it's requested because were lazy
+        // myList.put(Item.myJSONObject);
         return myList;
     }
 
@@ -47,12 +51,18 @@ public class myQueueTask {
 
     public void append(myQueueItem Item) {
         if (MatchingEnums(Item)) {
-            myList.put(Item.myJSONObject);
             myObjectList.add(Item.getO());
+            Log.d("myQueueTask", "Append successful! New size:" + myObjectList.size());
         } else {
             Log.d("myQueueTask", "Append failed Enum mismatch");
         }
     }
+
+    public void remove(myQueueItem Item) {
+        //TODO: This
+    }
+
+
 
     @Override
     public String toString() {

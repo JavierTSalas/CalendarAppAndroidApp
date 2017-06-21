@@ -27,7 +27,6 @@ import com.salas.javiert.magicmirror.R;
 import com.salas.javiert.magicmirror.Resources.ExpandableChild.ParentViewClass;
 import com.salas.javiert.magicmirror.Resources.ExpandableChild.ViewHolder.TitleChildViewHolder;
 import com.salas.javiert.magicmirror.Resources.ExpandableChild.ViewHolder.TitleParentViewHolder;
-import com.salas.javiert.magicmirror.Resources.TinyDB;
 
 import org.json.JSONException;
 
@@ -51,13 +50,13 @@ public class myExpandRecylerAdapter extends ExpandableRecyclerAdapter<TitleParen
     Dialog dialog;
     Calendar myCalendar;
     DatePickerDialog.OnDateSetListener date;
-    TinyDB myDB;
     boolean DoneFlag = false;
 
     public myExpandRecylerAdapter(Context context, List<ParentObject> parentItemList) {
         super(context, parentItemList);
         mInflater = LayoutInflater.from(context);
     }
+
 
     @Override
     public TitleParentViewHolder onCreateParentViewHolder(ViewGroup viewGroup) {
@@ -84,6 +83,7 @@ public class myExpandRecylerAdapter extends ExpandableRecyclerAdapter<TitleParen
 
 
         if (o instanceof assignment_class) {
+            Log.d("instanceof", "assignment_class");
             myAssignment = (assignment_class) o;
             titleChildViewHolder.tvTitle.setText(myAssignment.ass_name);
             titleChildViewHolder.tvTime.setText(myAssignment.TimeLeft());
@@ -245,6 +245,11 @@ public class myExpandRecylerAdapter extends ExpandableRecyclerAdapter<TitleParen
                             }
                             item.setMode("EDIT");
                             myQueue.getInstance().addQueueItem(item);
+                            dialog.dismiss();
+
+                            //Save the queue that we just created
+                            myQueue.getInstance().saveMyQueue(dialog.getContext());
+
 
                         }
                     });
@@ -267,7 +272,6 @@ public class myExpandRecylerAdapter extends ExpandableRecyclerAdapter<TitleParen
 
         }
     }
-
 
 }
 

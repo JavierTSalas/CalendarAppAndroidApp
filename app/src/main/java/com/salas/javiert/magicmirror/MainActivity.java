@@ -10,6 +10,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -41,11 +42,12 @@ public class MainActivity extends AppCompatActivity {
     private InsertTask myTask;
     private Toolbar mToolbar;
 
-    @Override
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        updateQueueCount();
+        com.salas.javiert.magicmirror.Objects.myQueue.getInstance().loadMyQueue(this);
 
         mButton = (Button) findViewById(R.id.bTest);
         mButton.setOnClickListener(new View.OnClickListener() {
@@ -58,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         navigationView = (NavigationView) findViewById(R.id.navigation_view);
+
 
         //Setting Navigation View Item Selected Listener to handle the item click of the navigation menu
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
@@ -94,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
                         fragmentTransaction.commit();
                         break;
                     case R.id.nav_Queue:
-                        Toast.makeText(getApplicationContext(), "Update Selected", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), "Queue Selected", Toast.LENGTH_SHORT).show();
                         QueueFragment queue_fragment = new QueueFragment();
                         fragmentTransaction.replace(R.id.frame, queue_fragment);
                         fragmentTransaction.commit();
@@ -104,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
                         return true;
                 }
 
-                //This will never run
+
                 return false;
             }
         });
@@ -126,7 +129,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onDrawerOpened(View drawerView) {
                 // Code here will be triggered once the drawer open as we dont want anything to happen so we leave this blank
-
+                updateQueueCount();
                 super.onDrawerOpened(drawerView);
             }
         };
@@ -143,6 +146,23 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
+
+
+    private void updateQueueCount() {
+
+        navigationView = (NavigationView) findViewById(R.id.navigation_view);
+
+        // get menu from navigationView
+        Menu menu = navigationView.getMenu();
+
+        // find MenuItem you want to change
+        MenuItem nav_camara = menu.findItem(R.id.nav_Queue);
+
+        // set new title to the MenuItem
+        nav_camara.setTitle("Queue(" + com.salas.javiert.magicmirror.Objects.myQueue.getInstance().getTaskCount() + ")");
+
+    }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
