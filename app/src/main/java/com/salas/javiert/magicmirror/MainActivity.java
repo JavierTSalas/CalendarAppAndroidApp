@@ -22,6 +22,7 @@ import com.salas.javiert.magicmirror.Fragments.AssignmentsFragment;
 import com.salas.javiert.magicmirror.Fragments.QueueFragment;
 import com.salas.javiert.magicmirror.Fragments.UpdateFragment;
 import com.salas.javiert.magicmirror.Objects.assignment_class;
+import com.salas.javiert.magicmirror.Objects.myQueueClasses.myQueue;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -34,7 +35,6 @@ import cz.msebera.android.httpclient.entity.StringEntity;
 public class MainActivity extends AppCompatActivity {
 
 
-    public com.salas.javiert.magicmirror.Objects.myQueue myQueue;
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mToggle;
     private NavigationView navigationView;
@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         updateQueueCount();
-        com.salas.javiert.magicmirror.Objects.myQueue.getInstance().loadMyQueue(this);
+        myQueue.getInstance().loadMyQueue(this);
 
         mButton = (Button) findViewById(R.id.bTest);
         mButton.setOnClickListener(new View.OnClickListener() {
@@ -129,7 +129,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onDrawerOpened(View drawerView) {
                 // Code here will be triggered once the drawer open as we dont want anything to happen so we leave this blank
-                updateQueueCount();
                 super.onDrawerOpened(drawerView);
             }
         };
@@ -147,7 +146,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-
     private void updateQueueCount() {
 
         navigationView = (NavigationView) findViewById(R.id.navigation_view);
@@ -159,7 +157,7 @@ public class MainActivity extends AppCompatActivity {
         MenuItem nav_camara = menu.findItem(R.id.nav_Queue);
 
         // set new title to the MenuItem
-        nav_camara.setTitle("Queue(" + com.salas.javiert.magicmirror.Objects.myQueue.getInstance().getTaskCount() + ")");
+        nav_camara.setTitle("Queue(" + myQueue.getInstance().getTaskCount() + ")");
 
     }
 

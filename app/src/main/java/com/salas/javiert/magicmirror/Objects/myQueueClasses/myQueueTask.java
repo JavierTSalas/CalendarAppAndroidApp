@@ -1,4 +1,4 @@
-package com.salas.javiert.magicmirror.Objects;
+package com.salas.javiert.magicmirror.Objects.myQueueClasses;
 
 import android.util.Log;
 
@@ -20,6 +20,7 @@ public class myQueueTask {
     // This list will contain the list of the JSONObjects
     private JSONArray myList = new JSONArray();
     private ArrayList<Object> myObjectList = new ArrayList<>();
+    private ArrayList<myQueueItem> myTaskList = new ArrayList<>();
 
     public myQueueTask(myQueueItem Item) {
         myMode = Item.getMyMode();
@@ -28,6 +29,10 @@ public class myQueueTask {
 
     public boolean MatchingEnums(myQueueItem Item) {
         return myMode == Item.getMyMode() && myTable == Item.getMyTable();
+    }
+
+    public ArrayList<myQueueItem> getMyTaskList() {
+        return myTaskList;
     }
 
     public myQueueItem.MODE getMyMode() {
@@ -52,6 +57,7 @@ public class myQueueTask {
     public void append(myQueueItem Item) {
         if (MatchingEnums(Item)) {
             myObjectList.add(Item.getO());
+            myTaskList.add(Item);
             Log.d("myQueueTask", "Append successful! New size:" + myObjectList.size());
         } else {
             Log.d("myQueueTask", "Append failed Enum mismatch");
@@ -110,7 +116,7 @@ public class myQueueTask {
         myEntitiy.setContentEncoding("UTF-8");
         myEntitiy.setContentType("application/json");
 
-        vv This part uses a information.java object vv
+        vv This part uses a sendToServerObject.java object vv
         DatabaseRestClient.post(this, "input.php", myEntitiy, "application/x-www-form-urlencoded", response);
 
 

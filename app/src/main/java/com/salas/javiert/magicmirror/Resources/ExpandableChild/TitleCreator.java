@@ -4,7 +4,7 @@ import android.content.Context;
 import android.util.Log;
 
 import com.salas.javiert.magicmirror.Objects.assignment_class;
-import com.salas.javiert.magicmirror.Objects.myQueueTask;
+import com.salas.javiert.magicmirror.Objects.myQueueClasses.myQueueTask;
 import com.salas.javiert.magicmirror.Resources.Adapters.RecylerAdapter;
 
 import java.util.ArrayList;

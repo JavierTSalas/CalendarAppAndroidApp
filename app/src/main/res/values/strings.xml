@@ -4,6 +4,8 @@
     <string name="open">Open navigation drawer</string>
     <string name="close">Close navigation drawer</string>
     <string name="app_nav">Mirror Control V0.0.2</string>
+    <string name="add">Add an item to the table</string>
+    <string name="DefaultAssignmentName">\"Enter an Assignment Name\"</string>
 
     <string-array name="class_list">
         <item>Non School Activitiy</item>

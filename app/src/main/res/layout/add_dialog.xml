@@ -8,13 +8,13 @@
     tools:layout_editor_absoluteY="25dp">
 
 
-    <TextView
+    <EditText
         android:id="@+id/etName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:focusable="false"
+        android:layout_gravity="center_horizontal"
         android:gravity="center"
-        android:text="TextView"
+        android:hint="@string/DefaultAssignmentName"
         android:textSize="20sp"
         tools:layout_editor_absoluteX="151dp"
         tools:layout_editor_absoluteY="25dp" />
@@ -23,6 +23,7 @@
         android:id="@+id/spDropDown"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
         tools:layout_editor_absoluteX="8dp"
         tools:layout_editor_absoluteY="68dp" />
 
@@ -52,6 +53,7 @@
             android:layout_width="4dp"
             android:layout_height="wrap_content" />
 
+
         <TextView
             android:id="@+id/etTime"
             android:layout_width="match_parent"
@@ -63,17 +65,35 @@
             android:textSize="20dp"
             tools:layout_editor_absoluteX="192dp"
             tools:layout_editor_absoluteY="125dp" />
+
     </LinearLayout>
 
-    <Button
-        android:id="@+id/bDone"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="numberSigned"
-        android:text="NOT DONE"
-        tools:layout_editor_absoluteX="110dp"
-        tools:layout_editor_absoluteY="201dp" />
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:orientation="horizontal"
+        android:weightSum="2">
+
+        <EditText
+            android:id="@+id/etWeight"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ems="3"
+            android:inputType="numberSigned" />
+
+        <Button
+            android:id="@+id/bDone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ems="10"
+            android:inputType="numberSigned"
+            android:text="NOT DONE"
+            tools:layout_editor_absoluteX="110dp"
+            tools:layout_editor_absoluteY="201dp" />
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"

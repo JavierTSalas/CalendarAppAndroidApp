@@ -4,6 +4,8 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,13 +18,15 @@ import android.widget.DatePicker;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import com.bignerdranch.expandablerecyclerview.Adapter.ExpandableRecyclerAdapter;
 import com.bignerdranch.expandablerecyclerview.Model.ParentObject;
 import com.salas.javiert.magicmirror.Objects.assignment_class;
-import com.salas.javiert.magicmirror.Objects.myQueue;
-import com.salas.javiert.magicmirror.Objects.myQueueItem;
-import com.salas.javiert.magicmirror.Objects.myQueueTask;
+import com.salas.javiert.magicmirror.Objects.myQueueClasses.myQueue;
+import com.salas.javiert.magicmirror.Objects.myQueueClasses.myQueueItem;
+import com.salas.javiert.magicmirror.Objects.myQueueClasses.myQueueTask;
+import com.salas.javiert.magicmirror.Objects.sendToServerObject;
 import com.salas.javiert.magicmirror.R;
 import com.salas.javiert.magicmirror.Resources.ExpandableChild.ParentViewClass;
 import com.salas.javiert.magicmirror.Resources.ExpandableChild.ViewHolder.TitleChildViewHolder;
@@ -78,11 +82,15 @@ public class myExpandRecylerAdapter extends ExpandableRecyclerAdapter<TitleParen
     }
 
     @Override
-    public void onBindChildViewHolder(final TitleChildViewHolder titleChildViewHolder, int i, Object o) {
+    public void onBindChildViewHolder(final TitleChildViewHolder titleChildViewHolder, int i, final Object o) {
         // o instanceof class can be used to determine the class type and template this adapter
 
 
         if (o instanceof assignment_class) {
+
+            Toast.makeText(titleChildViewHolder.itemView.getContext(), "assignment_class selected", Toast.LENGTH_SHORT)
+                    .show();
+
             Log.d("instanceof", "assignment_class");
             myAssignment = (assignment_class) o;
             titleChildViewHolder.tvTitle.setText(myAssignment.ass_name);
@@ -96,6 +104,7 @@ public class myExpandRecylerAdapter extends ExpandableRecyclerAdapter<TitleParen
                     final assignment_class ModifiedAssignment = myAssignment;
 
 
+                    //Create a new dialog
                     dialog = new Dialog(titleChildViewHolder.itemView.getContext());
                     dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                     dialog.setContentView(R.layout.assignment_dialog);
@@ -104,7 +113,7 @@ public class myExpandRecylerAdapter extends ExpandableRecyclerAdapter<TitleParen
 
 
                     // Set the textView at the top to the ass_name to indicate which assignment is being modified
-                    TextView Name = (TextView) dialog.findViewById(R.id.tvName);
+                    TextView Name = (TextView) dialog.findViewById(R.id.etName);
                     Name.setText(myAssignment.ass_name);
 
 
@@ -222,13 +231,13 @@ public class myExpandRecylerAdapter extends ExpandableRecyclerAdapter<TitleParen
                         public void onClick(View v) {
 
                             ModifiedAssignment.ass_id = myAssignment.ass_id;
-                            ModifiedAssignment.ass_name = ((TextView) dialog.findViewById(R.id.tvName)).getText();
+                            ModifiedAssignment.ass_name = ((TextView) dialog.findViewById(R.id.etName)).getText();
                             ModifiedAssignment.class_id = 0; //TODO: This
 
                             // We have to convert etDate to Date
                             SimpleDateFormat parser_date = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
                             try {
-                                ModifiedAssignment.due = parser_date.parse(etDate.toString() + " " + etTime + ":00");
+                                ModifiedAssignment.due = parser_date.parse(etDate.getText() + " " + etTime.getText() + ":00");
                             } catch (ParseException e) {
                                 e.printStackTrace();
                             }
@@ -265,10 +274,30 @@ public class myExpandRecylerAdapter extends ExpandableRecyclerAdapter<TitleParen
 
         }
 
-        if (o instanceof myQueueTask) {
-            myQueueTask = (myQueueTask) o;
-            titleChildViewHolder.tvTitle.setText(myQueueTask.toString());
-            titleChildViewHolder.tvTime.setText("time");
+
+        if (o instanceof myQueueItem) {
+            Toast.makeText(titleChildViewHolder.itemView.getContext(), "myQueueItem selected", Toast.LENGTH_SHORT)
+                    .show();
+            titleChildViewHolder.tvTitle.setText(o.toString());
+            titleChildViewHolder.tvTime.setText("SEND");
+
+            titleChildViewHolder.tvTime.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    new AlertDialog.Builder(titleChildViewHolder.itemView.getContext())
+                            .setTitle("Title")
+                            .setMessage("Do you really want to whatever?")
+                            .setIcon(android.R.drawable.ic_dialog_alert)
+                            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+
+                                public void onClick(DialogInterface dialog, int whichButton) {
+                                    sendToServerObject sendToServerObject = new sendToServerObject((myQueueItem) o);
+                                    sendToServerObject.send(titleChildViewHolder.itemView.getContext());
+                                }
+                            })
+                            .setNegativeButton(android.R.string.no, null).show();
+                }
+            });
 
         }
     }

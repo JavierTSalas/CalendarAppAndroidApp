@@ -76,7 +76,7 @@ public class assignment_class {
         this.weight = weight;
     }
 
-    //We use this for comparing two assignment_classes and create
+    //We use this for comparing two assignment_classes and create the different
     public assignment_class(assignment_class BaseAssignment, assignment_class HeadAssignment) {
         CharSequence ass_name = null;
         Integer class_id = null;

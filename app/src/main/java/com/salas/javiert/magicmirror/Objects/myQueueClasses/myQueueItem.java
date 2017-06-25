@@ -1,6 +1,10 @@
-package com.salas.javiert.magicmirror.Objects;
+package com.salas.javiert.magicmirror.Objects.myQueueClasses;
 
 import android.util.Log;
+
+import com.salas.javiert.magicmirror.Objects.assignment_class;
+import com.salas.javiert.magicmirror.Objects.occur_class;
+import com.salas.javiert.magicmirror.Objects.todo_class;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -19,7 +23,7 @@ public class myQueueItem {
         this.o = o;
         myTable = DeduceTable(o);
         myMode = MODE.NULL;
-        myJSONObject = getJsonObject(o);
+        myJSONObject = setJsonObject(o);
     }
 
     public MODE getMyMode() {
@@ -34,8 +38,12 @@ public class myQueueItem {
         return o;
     }
 
+    public JSONObject getMyJSONObject() {
+        return myJSONObject;
+    }
+
     //Return list, Logs if there is a error
-    public JSONObject getJsonObject(Object o) throws JSONException {
+    private JSONObject setJsonObject(Object o) throws JSONException {
         if (myTable == TABLE.ASSIGNMENTS)
             return ((assignment_class) o).toJSONObject();
         if (myTable == TABLE.OCCUR)

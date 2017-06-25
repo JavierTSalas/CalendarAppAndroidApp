@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.salas.javiert.magicmirror.Objects.assignment_class;
-import com.salas.javiert.magicmirror.Objects.myQueueTask;
+import com.salas.javiert.magicmirror.Objects.myQueueClasses.myQueueTask;
 import com.salas.javiert.magicmirror.R;
 
 import java.util.Collections;

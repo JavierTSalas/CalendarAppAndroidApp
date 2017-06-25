@@ -18,8 +18,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.bignerdranch.expandablerecyclerview.Model.ParentObject;
-import com.salas.javiert.magicmirror.Objects.myQueue;
-import com.salas.javiert.magicmirror.Objects.myQueueTask;
+import com.salas.javiert.magicmirror.Objects.myQueueClasses.myQueue;
+import com.salas.javiert.magicmirror.Objects.myQueueClasses.myQueueTask;
 import com.salas.javiert.magicmirror.R;
 import com.salas.javiert.magicmirror.Resources.Adapters.myExpandRecylerAdapter;
 import com.salas.javiert.magicmirror.Resources.ExpandableChild.ParentViewClass;
@@ -84,7 +84,7 @@ public class QueueFragment extends Fragment {
     @Override
     public void onDetach() {
         //If we a no longer viewing this fragment we should cancel the AsyncTask
-        // myTask is an AsyncTask that connects to the database and fetches the information that populates the RecyclerView
+        // myTask is an AsyncTask that connects to the database and fetches the sendToServerObject that populates the RecyclerView
         if (myTask != null && myTask.getStatus() == AsyncTask.Status.RUNNING) {
             myTask.cancel(true);
         }
@@ -103,11 +103,18 @@ public class QueueFragment extends Fragment {
         Menu menu = navigationView.getMenu();
 
         // find MenuItem you want to change
-        MenuItem nav_camara = menu.findItem(R.id.nav_Queue);
+        MenuItem navQueue = menu.findItem(R.id.nav_Queue);
 
         // set new title to the MenuItem
-        nav_camara.setTitle("Queue(" + myQueue.getInstance().getTaskCount() + ")");
+        int count = 0;
 
+
+        try {
+            count = myQueue.getInstance().getTaskCount();
+        } catch (NullPointerException e) {
+            Log.d("updateQueueCount", "No Tasks in queue, catching:" + e.toString());
+        }
+        navQueue.setTitle("Queue(" + count + ")");
     }
 
     private void PopulateRecyclerView() {
@@ -119,9 +126,6 @@ public class QueueFragment extends Fragment {
         myExpandRecylerAdapter adapter = new myExpandRecylerAdapter(getContext(), initData());
         adapter.setParentClickableViewAnimationDefaultDuration();
         adapter.setParentAndIconExpandOnClick(true);
-
-        Log.d("QF", adapter.toString());
-
 
         // Set the adapter
         mRecyclerView.setAdapter(adapter);
@@ -148,8 +152,9 @@ public class QueueFragment extends Fragment {
             // Create the childList that will hold the children of each Parent (The assignment occur_name and due date)
             List<Object> childList = new ArrayList<>();
             try {
-                childList.addAll(myQueue.getInstance().getList().get(i).getObjectList());
-                Log.d("childList", myQueue.getInstance().getList().get(i).getObjectList() + " inserted into childList");
+                childList.addAll(myQueue.getInstance().getList().get(i).getMyTaskList());
+                Log.d("childList", "myQueue.getInstance().getList().get(i).getMyTaskList() " + "of size " + myQueue.getInstance().getList().get(i).getObjectList().size() + " inserted into childList");
+                Log.d("childList", myQueue.getInstance().getList().get(i).getMyTaskList().get(0).getClass().toString());
             } catch (IndexOutOfBoundsException e) {
                 Log.d("QueueFragment", "Nothing in queue, catching " + e.toString());
             }
@@ -172,6 +177,29 @@ public class QueueFragment extends Fragment {
 
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_settings:
+                // User chose the "Settings" item, show the app settings UI...
+                return true;
+
+            case R.id.action_add:
+                // User chose the Add button
+                // as a favorite...
+                createAddDialog();
+                return true;
+
+            default:
+                // If we got here, the user's action was not recognized.
+                // Invoke the superclass to handle it.
+                return super.onOptionsItemSelected(item);
+
+        }
+    }
+
+    private void createAddDialog() {
+    }
 
     /* This AsyncTask does all of the work
     It's lifecycle is as follows:
