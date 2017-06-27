@@ -17,16 +17,16 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.bignerdranch.expandablerecyclerview.Model.ParentObject;
 import com.salas.javiert.magicmirror.Objects.myQueueClasses.myQueue;
 import com.salas.javiert.magicmirror.Objects.myQueueClasses.myQueueTask;
 import com.salas.javiert.magicmirror.R;
-import com.salas.javiert.magicmirror.Resources.Adapters.myExpandRecylerAdapter;
-import com.salas.javiert.magicmirror.Resources.ExpandableChild.ParentViewClass;
-import com.salas.javiert.magicmirror.Resources.ExpandableChild.TitleCreator;
+import com.salas.javiert.magicmirror.Resources.Adapters.myExpandRecyclerAdapter;
+import com.salas.javiert.magicmirror.Resources.ExpandableChild.ViewHolder.ExpandGroup;
 
 import java.util.ArrayList;
 import java.util.List;
+
+//import com.bignerdranch.expandablerecyclerview.Model.ParentObject;
 
 /**
  * Created by javi6 on 6/12/2017.
@@ -54,7 +54,7 @@ public class QueueFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        ((myExpandRecylerAdapter) mRecyclerView.getAdapter()).onSaveInstanceState(outState);
+        ((myExpandRecyclerAdapter) mRecyclerView.getAdapter()).onSaveInstanceState(outState);
 
     }
 
@@ -119,52 +119,42 @@ public class QueueFragment extends Fragment {
 
     private void PopulateRecyclerView() {
         Log.d("Async", "On postExec, populating Recyclerview");
+        // Set the LayoutManager
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
 
         // Prepare the adapter
-        myExpandRecylerAdapter adapter = new myExpandRecylerAdapter(getContext(), initData());
-        adapter.setParentClickableViewAnimationDefaultDuration();
-        adapter.setParentAndIconExpandOnClick(true);
+        myExpandRecyclerAdapter adapter = new myExpandRecyclerAdapter(initData());
 
         // Set the adapter
         mRecyclerView.setAdapter(adapter);
     }
 
-    private List<ParentObject> initData() {
-        // Get the titleCreator but we need to pass it a List<String> for it to create parents of
-        TitleCreator titleCreator = TitleCreator.get(getContext(), ListOfTitleStrings);
+    private List<ExpandGroup> initData() {
+        // Create the List<parentObjects> that will be returned
+        List<ExpandGroup> parentObjects = new ArrayList<>();
 
-        // Get the List of ParentViewClasses
-        List<ParentViewClass> titles = titleCreator.getAll();
+        // Initialize outside so we can use it more than once
+        ExpandGroup mExpand;
 
-        // Create the List<parentObject> that will be returned
-        List<ParentObject> parentObject = new ArrayList<>();
-
-        // Initalize outside so we can use it more than once
-        ParentViewClass title;
-
-        // For each ParentView
-        for (int i = 0; i < titles.size(); i++) {
-            // We need to populate these ParentViewClasses one at a time so lets work on the i index
-            title = titles.get(i);
-
-            // Create the childList that will hold the children of each Parent (The assignment occur_name and due date)
-            List<Object> childList = new ArrayList<>();
-            try {
-                childList.addAll(myQueue.getInstance().getList().get(i).getMyTaskList());
-                Log.d("childList", "myQueue.getInstance().getList().get(i).getMyTaskList() " + "of size " + myQueue.getInstance().getList().get(i).getObjectList().size() + " inserted into childList");
+        try {
+            // For each ParentView
+            for (int i = 0; i < myQueue.getInstance().getList().size(); i++) {
+                // Create a ExpandGroup that will hold the children of each Parent (The assignment occur_name and due date)
+                // ExpandGroup takes a String for the Title and a List<? extends ExpandableGroup>
+                String Title = myQueue.getInstance().getList().get(i).toString();
+                List<?> myChildList = myQueue.getInstance().getList().get(i).getMyTaskList();
+                mExpand = new ExpandGroup(Title, myChildList);
+                Log.d("childList", "myQueue.getInstance().getList().get(i).getMyTaskList() " + "of size " + myQueue.getInstance().getList().get(i).getObjectList().size() + " inserted into mExpand");
                 Log.d("childList", myQueue.getInstance().getList().get(i).getMyTaskList().get(0).getClass().toString());
-            } catch (IndexOutOfBoundsException e) {
-                Log.d("QueueFragment", "Nothing in queue, catching " + e.toString());
+
+                parentObjects.add(mExpand);
             }
-            title.setChildObjectList(childList);
-
-            parentObject.add(title);
+        } catch (IndexOutOfBoundsException e) {
+            Log.d("QueueFragment", "Nothing in queue, catching " + e.toString());
         }
-
         //We finished populating the parents so we can return the list
-        return parentObject;
+        return parentObjects;
     }
 
     private void FillListStringOfClasses() {

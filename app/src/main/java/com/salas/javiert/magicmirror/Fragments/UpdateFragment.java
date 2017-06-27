@@ -29,7 +29,6 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
-import com.bignerdranch.expandablerecyclerview.Model.ParentObject;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.salas.javiert.magicmirror.DatabaseRestClient;
 import com.salas.javiert.magicmirror.Objects.assignment_class;
@@ -37,9 +36,8 @@ import com.salas.javiert.magicmirror.Objects.class_class;
 import com.salas.javiert.magicmirror.Objects.myQueueClasses.myQueue;
 import com.salas.javiert.magicmirror.Objects.myQueueClasses.myQueueItem;
 import com.salas.javiert.magicmirror.R;
-import com.salas.javiert.magicmirror.Resources.Adapters.myExpandRecylerAdapter;
-import com.salas.javiert.magicmirror.Resources.ExpandableChild.ParentViewClass;
-import com.salas.javiert.magicmirror.Resources.ExpandableChild.TitleCreator;
+import com.salas.javiert.magicmirror.Resources.Adapters.myExpandRecyclerAdapter;
+import com.salas.javiert.magicmirror.Resources.ExpandableChild.ViewHolder.ExpandGroup;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -266,7 +264,7 @@ public class UpdateFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        ((myExpandRecylerAdapter) mRecyclerView.getAdapter()).onSaveInstanceState(outState);
+        ((myExpandRecyclerAdapter) mRecyclerView.getAdapter()).onSaveInstanceState(outState);
 
     }
 
@@ -342,9 +340,7 @@ public class UpdateFragment extends Fragment {
 
 
         // Prepare the adapter
-        myExpandRecylerAdapter adapter = new myExpandRecylerAdapter(getContext(), initData());
-        adapter.setParentClickableViewAnimationDefaultDuration();
-        adapter.setParentAndIconExpandOnClick(true);
+        myExpandRecyclerAdapter adapter = new myExpandRecyclerAdapter(initData());
 
 
         //mRecyclerView.swapAdapter(adapter, true);
@@ -353,34 +349,27 @@ public class UpdateFragment extends Fragment {
         mRecyclerView.setAdapter(adapter);
     }
 
-    private List<ParentObject> initData() {
-        // Get the titleCreator but we need to pass it a List<String> for it to create parents of
-        TitleCreator titleCreator = TitleCreator.get(getContext(), ClassList);
+    private List<ExpandGroup> initData() {
+        // Create the List<parentObjects> that will be returned
+        List<ExpandGroup> parentObjects = new ArrayList<>();
 
-        // Get the List of ParentViewClasses
-        List<ParentViewClass> titles = titleCreator.getAll();
-
-        // Create the List<parentObject> that will be returned
-        List<ParentObject> parentObject = new ArrayList<>();
-
-        // Initalize outside so we can use it more than once
-        ParentViewClass title;
+        // Initialize outside so we can use it more than once
+        ExpandGroup mExpand;
 
         // For each ParentView
-        for (int i = 0; i < titles.size(); i++) {
-            // We need to populate these ParentViewClasses one at a time so lets work on the i index
-            title = titles.get(i);
+        for (int i = 0; i < bigarray.length; i++) {
+            // Create a ExpandGroup that will hold the children of each Parent (The assignment occur_name and due date)
+            // ExpandGroup takes a String for the Title and a List<? extends ExpandableGroup>
+            String title = ClassList.get(i).ass_name.toString();
+            List<?> myList = bigarray[i].getList();
 
-            // Create the childList that will hold the children of each Parent (The assignment name and due date)
-            List<Object> childList = new ArrayList<>();
-            childList.addAll(bigarray[i].getList());
-            title.setChildObjectList(childList);
+            mExpand = new ExpandGroup(title, myList);
 
-            parentObject.add(title);
+            parentObjects.add(mExpand);
         }
 
         //We finished populating the parents so we can return the list
-        return parentObject;
+        return parentObjects;
     }
 
     private void FillListStringOfClasses() throws JSONException {

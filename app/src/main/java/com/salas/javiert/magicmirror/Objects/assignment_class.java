@@ -54,7 +54,6 @@ public class assignment_class {
         Log.d("Classes", "assignment_class: built");
     }
 
-    //TODO: Make this return a Date so that a countdown can be initialized by the ChildView. Furthermore passing this as a string as a date can be changed easier  if need be```````````
     public assignment_class(String s) {
         this.ass_name = s;
         Log.d("Classes", "assignment_class: built");
@@ -111,19 +110,22 @@ public class assignment_class {
         this.weight = weight;
     }
 
-    public static long hoursBetween(Date Due) {
+    //TODO: Make this return a Date so that a countdown can be initialized by the ChildView. Furthermore passing this as a string as a date can be changed easier if need be
+    //Returns the minutes between now and a Date Due
+    public static long minutesBetween(Date Due) {
         Calendar DueDate = Calendar.getInstance();
         DueDate.setTime(Due);
         Calendar RightNow = Calendar.getInstance();
 
-        long daysBetween = 0;
+        long MinutesBetween = 0;
         while (RightNow.before(DueDate)) {
             RightNow.add(Calendar.MINUTE, 1);
-            daysBetween++;
+            MinutesBetween++;
         }
-        return daysBetween;
+        return MinutesBetween;
     }
 
+    //JSONafy the object
     public JSONObject toJSONObject() throws JSONException {
         JSONObject ReturnObject = new JSONObject();
         if (ass_id != null)
@@ -161,6 +163,7 @@ public class assignment_class {
                 '}';
     }
 
+    //Returns timeleft (time from due to now)
     public String TimeLeft() {
 
         try {
@@ -169,7 +172,7 @@ public class assignment_class {
             return "N/A";
         }
 
-        long MinutesUntilDue = hoursBetween(due);
+        long MinutesUntilDue = minutesBetween(due);
 
         double HoursLeft, DaysLeft = 0;
 

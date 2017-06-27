@@ -3,11 +3,9 @@ package com.salas.javiert.magicmirror.Resources.Adapters;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -20,17 +18,16 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
-import com.bignerdranch.expandablerecyclerview.Adapter.ExpandableRecyclerAdapter;
-import com.bignerdranch.expandablerecyclerview.Model.ParentObject;
 import com.salas.javiert.magicmirror.Objects.assignment_class;
 import com.salas.javiert.magicmirror.Objects.myQueueClasses.myQueue;
 import com.salas.javiert.magicmirror.Objects.myQueueClasses.myQueueItem;
 import com.salas.javiert.magicmirror.Objects.myQueueClasses.myQueueTask;
 import com.salas.javiert.magicmirror.Objects.sendToServerObject;
 import com.salas.javiert.magicmirror.R;
-import com.salas.javiert.magicmirror.Resources.ExpandableChild.ParentViewClass;
 import com.salas.javiert.magicmirror.Resources.ExpandableChild.ViewHolder.TitleChildViewHolder;
 import com.salas.javiert.magicmirror.Resources.ExpandableChild.ViewHolder.TitleParentViewHolder;
+import com.thoughtbot.expandablerecyclerview.ExpandableRecyclerViewAdapter;
+import com.thoughtbot.expandablerecyclerview.models.ExpandableGroup;
 
 import org.json.JSONException;
 
@@ -40,15 +37,18 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
+import static android.view.LayoutInflater.from;
 import static android.widget.AdapterView.OnItemSelectedListener;
+
+//import com.bignerdranch.expandablerecyclerview.Adapter.ExpandableRecyclerAdapter;
+//import com.bignerdranch.expandablerecyclerview.Model.ParentObject;
 
 /**
  * Created by javi6 on 6/4/2017.
  */
 
-public class myExpandRecylerAdapter extends ExpandableRecyclerAdapter<TitleParentViewHolder, TitleChildViewHolder> {
+public class myExpandRecyclerAdapter extends ExpandableRecyclerViewAdapter<TitleParentViewHolder, TitleChildViewHolder> {
 
-    LayoutInflater mInflater;
     assignment_class myAssignment;
     myQueueTask myQueueTask;
     Dialog dialog;
@@ -56,35 +56,28 @@ public class myExpandRecylerAdapter extends ExpandableRecyclerAdapter<TitleParen
     DatePickerDialog.OnDateSetListener date;
     boolean DoneFlag = false;
 
-    public myExpandRecylerAdapter(Context context, List<ParentObject> parentItemList) {
-        super(context, parentItemList);
-        mInflater = LayoutInflater.from(context);
+
+    public myExpandRecyclerAdapter(List<? extends ExpandableGroup> groups) {
+        super(groups);
     }
 
-
     @Override
-    public TitleParentViewHolder onCreateParentViewHolder(ViewGroup viewGroup) {
-        View view = mInflater.inflate(R.layout.list_parent, viewGroup, false);
+    public TitleParentViewHolder onCreateGroupViewHolder(ViewGroup viewGroup, int viewType) {
+        View view = from(viewGroup.getContext()).inflate(R.layout.list_parent, viewGroup, false);
         return new TitleParentViewHolder(view);
     }
 
     @Override
-    public TitleChildViewHolder onCreateChildViewHolder(ViewGroup viewGroup) {
-        View view = mInflater.inflate(R.layout.list_child, viewGroup, false);
+    public TitleChildViewHolder onCreateChildViewHolder(ViewGroup viewGroup, int viewType) {
+        View view = from(viewGroup.getContext()).inflate(R.layout.list_child, viewGroup, false);
         return new TitleChildViewHolder(view);
     }
 
-    @Override
-    public void onBindParentViewHolder(TitleParentViewHolder titleParentViewHolder, int i, Object o) {
-        ParentViewClass title = (ParentViewClass) o;
-        titleParentViewHolder.tvParent.setText(title.getTitle());
-
-    }
 
     @Override
-    public void onBindChildViewHolder(final TitleChildViewHolder titleChildViewHolder, int i, final Object o) {
+    public void onBindChildViewHolder(final TitleChildViewHolder titleChildViewHolder, int flatPosition, ExpandableGroup group, int childIndex) {
         // o instanceof class can be used to determine the class type and template this adapter
-
+        final Object o = (group).getItems().get(childIndex);
 
         if (o instanceof assignment_class) {
 
@@ -302,5 +295,10 @@ public class myExpandRecylerAdapter extends ExpandableRecyclerAdapter<TitleParen
         }
     }
 
+    @Override
+    public void onBindGroupViewHolder(TitleParentViewHolder holder, int flatPosition, ExpandableGroup group) {
+        holder.setText(group);
+
+    }
 }
 

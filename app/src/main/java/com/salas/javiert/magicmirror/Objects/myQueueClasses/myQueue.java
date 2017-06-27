@@ -23,7 +23,6 @@ public class myQueue {
     //This is the finalized form of the data that will be sent
     private ArrayList<sendToServerObject> actions = new ArrayList();
 
-
     private myQueue() {
     }
 
@@ -35,20 +34,17 @@ public class myQueue {
         return instance;
     }
 
-    //Everytime you need an instance, call this
-    public void setInstance(myQueue myQueue) {
-        instance = myQueue;
-    }
-
     public void addQueueTask(myQueueTask Task) {
         QueueTaskList.add(Task);
     }
 
+    //Find the correct position then appends it
     public void addQueueItem(myQueueItem Item) {
         int Position = findCorrectQueueTask(Item);
         QueueTaskList.get(Position).append(Item);
     }
 
+    //Returns the index of QueueTaskList that has the same enums as Item
     private int findCorrectQueueTask(myQueueItem item) {
 
         if (QueueTaskList == null) {
@@ -64,6 +60,7 @@ public class myQueue {
         return (QueueTaskList.size() - 1); //Minus one since the size of a list is n+1 indexes
     }
 
+    //Not used
     public void SendInformation(Context context) {
         TextHttpResponseHandler response = new TextHttpResponseHandler() {
             @Override
@@ -97,6 +94,8 @@ public class myQueue {
 
     }
 
+
+    //TODO: Get this to work
     public synchronized void loadMyQueue(Context context) {
        /* SharedPreferences appSharedPrefs = PreferenceManager
                 .getDefaultSharedPreferences(context);
@@ -113,7 +112,7 @@ public class myQueue {
         Log.d("SharedPref", "Reading Queue to SharedPreferences");*/
     }
 
-
+    //TODO: Get this to work
     public synchronized void saveMyQueue(Context context) {
 /*
 
@@ -132,6 +131,7 @@ public class myQueue {
         Log.d("SharedPref", "Saving Queue to SharedPreferences");*/
     }
 
+    //Return task count
     public int getTaskCount() {
         int runningCount = 0;
         for (int i = 0; i < QueueTaskList.size(); i++)
