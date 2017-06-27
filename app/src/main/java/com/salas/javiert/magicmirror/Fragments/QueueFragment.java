@@ -21,7 +21,7 @@ import com.salas.javiert.magicmirror.Objects.myQueueClasses.myQueue;
 import com.salas.javiert.magicmirror.Objects.myQueueClasses.myQueueTask;
 import com.salas.javiert.magicmirror.R;
 import com.salas.javiert.magicmirror.Resources.Adapters.myExpandRecyclerAdapter;
-import com.salas.javiert.magicmirror.Resources.ExpandableChild.ViewHolder.ExpandGroup;
+import com.salas.javiert.magicmirror.Resources.ExpandableRecyclerView.DependentViews.ExpandGroup;
 
 import java.util.ArrayList;
 import java.util.List;

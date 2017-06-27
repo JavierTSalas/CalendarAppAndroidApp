@@ -1,4 +1,4 @@
-package com.salas.javiert.magicmirror.Resources.ExpandableChild.ViewHolder;
+package com.salas.javiert.magicmirror.Resources.ExpandableRecyclerView.DependentViews;
 
 import com.thoughtbot.expandablerecyclerview.models.ExpandableGroup;
 

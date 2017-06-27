@@ -24,8 +24,8 @@ import com.salas.javiert.magicmirror.Objects.myQueueClasses.myQueueItem;
 import com.salas.javiert.magicmirror.Objects.myQueueClasses.myQueueTask;
 import com.salas.javiert.magicmirror.Objects.sendToServerObject;
 import com.salas.javiert.magicmirror.R;
-import com.salas.javiert.magicmirror.Resources.ExpandableChild.ViewHolder.TitleChildViewHolder;
-import com.salas.javiert.magicmirror.Resources.ExpandableChild.ViewHolder.TitleParentViewHolder;
+import com.salas.javiert.magicmirror.Resources.ExpandableRecyclerView.DependentViews.TitleChildViewHolder;
+import com.salas.javiert.magicmirror.Resources.ExpandableRecyclerView.DependentViews.TitleParentViewHolder;
 import com.thoughtbot.expandablerecyclerview.ExpandableRecyclerViewAdapter;
 import com.thoughtbot.expandablerecyclerview.models.ExpandableGroup;
 

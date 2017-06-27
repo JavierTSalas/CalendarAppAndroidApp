@@ -37,7 +37,7 @@ import com.salas.javiert.magicmirror.Objects.myQueueClasses.myQueue;
 import com.salas.javiert.magicmirror.Objects.myQueueClasses.myQueueItem;
 import com.salas.javiert.magicmirror.R;
 import com.salas.javiert.magicmirror.Resources.Adapters.myExpandRecyclerAdapter;
-import com.salas.javiert.magicmirror.Resources.ExpandableChild.ViewHolder.ExpandGroup;
+import com.salas.javiert.magicmirror.Resources.ExpandableRecyclerView.DependentViews.ExpandGroup;
 
 import org.json.JSONArray;
 import org.json.JSONException;

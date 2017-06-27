@@ -1,4 +1,8 @@
-package com.salas.javiert.magicmirror.Resources.ExpandableChild;
+/*
+ * Copyright (c) 2017. Javier Salas
+ */
+
+package com.salas.javiert.magicmirror.Resources.ExpandableRecyclerView.DependentViews;
 
 import com.bignerdranch.expandablerecyclerview.Model.ParentObject;
 
