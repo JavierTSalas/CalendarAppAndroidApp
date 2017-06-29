@@ -44,9 +44,9 @@ public class myQueueTask {
     }
 
     public JSONArray getJsonList() {
-        //TODO: Generate this list
-        // We generate it when it's requested because were lazy
-        // myList.put(Item.myJSONObject);
+        for (myQueueItem task : this.getMyTaskList()) {
+            myList.put(task.getMyJSONObject());
+        }
         return myList;
     }
 
@@ -92,7 +92,7 @@ public class myQueueTask {
         if (myMode == myQueueItem.MODE.SET_DONE)
             myModeString = "SET_DONE";
 
-        return myModeString + "__" + myTableString + '(' + myObjectList.size() + ')';
+        return myModeString + "__" + myTableString + '(' + myTaskList.size() + ')';
 
     }
 

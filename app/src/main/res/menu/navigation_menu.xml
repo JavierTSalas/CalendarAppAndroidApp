@@ -9,9 +9,9 @@
             android:title="Show TODO + Assignments" />
 
         <item
-            android:id="@+id/nav_Add"
+            android:id="@+id/nav_TODOCheck"
             android:icon="@mipmap/ic_add_black_24dp"
-            android:title="Add new TODO + Assignment" />
+            android:title="Check assignment TODO" />
 
         <item
             android:id="@+id/nav_Update"
@@ -21,5 +21,9 @@
             android:id="@+id/nav_Queue"
             android:icon="@mipmap/ic_update_black_24dp"
             android:title="Queue (0)" />
+        <item
+            android:id="@+id/nav_Check"
+            android:icon="@mipmap/ic_update_black_24dp"
+            android:title="Test" />
     </group>
 </menu>

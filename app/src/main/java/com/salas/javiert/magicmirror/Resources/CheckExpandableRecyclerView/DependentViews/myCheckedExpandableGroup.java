@@ -2,7 +2,7 @@
  * Copyright (c) 2017. Javier Salas
  */
 
-package com.salas.javiert.magicmirror.Resources.CheckExpandableRecyclerView;
+package com.salas.javiert.magicmirror.Resources.CheckExpandableRecyclerView.DependentViews;
 
 import android.os.Parcel;
 
@@ -15,12 +15,25 @@ import java.util.List;
  */
 
 public class myCheckedExpandableGroup extends CheckedExpandableGroup {
+    private String myTitle;
+    private List myList;
     protected myCheckedExpandableGroup(Parcel in) {
         super(in);
     }
 
     public myCheckedExpandableGroup(String title, List items) {
         super(title, items);
+        myTitle = title;
+
+        myList = items;
+    }
+
+    public String getMyTitle() {
+        return myTitle;
+    }
+
+    public List getMyList() {
+        return myList;
     }
 
     @Override

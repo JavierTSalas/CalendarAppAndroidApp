@@ -17,8 +17,9 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.loopj.android.http.TextHttpResponseHandler;
-import com.salas.javiert.magicmirror.Fragments.AddFragment;
 import com.salas.javiert.magicmirror.Fragments.AssignmentsFragment;
+import com.salas.javiert.magicmirror.Fragments.DoneCheckFragment;
+import com.salas.javiert.magicmirror.Fragments.MultiCheckActivity;
 import com.salas.javiert.magicmirror.Fragments.QueueFragment;
 import com.salas.javiert.magicmirror.Fragments.UpdateFragment;
 import com.salas.javiert.magicmirror.Objects.assignment_class;
@@ -84,10 +85,10 @@ public class MainActivity extends AppCompatActivity {
                         fragmentTransaction.replace(R.id.frame, view_fragment);
                         fragmentTransaction.commit();
                         break;
-                    case R.id.nav_Add:
-                        Toast.makeText(getApplicationContext(), "Add Selected", Toast.LENGTH_SHORT).show();
-                        AddFragment add_fragment = new AddFragment();
-                        fragmentTransaction.replace(R.id.frame, add_fragment);
+                    case R.id.nav_TODOCheck:
+                        Toast.makeText(getApplicationContext(), "TODOCheck Selected", Toast.LENGTH_SHORT).show();
+                        DoneCheckFragment todoCheck = new DoneCheckFragment();
+                        fragmentTransaction.replace(R.id.frame, todoCheck);
                         fragmentTransaction.commit();
                         break;
                     case R.id.nav_Update:
@@ -100,6 +101,12 @@ public class MainActivity extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(), "Queue Selected", Toast.LENGTH_SHORT).show();
                         QueueFragment queue_fragment = new QueueFragment();
                         fragmentTransaction.replace(R.id.frame, queue_fragment);
+                        fragmentTransaction.commit();
+                        break;
+                    case R.id.nav_Check:
+                        Toast.makeText(getApplicationContext(), "Check Selected", Toast.LENGTH_SHORT).show();
+                        MultiCheckActivity check_fragment = new MultiCheckActivity();
+                        fragmentTransaction.replace(R.id.frame, check_fragment);
                         fragmentTransaction.commit();
                         break;
                     default:

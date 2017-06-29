@@ -23,7 +23,7 @@ public class myQueue {
     //This is the finalized form of the data that will be sent
     private ArrayList<sendToServerObject> actions = new ArrayList();
 
-    private myQueue() {
+    protected myQueue() {
     }
 
     //Everytime you need an instance, call this
@@ -38,10 +38,28 @@ public class myQueue {
         QueueTaskList.add(Task);
     }
 
-    //Find the correct position then appends it
+    //Find the correct position in QueueTaskList and appends it
     public void addQueueItem(myQueueItem Item) {
         int Position = findCorrectQueueTask(Item);
         QueueTaskList.get(Position).append(Item);
+    }
+
+    //Find the correct position in QueueTaskList and removes it
+    public void removeQueueItem(myQueueItem Item) {
+        int Position = findCorrectQueueTask(Item);
+        removeFromQueueTask(QueueTaskList.get(Position), Item);
+        cleanList();
+    }
+
+    //Removes the myQueueItem from a myQueueTask
+    private void removeFromQueueTask(myQueueTask myTask, myQueueItem item) {
+        for (int index = 0; index < myTask.getMyTaskList().size(); index++) {
+            if (item == myTask.getMyTaskList().get(index)) {
+                myTask.getMyTaskList().remove(index);
+                myTask.getJsonList().remove(index);
+                myTask.getObjectList().remove(index);
+            }
+        }
     }
 
     //Returns the index of QueueTaskList that has the same enums as Item
@@ -50,10 +68,10 @@ public class myQueue {
         if (QueueTaskList == null) {
             QueueTaskList = new ArrayList<>();
         }
-        for (int i = 0; i < QueueTaskList.size(); i++)
-            if (QueueTaskList.get(i).MatchingEnums(item)) {
-                Log.d("myQueue", "Was able to find a QueueTask with matching enums." + i + " Appending item");
-                return i;
+        for (int index = 0; index < QueueTaskList.size(); index++)
+            if (QueueTaskList.get(index).MatchingEnums(item)) {
+                Log.d("myQueue", "Was able to find a QueueTask with matching enums." + index + " Appending item");
+                return index;
             }
         addQueueTask(new myQueueTask(item));
         Log.d("myQueue", "Was not able to find a QueueTask with matchig enums. Creating new QueueTask with item");
@@ -77,23 +95,6 @@ public class myQueue {
         for (int i = 0; i < actions.size(); i++)
             DatabaseRestClient.post(context, actions.get(i).getUrl(), actions.get(i).getMyEntity(), "application/x-www-form-urlencoded", response);
     }
-
-    public List<String> createListString() {
-        List<String> myStringList = new ArrayList<String>();
-        if (QueueTaskList.size() < 0) {
-
-
-            for (int index = 0; index < QueueTaskList.size(); index++) {
-                myStringList.add(QueueTaskList.get(index).toString());
-            }
-
-        } else {
-            myStringList.add("Nothing in queue");
-        }
-        return myStringList;
-
-    }
-
 
     //TODO: Get this to work
     public synchronized void loadMyQueue(Context context) {
@@ -134,8 +135,8 @@ public class myQueue {
     //Return task count
     public int getTaskCount() {
         int runningCount = 0;
-        for (int i = 0; i < QueueTaskList.size(); i++)
-            for (int j = 0; j < QueueTaskList.get(i).getObjectList().size(); j++)
+        for (int myQueueTaskCount = 0; myQueueTaskCount < QueueTaskList.size(); myQueueTaskCount++)
+            for (int myQueueItemCount = 0; myQueueItemCount < QueueTaskList.get(myQueueTaskCount).getObjectList().size(); myQueueItemCount++)
                 runningCount++;
 
         Log.d("myQueue", "Count of tasks: " + runningCount);
@@ -148,6 +149,30 @@ public class myQueue {
 
     public void setList(ArrayList<myQueueTask> newList) {
         this.QueueTaskList = newList;
+    }
+
+    //If an myQueueTask is empty in myQueueTasList then it is deleted
+    private void cleanList() {
+        for (int index = 0; index < QueueTaskList.size(); index++) {
+            if (QueueTaskList.get(index).getMyTaskList().size() == 0)
+                QueueTaskList.remove(index);
+        }
+    }
+
+    //Remove the myQueueTask that matches the passed myQueueTask
+    public void removeQueueTask(List<myQueueTask> myQueueTaskList) {
+        //This function takes an array of myQueueTask and deletes each Item in the myQueue
+        //We do it this way since the elements we want to delete may not be all of the elements in myQueueTask
+        List<myQueueItem> itemsToRemove = new ArrayList<>();
+
+        //Get all of the tasks
+        for (int index = 0; index < myQueueTaskList.size(); index++) {
+            for (int task = 0; task < myQueueTaskList.get(index).getMyTaskList().size(); task++)
+                itemsToRemove.add(myQueueTaskList.get(index).getMyTaskList().get(task));
+        }
+        //Remove the elements
+        for (myQueueItem item : itemsToRemove)
+            getInstance().removeQueueItem(item);
     }
 
 

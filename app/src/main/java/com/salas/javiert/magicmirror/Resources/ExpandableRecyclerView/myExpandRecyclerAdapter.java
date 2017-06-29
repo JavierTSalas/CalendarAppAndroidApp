@@ -1,4 +1,8 @@
-package com.salas.javiert.magicmirror.Resources.Adapters;
+/*
+ * Copyright (c) 2017. Javier Salas
+ */
+
+package com.salas.javiert.magicmirror.Resources.ExpandableRecyclerView;
 
 import android.app.DatePickerDialog;
 import android.app.Dialog;

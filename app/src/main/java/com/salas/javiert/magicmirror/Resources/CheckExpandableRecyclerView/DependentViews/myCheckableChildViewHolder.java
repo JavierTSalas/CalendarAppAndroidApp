@@ -1,11 +1,14 @@
 /*
  * Copyright (c) 2017. Javier Salas
+ * This class is the child for each row
+ * This class interfaces with each myQueueTask
  */
 
-package com.salas.javiert.magicmirror.Resources.CheckExpandableRecyclerView;
+package com.salas.javiert.magicmirror.Resources.CheckExpandableRecyclerView.DependentViews;
 
 import android.view.View;
 import android.widget.Checkable;
+import android.widget.CheckedTextView;
 
 import com.salas.javiert.magicmirror.R;
 import com.thoughtbot.expandablecheckrecyclerview.viewholders.CheckableChildViewHolder;
@@ -15,16 +18,22 @@ import com.thoughtbot.expandablecheckrecyclerview.viewholders.CheckableChildView
  */
 
 public class myCheckableChildViewHolder extends CheckableChildViewHolder {
-    private android.widget.CheckBox CheckBox;
+    private CheckedTextView checkedTextView;
 
 
     public myCheckableChildViewHolder(View itemView) {
         super(itemView);
-        CheckBox = (android.widget.CheckBox) itemView.findViewById(R.id.checkBox);
+        checkedTextView = (CheckedTextView) itemView.findViewById(R.id.tvCheckable);
     }
 
     @Override
     public Checkable getCheckable() {
-        return CheckBox;
+        return checkedTextView;
     }
+
+
+    public void setCheckedTextView(String Text) {
+        checkedTextView.setText(Text);
+    }
+
 }

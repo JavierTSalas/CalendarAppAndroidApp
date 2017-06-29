@@ -34,6 +34,7 @@ public class DatabaseRestClient {
 
     public static void post(Context context, String url, HttpEntity params, String contentType, ResponseHandlerInterface responseHandler) {
         client.post(context, getAbsoluteUrl(url), params, contentType, responseHandler);
+        Log.d("POST", "SENT TO:" + getAbsoluteUrl(url));
     }
 
     private static String getAbsoluteUrl(String relativeUrl) {
