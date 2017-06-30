@@ -1,7 +1,5 @@
 package com.salas.javiert.magicmirror.Objects;
 
-import android.util.Log;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,12 +13,10 @@ public class class_class extends assignment_class {
 
     public class_class(int i) {
         AssignmentList.add(new assignment_class("No assignments due for this class", i));
-        Log.d("Classes", "class_class: built");
     }
 
     public class_class() {
         AssignmentList.add(new assignment_class("No assignments due for this class"));
-        Log.d("Classes", "class_class: built");
     }
 
     public Integer getClassID() {

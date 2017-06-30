@@ -4,12 +4,12 @@
 
 package com.salas.javiert.magicmirror.Resources.CheckExpandableRecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.salas.javiert.magicmirror.Objects.myQueueClasses.myQueueItem;
-import com.salas.javiert.magicmirror.Objects.myQueueClasses.mySendQueue;
 import com.salas.javiert.magicmirror.R;
 import com.salas.javiert.magicmirror.Resources.CheckExpandableRecyclerView.DependentViews.myCheckableChildViewHolder;
 import com.salas.javiert.magicmirror.Resources.CheckExpandableRecyclerView.DependentViews.myGroupViewHolder;
@@ -25,6 +25,8 @@ import java.util.List;
 
 public class myCheckableChildRecyclerViewAdapter extends CheckableChildRecyclerViewAdapter<myGroupViewHolder, myCheckableChildViewHolder> {
 
+    private static boolean visible = false;
+
     public myCheckableChildRecyclerViewAdapter(List<? extends CheckedExpandableGroup> groups) {
         super(groups);
     }
@@ -35,13 +37,23 @@ public class myCheckableChildRecyclerViewAdapter extends CheckableChildRecyclerV
                 .inflate(R.layout.checkable_row, parent, false);
 
         return new myCheckableChildViewHolder(view);
+
     }
 
     @Override
     public void onBindCheckChildViewHolder(myCheckableChildViewHolder holder, int flatPosition, CheckedExpandableGroup group, int childIndex) {
-        mySendQueue mySendQueue = new mySendQueue();
         final myQueueItem myQueueItem = (myQueueItem) group.getItems().get(childIndex);
         holder.setCheckedTextView(myQueueItem.toString());
+
+        //Set the visibility of the checkBox
+        if (visible) {
+            holder.showCheckbox();
+            Log.d(this.getClass().toString(), "Showing Checkboxes");
+        }
+        if (!visible) {
+            holder.hideCheckbox();
+            Log.d(this.getClass().toString(), "Hiding Checkboxes");
+        }
     }
 
     @Override
@@ -56,5 +68,12 @@ public class myCheckableChildRecyclerViewAdapter extends CheckableChildRecyclerV
         holder.setTextView(group);
     }
 
+    public boolean isCheckBoxVisible() {
+        return visible;
+    }
 
+    public void setVisible(boolean visible) {
+        myCheckableChildRecyclerViewAdapter.visible = visible;
+    }
 }
+

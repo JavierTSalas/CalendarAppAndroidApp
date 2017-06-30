@@ -47,7 +47,6 @@ public class assignment_class {
         this.done = Boolean.parseBoolean(a6);
         this.weight = a7;
 
-        Log.d("Classes", "assignment_class: built");
     }
 
     public assignment_class() {
@@ -56,13 +55,11 @@ public class assignment_class {
 
     public assignment_class(String s) {
         this.ass_name = s;
-        Log.d("Classes", "assignment_class: built");
     }
 
     public assignment_class(String s, int i) {
         this.ass_name = s;
         this.class_id = i;
-        Log.d("Classes", "assignment_class: built");
     }
 
     public assignment_class(Integer ass_id, CharSequence ass_name, Integer class_id, Date date_assigned, Date due, Boolean done, Integer weight) {

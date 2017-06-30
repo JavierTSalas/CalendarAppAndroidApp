@@ -1,7 +1,5 @@
 package com.salas.javiert.magicmirror.Objects;
 
-import android.util.Log;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -47,7 +45,6 @@ public class todo_class {
         if (school != null)
             ReturnObject.put("school", school);
 
-        Log.d("todo_class", "Created a JSONObject with todo_id" + todo_id);
         return ReturnObject;
     }
     //TODO: Do this

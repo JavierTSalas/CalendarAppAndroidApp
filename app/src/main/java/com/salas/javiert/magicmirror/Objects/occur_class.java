@@ -55,7 +55,6 @@ public class occur_class {
         if (next_occurance != null)
             ReturnObject.put("next_occurance", DateFormatDate.format(next_occurance));
 
-        Log.d("occur_class", "Created a JSONObject with reoccur_id" + reoccur_id);
         return ReturnObject;
     }
 

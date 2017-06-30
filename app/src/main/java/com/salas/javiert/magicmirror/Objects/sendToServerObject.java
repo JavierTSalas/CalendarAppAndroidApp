@@ -22,13 +22,10 @@ import cz.msebera.android.httpclient.entity.StringEntity;
  */
 
 public class sendToServerObject {
-    final String TAG = "sendToServerObject";
     private String url;
     private StringEntity myEntity;
 
-    public sendToServerObject() {
-    }
-
+    //Constructor that takes a myQueueTask as a argument
     public sendToServerObject(myQueueTask Task) {
         try {
             CreateStringEntitiy(Task);
@@ -39,6 +36,7 @@ public class sendToServerObject {
         }
     }
 
+    //Constructor that takes a myQueueItem as a argument
     public sendToServerObject(myQueueItem Item) {
         try {
             CreateStringEntitiy(Item);
@@ -49,12 +47,7 @@ public class sendToServerObject {
         }
     }
 
-    public sendToServerObject(String url, StringEntity myEntity) {
-        this.url = url;
-        this.myEntity = myEntity;
-
-    }
-
+    //Setters and Getters
     public String getUrl() {
         return url;
     }
@@ -98,7 +91,9 @@ public class sendToServerObject {
 
 
         JSONObject ParamObject = new JSONObject();
-        ParamObject.put(QueueAction, Task.getJsonList());
+
+
+        ParamObject.put(QueueAction, Task.getJSONArray());
         StringEntity myEntitiy = new StringEntity(ParamObject.toString());
         myEntitiy.setContentEncoding("UTF-8");
         myEntitiy.setContentType("application/json");
@@ -149,7 +144,9 @@ public class sendToServerObject {
         new SendTask().execute(myTaskParams);
     }
 
+    //This function actually send it
     private void sendToServer(Context context) {
+        //Define our response handler
         TextHttpResponseHandler response = new TextHttpResponseHandler() {
             @Override
             public void onFailure(int statusCode, cz.msebera.android.httpclient.Header[] headers, String responseString, Throwable throwable) {
@@ -159,9 +156,12 @@ public class sendToServerObject {
             @Override
             public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, String responseString) {
                 Log.d("Response: ", responseString);
+                Log.d("StatusCode: ", String.valueOf(statusCode));
+                for (cz.msebera.android.httpclient.Header header : headers)
+                    Log.d("Headers:", header.toString());
+
             }
         };
-        Log.d("Connection: ", "Attempting to connect to server...");
         DatabaseRestClient.post(context, getUrl(), getMyEntity(), "application/x-www-form-urlencoded", response);
     }
 
@@ -171,6 +171,7 @@ public class sendToServerObject {
 
         @Override
         protected Void doInBackground(Context... params) {
+            Log.d("Connection: ", "Attempting to connect to server...");
             sendToServer(params[0]);
             return null;
         }

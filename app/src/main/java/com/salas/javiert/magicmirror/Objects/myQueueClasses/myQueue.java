@@ -45,20 +45,16 @@ public class myQueue {
     }
 
     //Find the correct position in QueueTaskList and removes it
-    public void removeQueueItem(myQueueItem Item) {
-        int Position = findCorrectQueueTask(Item);
-        removeFromQueueTask(QueueTaskList.get(Position), Item);
+    public void removeQueueItem(myQueueItem item) {
+        int position = findCorrectQueueTask(item);
+        QueueTaskList.get(position).remove(item);
         cleanList();
     }
 
     //Removes the myQueueItem from a myQueueTask
     private void removeFromQueueTask(myQueueTask myTask, myQueueItem item) {
         for (int index = 0; index < myTask.getMyTaskList().size(); index++) {
-            if (item == myTask.getMyTaskList().get(index)) {
-                myTask.getMyTaskList().remove(index);
-                myTask.getJsonList().remove(index);
-                myTask.getObjectList().remove(index);
-            }
+
         }
     }
 
@@ -70,11 +66,9 @@ public class myQueue {
         }
         for (int index = 0; index < QueueTaskList.size(); index++)
             if (QueueTaskList.get(index).MatchingEnums(item)) {
-                Log.d("myQueue", "Was able to find a QueueTask with matching enums." + index + " Appending item");
                 return index;
             }
         addQueueTask(new myQueueTask(item));
-        Log.d("myQueue", "Was not able to find a QueueTask with matchig enums. Creating new QueueTask with item");
         return (QueueTaskList.size() - 1); //Minus one since the size of a list is n+1 indexes
     }
 

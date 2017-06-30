@@ -8,14 +8,12 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.salas.javiert.magicmirror.Objects.myQueueClasses.myQueue;
 import com.salas.javiert.magicmirror.Objects.myQueueClasses.myQueueItem;
@@ -54,7 +52,6 @@ public class DoneCheckFragment extends Fragment {
         adapter.setChildClickListener(new OnCheckChildClickListener() {
             @Override
             public void onCheckChildCLick(View v, boolean checked, CheckedExpandableGroup group, int childIndex) {
-                Log.d("CCC", "b:" + checked + ",g:" + group.toString() + ",i:" + childIndex);
                 if (checked)
                     mySendQueue.getInstance().addQueueItem((myQueueItem) group.getItems().get(childIndex));
                 if (!checked)
@@ -67,12 +64,10 @@ public class DoneCheckFragment extends Fragment {
 
     //Send the data
     private void SendAll() {
-        Log.d("Send", "Sending PART 1");
         List<myQueueTask> tasksToRemove = new ArrayList<>();
         for (int myQueueTaskCount = 0; myQueueTaskCount < mySendQueue.getInstance().getList().size(); myQueueTaskCount++) {
             //Send a new sendToServerObject for each myQueueList
             new sendToServerObject(mySendQueue.getInstance().getList().get(myQueueTaskCount)).send(getContext());
-            Log.d("Send", "Sending PART 2");
             tasksToRemove.add(mySendQueue.getInstance().getList().get(myQueueTaskCount));
         }
 
@@ -82,10 +77,12 @@ public class DoneCheckFragment extends Fragment {
 
         adapter.clearChoices();
 
-        //Reset the List
+
+
+    /*    //Reset the List
         myCheckableChildRecyclerViewAdapter mAdapter = new myCheckableChildRecyclerViewAdapter(initData());
         mRecyclerView.swapAdapter(mAdapter, true);
-
+*/
 
     }
 
@@ -123,10 +120,20 @@ public class DoneCheckFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_send:
-                Toast.makeText(this.getContext(), "Action selected", Toast.LENGTH_SHORT)
-                        .show();
-                SendAll();
+                //If the checkboxes are visible then send the data
+                if (adapter.isCheckBoxVisible()) {
+                    SendAll();
+                    //Then we hide the checkboxes
+                    adapter.setVisible(false);
+                    adapter.notifyDataSetChanged();
 
+                    //If we aren't showing it then we don't want to send anything
+                    //We also want to clear the choices the user set while scrolling
+                } else {
+                    adapter.clearChoices();
+                    adapter.setVisible(true);
+                    adapter.notifyDataSetChanged();
+                }
                 break;
 
             default:

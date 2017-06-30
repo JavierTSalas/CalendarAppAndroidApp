@@ -17,14 +17,14 @@ public class myQueueTask {
     // This describes what the myQueueTask will do
     private myQueueItem.MODE myMode;
     private myQueueItem.TABLE myTable;
-    // This list will contain the list of the JSONObjects
-    private JSONArray myList = new JSONArray();
     private ArrayList<Object> myObjectList = new ArrayList<>();
     private ArrayList<myQueueItem> myTaskList = new ArrayList<>();
+
 
     public myQueueTask(myQueueItem Item) {
         myMode = Item.getMyMode();
         myTable = Item.getMyTable();
+
     }
 
     public boolean MatchingEnums(myQueueItem Item) {
@@ -43,11 +43,14 @@ public class myQueueTask {
         return myTable;
     }
 
-    public JSONArray getJsonList() {
+    public JSONArray getJSONArray() {
+        // Since our JSONArray information is strictly dependent on the contents of the myTaskList we should generate it everytime it is called to ensure
+        // that it reflects the content of that list
+        JSONArray myJSONArray = new JSONArray();
         for (myQueueItem task : this.getMyTaskList()) {
-            myList.put(task.getMyJSONObject());
+            myJSONArray.put(task.getMyJSONObject());
         }
-        return myList;
+        return myJSONArray;
     }
 
     public List<?> getObjectList() {
@@ -64,10 +67,13 @@ public class myQueueTask {
         }
     }
 
-    public void remove(myQueueItem Item) {
-        //TODO: This
-    }
+    public void remove(myQueueItem item) {
+        if (myTaskList.contains(item))
+            myTaskList.remove(myTaskList.indexOf(item));
+        if (myObjectList.contains(item.getO()))
+            myObjectList.remove(myObjectList.indexOf(item.getO()));
 
+    }
 
 
     @Override
