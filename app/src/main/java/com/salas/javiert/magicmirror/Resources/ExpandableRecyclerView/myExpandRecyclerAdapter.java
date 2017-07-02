@@ -67,13 +67,13 @@ public class myExpandRecyclerAdapter extends ExpandableRecyclerViewAdapter<Title
 
     @Override
     public TitleParentViewHolder onCreateGroupViewHolder(ViewGroup viewGroup, int viewType) {
-        View view = from(viewGroup.getContext()).inflate(R.layout.list_parent, viewGroup, false);
+        View view = from(viewGroup.getContext()).inflate(R.layout.recyclerview_list_parent, viewGroup, false);
         return new TitleParentViewHolder(view);
     }
 
     @Override
     public TitleChildViewHolder onCreateChildViewHolder(ViewGroup viewGroup, int viewType) {
-        View view = from(viewGroup.getContext()).inflate(R.layout.list_child, viewGroup, false);
+        View view = from(viewGroup.getContext()).inflate(R.layout.recyclerview_list_child, viewGroup, false);
         return new TitleChildViewHolder(view);
     }
 
@@ -104,7 +104,7 @@ public class myExpandRecyclerAdapter extends ExpandableRecyclerViewAdapter<Title
                     //Create a new dialog
                     dialog = new Dialog(titleChildViewHolder.itemView.getContext());
                     dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                    dialog.setContentView(R.layout.assignment_dialog);
+                    dialog.setContentView(R.layout.dialog_assignment);
                     dialog.show();
                     Log.d("onClick", "Child: " + myAssignment.toString());
 

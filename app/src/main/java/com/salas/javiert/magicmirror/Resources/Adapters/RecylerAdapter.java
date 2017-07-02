@@ -50,11 +50,11 @@ public class RecylerAdapter extends RecyclerView.Adapter<RecylerAdapter.MyViewHo
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         switch (DetermineType()) {
             case ASSIGN_CLASS:
-                view = inflater.inflate(R.layout.recycler_row_assignclass, parent, false);
+                view = inflater.inflate(R.layout.recyclerview_row_assignclass, parent, false);
                 Log.d("RecyclerAdapter", "Determined that the type of the list was assignment_class");
                 break;
             case QUEUETASK:
-                view = inflater.inflate(R.layout.recycler_row_assignclass, parent, false);
+                view = inflater.inflate(R.layout.recyclerview_row_assignclass, parent, false);
                 Log.d("RecyclerAdapter", "Determined that the type of the list was assignment_class");
                 break;
             default:

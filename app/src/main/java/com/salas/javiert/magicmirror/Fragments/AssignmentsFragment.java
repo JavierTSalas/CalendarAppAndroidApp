@@ -46,7 +46,7 @@ public class AssignmentsFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        final View view = inflater.inflate(R.layout.assignments_layout, container, false);
+        final View view = inflater.inflate(R.layout.layout_fragment_asignments, container, false);
         mExpandView = (ExpandableListView) view.findViewById(R.id.ExpandableView);
         myTask = new FetchAssignments();
         myTask.execute();

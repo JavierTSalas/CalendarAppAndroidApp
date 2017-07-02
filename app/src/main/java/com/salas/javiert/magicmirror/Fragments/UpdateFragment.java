@@ -69,7 +69,7 @@ public class UpdateFragment extends Fragment {
     public static void createAddDialog(Context context) {
         dialog = new Dialog(context);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setContentView(R.layout.add_dialog); //TODO: This
+        dialog.setContentView(R.layout.dialog_addAssignment); //TODO: This
         dialog.show();
 
 
@@ -249,7 +249,7 @@ public class UpdateFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.update_layout, container, false);
+        View view = inflater.inflate(R.layout.layout_fragment_update, container, false);
         //Required for adding buttons to the ToolBar
         setHasOptionsMenu(true);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.RecyclerView);

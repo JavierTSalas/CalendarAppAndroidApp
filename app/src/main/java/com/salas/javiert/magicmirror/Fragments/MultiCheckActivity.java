@@ -42,7 +42,7 @@ public class MultiCheckActivity extends Fragment {
     private myCheckableChildRecyclerViewAdapter adapter;
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.test_fragment, container, false);
+        View view = inflater.inflate(R.layout.layout_fragment_test, container, false);
         //Required for adding buttons to the ToolBar
         setHasOptionsMenu(true);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.RecyclerView_Queue);

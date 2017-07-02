@@ -70,7 +70,7 @@ public class mExpandListAdapter extends BaseExpandableListAdapter {
 
         if (convertView == null) {
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = inflater.inflate(R.layout.list_parent, null);
+            convertView = inflater.inflate(R.layout.recyclerview_list_parent, null);
         }
 
         TextView tvParent = (TextView) convertView.findViewById(R.id.tvParent);
@@ -85,7 +85,7 @@ public class mExpandListAdapter extends BaseExpandableListAdapter {
 
         if (convertView == null) {
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = inflater.inflate(R.layout.list_child, null);
+            convertView = inflater.inflate(R.layout.recyclerview_list_child, null);
         }
 
         final TextView tvChild = (TextView) convertView.findViewById(R.id.tvChild);

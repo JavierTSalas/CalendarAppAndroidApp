@@ -35,7 +35,7 @@ public class myCheckableChildRecyclerViewAdapter extends CheckableChildRecyclerV
     @Override
     public myCheckableChildViewHolder onCreateCheckChildViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.checkable_row, parent, false);
+                .inflate(R.layout.recyclerview_rows_checkable, parent, false);
 
         return new myCheckableChildViewHolder(view);
 
@@ -63,7 +63,7 @@ public class myCheckableChildRecyclerViewAdapter extends CheckableChildRecyclerV
     @Override
     public myGroupViewHolder onCreateGroupViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.list_parent, parent, false);
+                .inflate(R.layout.recyclerview_list_parent, parent, false);
         return new myGroupViewHolder(view);
     }
 
