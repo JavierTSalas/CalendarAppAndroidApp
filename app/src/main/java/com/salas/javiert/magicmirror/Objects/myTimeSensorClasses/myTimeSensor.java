@@ -4,8 +4,13 @@
 
 package com.salas.javiert.magicmirror.Objects.myTimeSensorClasses;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.salas.javiert.magicmirror.DatabaseRestClient;
 
@@ -13,6 +18,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Type;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -106,6 +112,44 @@ public class myTimeSensor {
     public void resetInstance() {
         clearInstance();
         fetchFromInternet();
+    }
+
+    private void setMyList(List<myClassTimeObject> mList) {
+        myList = mList;
+    }
+
+    // Save our data
+    public synchronized void save(Context context) {
+        SharedPreferences appSharedPrefs = PreferenceManager
+                .getDefaultSharedPreferences(context);
+        SharedPreferences.Editor prefsEditor = appSharedPrefs.edit();
+        Gson gson = new Gson();
+
+        String json = gson.toJson(myList);
+
+        prefsEditor.putString("TIME_SENSOR", json);
+        Log.d("Saving", json);
+        prefsEditor.commit();
+        Log.d("SharedPref", "Saving Queue to SharedPreferences");
+    }
+
+    // Load our data
+    public synchronized void load(Context context) {
+        SharedPreferences appSharedPrefs = PreferenceManager
+                .getDefaultSharedPreferences(context);
+        Gson gson = new Gson();
+        //TODO: Make this read "Please add an item to the queue" the queue is empty
+        String json = appSharedPrefs.getString("TIME_SENSOR", "");
+        Log.d("Loading", json);
+
+        // Fetch the data
+        Type type = new TypeToken<List<myClassTimeObject>>() {
+        }.getType();
+        ArrayList<myClassTimeObject> QUEUE_DATA_FROM_PREFERENCES = gson.fromJson(json, type);
+
+        //Set it
+        setMyList(QUEUE_DATA_FROM_PREFERENCES);
+        Log.d("SharedPref", "Reading myTimeSensor to SharedPreferences");
     }
 
 }
