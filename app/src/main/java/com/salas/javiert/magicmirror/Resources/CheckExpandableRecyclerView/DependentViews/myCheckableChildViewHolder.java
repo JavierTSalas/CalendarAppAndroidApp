@@ -9,6 +9,7 @@ package com.salas.javiert.magicmirror.Resources.CheckExpandableRecyclerView.Depe
 import android.view.View;
 import android.widget.Checkable;
 import android.widget.CheckedTextView;
+import android.widget.TextView;
 
 import com.salas.javiert.magicmirror.R;
 import com.thoughtbot.expandablecheckrecyclerview.viewholders.CheckableChildViewHolder;
@@ -20,31 +21,44 @@ import com.thoughtbot.expandablecheckrecyclerview.viewholders.CheckableChildView
 
 @SuppressWarnings("ResourceType")
 public class myCheckableChildViewHolder extends CheckableChildViewHolder {
-    private CheckedTextView checkedTextView;
+    private CheckedTextView ctvName;
+    private TextView tvTimeLeft;
 
 
     public myCheckableChildViewHolder(View itemView) {
         super(itemView);
-        checkedTextView = (CheckedTextView) itemView.findViewById(R.id.tvCheckable);
+        ctvName = (CheckedTextView) itemView.findViewById(R.id.tvCheckable);
+        tvTimeLeft = (TextView) itemView.findViewById(R.id.tvTimeLeftCheckable);
     }
 
     @Override
     public Checkable getCheckable() {
-        return checkedTextView;
+        return ctvName;
     }
 
     public void showCheckbox() {
         //Use this trick to get a system checkbox
         int[] attrs = {android.R.attr.listChoiceIndicatorMultiple};
-        checkedTextView.setCheckMarkDrawable(checkedTextView.getContext().obtainStyledAttributes(attrs).getDrawable(0));
+        ctvName.setCheckMarkDrawable(ctvName.getContext().obtainStyledAttributes(attrs).getDrawable(0));
     }
 
     public void hideCheckbox() {
-        checkedTextView.setCheckMarkDrawable(null);
+        ctvName.setCheckMarkDrawable(null);
     }
 
-    public void setCheckedTextView(String Text) {
-        checkedTextView.setText(Text);
+    public void setCtvName(String Text) {
+        ctvName.setText(Text);
     }
 
+    public void showTimeLeft() {
+        tvTimeLeft.setVisibility(View.VISIBLE);
+    }
+
+    public void hideTimeLeft() {
+        tvTimeLeft.setVisibility(View.INVISIBLE);
+    }
+
+    public void setTimeLeft(String s) {
+        tvTimeLeft.setText(s);
+    }
 }

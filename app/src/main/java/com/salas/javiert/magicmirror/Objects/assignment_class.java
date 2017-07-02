@@ -107,6 +107,7 @@ public class assignment_class {
         this.weight = weight;
     }
 
+
     //TODO: Make this return a Date so that a countdown can be initialized by the ChildView. Furthermore passing this as a string as a date can be changed easier if need be
     //Returns the minutes between now and a Date Due
     public static long minutesBetween(Date Due) {

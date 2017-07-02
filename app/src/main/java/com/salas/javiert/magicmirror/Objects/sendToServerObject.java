@@ -1,3 +1,6 @@
+//This class is only to be used to send to the server when you are expecting no response
+
+
 package com.salas.javiert.magicmirror.Objects;
 
 import android.content.Context;

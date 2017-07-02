@@ -13,6 +13,8 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
+
+        <!-- Toggle button for navigation drawer -->
         <include
             layout="@layout/navigation_action"
             android:layout_width="match_parent"
@@ -31,12 +33,6 @@
 
             />
 
-        <Button
-            android:id="@+id/bTest"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Button"
-            android:visibility="gone" />
         <!--
                     <com.salas.javiert.magicmirror.Views.CustomView
                         android:id="@+id/customView"

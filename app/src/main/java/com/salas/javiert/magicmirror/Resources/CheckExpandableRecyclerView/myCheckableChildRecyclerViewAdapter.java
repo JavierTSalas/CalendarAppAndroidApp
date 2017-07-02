@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.salas.javiert.magicmirror.Objects.assignment_class;
 import com.salas.javiert.magicmirror.Objects.myQueueClasses.myQueueItem;
 import com.salas.javiert.magicmirror.R;
 import com.salas.javiert.magicmirror.Resources.CheckExpandableRecyclerView.DependentViews.myCheckableChildViewHolder;
@@ -43,15 +44,18 @@ public class myCheckableChildRecyclerViewAdapter extends CheckableChildRecyclerV
     @Override
     public void onBindCheckChildViewHolder(myCheckableChildViewHolder holder, int flatPosition, CheckedExpandableGroup group, int childIndex) {
         final myQueueItem myQueueItem = (myQueueItem) group.getItems().get(childIndex);
-        holder.setCheckedTextView(myQueueItem.toString());
+        holder.setCtvName(myQueueItem.toString());
 
         //Set the visibility of the checkBox
         if (visible) {
             holder.showCheckbox();
+            holder.setTimeLeft(((assignment_class) myQueueItem.getO()).TimeLeft());
+            holder.showTimeLeft();
             Log.d(this.getClass().toString(), "Showing Checkboxes");
         }
         if (!visible) {
             holder.hideCheckbox();
+            holder.hideTimeLeft();
             Log.d(this.getClass().toString(), "Hiding Checkboxes");
         }
     }
