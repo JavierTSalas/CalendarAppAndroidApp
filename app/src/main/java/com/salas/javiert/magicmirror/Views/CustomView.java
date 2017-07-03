@@ -66,7 +66,7 @@ public class CustomView extends View {
         mPaintCircle.setColor(Color.parseColor("#00ccff"));
 
 
-        mImage = BitmapFactory.decodeResource(getResources(), R.drawable.image);
+        mImage = BitmapFactory.decodeResource(getResources(), R.drawable.icons8_calendar_512);
 
 
         getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {

@@ -3,9 +3,29 @@
 
     <string name="open">Open navigation drawer</string>
     <string name="close">Close navigation drawer</string>
-    <string name="app_nav">Mirror Control V0.0.2</string>
+    <string name="app_nav">Mirror Control V0.0.3</string>
     <string name="add">Add an item to the table</string>
     <string name="DefaultAssignmentName">\"Enter an Assignment Name\"</string>
+    <string name="title_activity_welcome">Home Screen</string>
+    <string name="next">NEXT</string>
+    <string name="skip">SKIP</string>
+    <string name="start">GOT IT</string>
+
+    <string name="slide_1_title">CalendarApp</string>
+    <string name="slide_1_desc">This app lets you manage your school calendar!</string>
+
+    <string name="slide_2_title">Manage your assignments</string>
+    <string name="slide_2_desc">Add + Remove assignments plus some extra features to make your life easier!</string>
+
+    <string name="slide_3_title">Have reoccuing assignments?</string>
+    <string name="slide_3_desc">We\'ll take care of those for you!</string>
+
+    <string name="slide_4_title">Setup</string>
+    <string name="slide_4_desc">Lets start by setting up a connection to your database!</string>
+
+    <string name="credits_for_icons">Thanks to icons8 for the following icons:</string>
+    <string name="icons_used_from_icons9">Calendar,Plus,Settings,Refresh</string>
+
 
     <string-array name="class_list">
         <item>Non School Activitiy</item>

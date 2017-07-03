@@ -69,7 +69,7 @@ public class UpdateFragment extends Fragment {
     public static void createAddDialog(Context context) {
         dialog = new Dialog(context);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setContentView(R.layout.dialog_addAssignment); //TODO: This
+        dialog.setContentView(R.layout.dialog_addassignment);
         dialog.show();
 
 

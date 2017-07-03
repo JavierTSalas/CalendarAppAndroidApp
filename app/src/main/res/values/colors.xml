@@ -4,4 +4,28 @@
     <color name="colorPrimaryDark">#303f9f</color>
     <color name="colorAccent">#FF4081</color>
 
+    <!-- Screens background color-->
+    <color name="bg_screen">#3395ff</color>
+
+    <!-- dots inactive colors -->
+    <color name="dot_dark_screen">#2278d4</color>
+
+    <!-- dots active colors -->
+    <color name="dot_light_screen">#93c6fd</color>
+
+    <array name="array_dot_active">
+        <item>@color/dot_light_screen</item>
+        <item>@color/dot_light_screen</item>
+        <item>@color/dot_light_screen</item>
+        <item>@color/dot_light_screen</item>
+    </array>
+
+    <array name="array_dot_inactive">
+        <item>@color/dot_dark_screen</item>
+        <item>@color/dot_dark_screen</item>
+        <item>@color/dot_dark_screen</item>
+        <item>@color/dot_dark_screen</item>
+    </array>
+
+
 </resources>

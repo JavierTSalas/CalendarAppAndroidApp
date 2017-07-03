@@ -46,18 +46,9 @@ public class MainActivity extends AppCompatActivity {
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.layout_activity_main);
         updateQueueCount();
         myQueue.getInstance().loadMyQueue(this);
-
-        mButton = (Button) findViewById(R.id.bTest);
-        mButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                myTask = new InsertTask();
-                myTask.execute();
-            }
-        });
 
 
         navigationView = (NavigationView) findViewById(R.id.navigation_view);
