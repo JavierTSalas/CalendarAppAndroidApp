@@ -24,7 +24,7 @@
     <string name="slide_4_desc">Lets start by setting up a connection to your database!</string>
 
     <string name="credits_for_icons">Thanks to icons8 for the following icons:</string>
-    <string name="icons_used_from_icons9">Calendar,Plus,Settings,Refresh</string>
+    <string name="icons_used_from_icons9">Calendar,Plus,Settings,Refresh,Download from the Cloud</string>
 
 
     <string-array name="class_list">
@@ -34,5 +34,24 @@
         <item>Discrete Mathematics</item>
         <item>General Physics B</item>
         <item>General Physics B Lab</item>
+    </string-array>
+
+    <string-array name="connection_data">
+        <item>Host</item>
+        <item>Port</item>
+        <item>assignment_interface</item>
+        <item>todo_interface</item>
+        <item>occur_interface</item>
+        <item>class_times_interface</item>
+        <item>classes_interface</item>
+    </string-array>
+    <string-array name="connection_data_defaults">
+        <item>localhost</item>
+        <item></item>
+        <item>interfaceassignments.php</item>
+        <item>interfacetodo.php</item>
+        <item>interfaceoccur.php</item>
+        <item>interfaceclasstimes.php</item>
+        <item>interfaceclasses.php</item>
     </string-array>
 </resources>

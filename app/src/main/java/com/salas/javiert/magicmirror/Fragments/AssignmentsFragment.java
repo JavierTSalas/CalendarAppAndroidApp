@@ -13,11 +13,11 @@ import android.widget.ExpandableListView;
 import android.widget.Toast;
 
 import com.loopj.android.http.JsonHttpResponseHandler;
-import com.salas.javiert.magicmirror.DatabaseRestClient;
-import com.salas.javiert.magicmirror.Objects.assignment_class;
-import com.salas.javiert.magicmirror.Objects.class_class;
+import com.salas.javiert.magicmirror.Objects.helperObjects.assignment_class;
+import com.salas.javiert.magicmirror.Objects.helperObjects.class_class;
 import com.salas.javiert.magicmirror.R;
 import com.salas.javiert.magicmirror.Resources.Adapters.mExpandListAdapter;
+import com.salas.javiert.magicmirror.Resources.DatabaseRestClient;
 
 import org.json.JSONArray;
 import org.json.JSONException;

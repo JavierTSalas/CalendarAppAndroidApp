@@ -25,5 +25,9 @@
             android:id="@+id/nav_Check"
             android:icon="@mipmap/ic_update_black_24dp"
             android:title="Test" />
+        <item
+            android:id="@+id/nav_Conn"
+            android:icon="@mipmap/ic_update_black_24dp"
+            android:title="Connection"/>
     </group>
 </menu>

@@ -30,14 +30,14 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.loopj.android.http.JsonHttpResponseHandler;
-import com.salas.javiert.magicmirror.DatabaseRestClient;
-import com.salas.javiert.magicmirror.Objects.assignment_class;
-import com.salas.javiert.magicmirror.Objects.class_class;
-import com.salas.javiert.magicmirror.Objects.myQueueClasses.myQueue;
-import com.salas.javiert.magicmirror.Objects.myQueueClasses.myQueueItem;
+import com.salas.javiert.magicmirror.Objects.SingletonObjects.myQueueClasses.myQueue;
+import com.salas.javiert.magicmirror.Objects.SingletonObjects.myQueueClasses.myQueueItem;
+import com.salas.javiert.magicmirror.Objects.helperObjects.assignment_class;
+import com.salas.javiert.magicmirror.Objects.helperObjects.class_class;
 import com.salas.javiert.magicmirror.R;
-import com.salas.javiert.magicmirror.Resources.ExpandableRecyclerView.DependentViews.ExpandGroup;
-import com.salas.javiert.magicmirror.Resources.ExpandableRecyclerView.myExpandRecyclerAdapter;
+import com.salas.javiert.magicmirror.Resources.DatabaseRestClient;
+import com.salas.javiert.magicmirror.Views.ExpandableRecyclerView.DependentViews.ExpandGroup;
+import com.salas.javiert.magicmirror.Views.ExpandableRecyclerView.myExpandRecyclerAdapter;
 
 import org.json.JSONArray;
 import org.json.JSONException;

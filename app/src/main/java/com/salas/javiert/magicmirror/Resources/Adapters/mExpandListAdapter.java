@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.TextView;
 
-import com.salas.javiert.magicmirror.Objects.assignment_class;
+import com.salas.javiert.magicmirror.Objects.helperObjects.assignment_class;
 import com.salas.javiert.magicmirror.R;
 
 import java.util.List;

@@ -17,14 +17,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.salas.javiert.magicmirror.Objects.myQueueClasses.myQueue;
-import com.salas.javiert.magicmirror.Objects.myQueueClasses.myQueueItem;
-import com.salas.javiert.magicmirror.Objects.myQueueClasses.myQueueTask;
-import com.salas.javiert.magicmirror.Objects.myQueueClasses.mySendQueue;
-import com.salas.javiert.magicmirror.Objects.sendToServerObject;
+import com.salas.javiert.magicmirror.Objects.SingletonObjects.myQueueClasses.myQueue;
+import com.salas.javiert.magicmirror.Objects.SingletonObjects.myQueueClasses.myQueueItem;
+import com.salas.javiert.magicmirror.Objects.SingletonObjects.myQueueClasses.myQueueTask;
+import com.salas.javiert.magicmirror.Objects.SingletonObjects.myQueueClasses.mySendQueue;
+import com.salas.javiert.magicmirror.Objects.helperObjects.sendToServerObject;
 import com.salas.javiert.magicmirror.R;
-import com.salas.javiert.magicmirror.Resources.CheckExpandableRecyclerView.DependentViews.myMultiCheckExpandGroup;
-import com.salas.javiert.magicmirror.Resources.CheckExpandableRecyclerView.myCheckableChildRecyclerViewAdapter;
+import com.salas.javiert.magicmirror.Views.CheckExpandableRecyclerView.DependentViews.myMultiCheckExpandGroup;
+import com.salas.javiert.magicmirror.Views.CheckExpandableRecyclerView.myCheckableChildRecyclerViewAdapter;
 import com.thoughtbot.expandablecheckrecyclerview.listeners.OnCheckChildClickListener;
 import com.thoughtbot.expandablecheckrecyclerview.models.CheckedExpandableGroup;
 

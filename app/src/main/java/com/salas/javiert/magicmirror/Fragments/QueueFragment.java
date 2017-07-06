@@ -17,11 +17,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.salas.javiert.magicmirror.Objects.myQueueClasses.myQueue;
-import com.salas.javiert.magicmirror.Objects.myQueueClasses.myQueueTask;
+import com.salas.javiert.magicmirror.Objects.SingletonObjects.myQueueClasses.myQueue;
+import com.salas.javiert.magicmirror.Objects.SingletonObjects.myQueueClasses.myQueueTask;
 import com.salas.javiert.magicmirror.R;
-import com.salas.javiert.magicmirror.Resources.ExpandableRecyclerView.DependentViews.ExpandGroup;
-import com.salas.javiert.magicmirror.Resources.ExpandableRecyclerView.myExpandRecyclerAdapter;
+import com.salas.javiert.magicmirror.Views.ExpandableRecyclerView.DependentViews.ExpandGroup;
+import com.salas.javiert.magicmirror.Views.ExpandableRecyclerView.myExpandRecyclerAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
