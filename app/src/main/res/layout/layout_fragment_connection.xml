@@ -48,6 +48,7 @@
         android:layout_marginTop="38dp"
         android:src="@drawable/icons8_download_from_the_cloud_512"/>
 
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/settingsRecyclerView"
         android:layout_width="match_parent"
@@ -56,6 +57,6 @@
         android:layout_centerHorizontal="true"
         android:gravity="center"
 
-        android:paddingBottom="50dp"/>
+        android:paddingBottom="0dp"/>
 
 </RelativeLayout>

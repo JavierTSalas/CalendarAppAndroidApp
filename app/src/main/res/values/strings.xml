@@ -25,6 +25,8 @@
 
     <string name="credits_for_icons">Thanks to icons8 for the following icons:</string>
     <string name="icons_used_from_icons9">Calendar,Plus,Settings,Refresh,Download from the Cloud</string>
+    <string name="action_connection_load">Load current connection settings</string>
+    <string name="action_connection_save">Save current connection settings</string>
 
 
     <string-array name="class_list">

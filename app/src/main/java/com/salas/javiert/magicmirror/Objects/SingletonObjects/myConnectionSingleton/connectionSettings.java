@@ -104,6 +104,7 @@ public class connectionSettings {
         } else {
             pbLoading.setVisibility(View.GONE);
             ivConnectionStatus.setVisibility(View.VISIBLE);
+            // Set the checkmark or the X
             if (connectionSuccessful) {
                 ivConnectionStatus.setImageResource(R.drawable.icons8_checkmark_16);
                 lockIfConnectionSuccessful();
@@ -141,6 +142,7 @@ public class connectionSettings {
         DatabaseRestClient.post(context, pingURL, createPingEntity(), "application/x-www-form-urlencoded", response);
     }
 
+    //
     private void lockIfConnectionSuccessful() {
         if (connectionSuccessful) {
             subTextView.setInputType(InputType.TYPE_NULL);

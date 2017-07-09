@@ -13,10 +13,14 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.loopj.android.http.TextHttpResponseHandler;
 import com.salas.javiert.magicmirror.Objects.SingletonObjects.myConnectionSingleton.connectionSettings;
@@ -53,6 +57,9 @@ public class ConnectionFragment extends Fragment {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
         mRecyclerView.setAdapter(mAdpater);
 
+        //Required for adding buttons to the ToolBar
+        setHasOptionsMenu(true);
+
         // The 'status'
         tvConnectionStatus = (TextView) view.findViewById(R.id.tvConnectedToServer);
 
@@ -67,6 +74,33 @@ public class ConnectionFragment extends Fragment {
 
         return view;
     }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.toolbar_connections, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    //Called when a menu option is selected
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_connection_load:
+                Toast.makeText(this.getContext(), "Action load selected", Toast.LENGTH_SHORT)
+                        .show();
+                break;
+            case R.id.action_connection_save:
+                Toast.makeText(this.getContext(), "Action save selected", Toast.LENGTH_SHORT)
+                        .show();
+                break;
+
+            default:
+                break;
+        }
+
+        return true;
+    }
+
 
     // Fetches the data from the preferences if there is none, then create default
     private List<connectionSettings> initData() {
