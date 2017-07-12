@@ -41,6 +41,7 @@
     <string-array name="connection_data">
         <item>Host</item>
         <item>Port</item>
+        <item>Directory</item>
         <item>assignment_interface</item>
         <item>todo_interface</item>
         <item>occur_interface</item>
@@ -50,6 +51,7 @@
     <string-array name="connection_data_defaults">
         <item>localhost</item>
         <item></item>
+        <item>learning</item>
         <item>interfaceassignments.php</item>
         <item>interfacetodo.php</item>
         <item>interfaceoccur.php</item>

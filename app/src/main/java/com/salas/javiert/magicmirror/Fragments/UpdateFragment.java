@@ -30,8 +30,8 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.loopj.android.http.JsonHttpResponseHandler;
-import com.salas.javiert.magicmirror.Objects.SingletonObjects.myQueueClasses.myQueue;
-import com.salas.javiert.magicmirror.Objects.SingletonObjects.myQueueClasses.myQueueItem;
+import com.salas.javiert.magicmirror.Objects.SingletonObjects_REMOVE_ME.myQueueClasses.myQueue;
+import com.salas.javiert.magicmirror.Objects.SingletonObjects_REMOVE_ME.myQueueClasses.myQueueItem;
 import com.salas.javiert.magicmirror.Objects.helperObjects.assignment_class;
 import com.salas.javiert.magicmirror.Objects.helperObjects.class_class;
 import com.salas.javiert.magicmirror.R;

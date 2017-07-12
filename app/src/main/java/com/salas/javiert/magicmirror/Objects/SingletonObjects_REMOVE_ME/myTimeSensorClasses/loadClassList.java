@@ -2,10 +2,11 @@
  * Copyright (c) 2017. Javier Salas
  */
 
-package com.salas.javiert.magicmirror.Objects.SingletonObjects.myTimeSensorClasses;
+package com.salas.javiert.magicmirror.Objects.SingletonObjects_REMOVE_ME.myTimeSensorClasses;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -29,32 +30,16 @@ import cz.msebera.android.httpclient.Header;
  * Created by javi6 on 7/2/2017.
  */
 
-public class myTimeSensor {
+public class loadClassList {
 
-
-    private static List<myClassTimeObject> myList = new ArrayList();
-
-    private static myTimeSensor instance = null;
 
     // Literally does nothing
-    private myTimeSensor() {
-    }
-
-    //Everytime you need an instance, call this
-    public static myTimeSensor getInstance() {
-        if (instance == null)
-            instance = new myTimeSensor();
-
-        return instance;
-    }
-
-    // Clear the instance
-    public void clearInstance() {
-        instance = new myTimeSensor();
+    private loadClassList() {
     }
 
     // Download the data and populate myList
-    public void fetchFromInternet() {
+    public List<myClassTimeObject> fetchFromInternet() {
+        final List<myClassTimeObject> returnList = new ArrayList<>();
         DatabaseRestClient.get("outputclass.php", null, new JsonHttpResponseHandler() {
 
             JSONArray myJSONArrayResponse;
@@ -87,7 +72,7 @@ public class myTimeSensor {
                             e.printStackTrace();
                         }
 
-                        myList.add(myClassTimeObject);
+                        returnList.add(myClassTimeObject);
 
                     }
                 } catch (JSONException e) {
@@ -97,59 +82,64 @@ public class myTimeSensor {
 
 
         });
-
+        return returnList;
     }
 
     //Returns 0 if not in class, else returns the class we are currently in
     public int intOfClassInCurrently() {
-        for (myClassTimeObject classTime : myList) {
+        for (myClassTimeObject classTime : getMyList()) {
             if (classTime.shouldSuggest())
                 return classTime.getClass_id();
         }
         return 0;
     }
 
-    public void resetInstance() {
-        clearInstance();
-        fetchFromInternet();
+    public List<myClassTimeObject> getMyList() {
+        // If we want to get the data from the internet
+        return fetchFromInternet();
     }
 
-    private void setMyList(List<myClassTimeObject> mList) {
-        myList = mList;
-    }
 
-    // Save our data
-    public synchronized void save(Context context) {
-        SharedPreferences appSharedPrefs = PreferenceManager
-                .getDefaultSharedPreferences(context);
-        SharedPreferences.Editor prefsEditor = appSharedPrefs.edit();
-        Gson gson = new Gson();
-
-        String json = gson.toJson(myList);
-
-        prefsEditor.putString("TIME_SENSOR", json);
-        Log.d("Saving", json);
-        prefsEditor.commit();
-        Log.d("SharedPref", "Saving Queue to SharedPreferences");
+    public List<myClassTimeObject> getMyList(Context context) {
+        List<myClassTimeObject> returnList =
+        // We need context to read SharedPreferences
+        return readFromSharedPerferences(context);
     }
 
     // Load our data
-    public synchronized void load(Context context) {
+    public synchronized ArrayList<myClassTimeObject> readFromSharedPerferences(Context context) {
+
         SharedPreferences appSharedPrefs = PreferenceManager
                 .getDefaultSharedPreferences(context);
+
         Gson gson = new Gson();
         //TODO: Make this read "Please add an item to the queue" the queue is empty
-        String json = appSharedPrefs.getString("TIME_SENSOR", "");
-        Log.d("Loading", json);
 
-        // Fetch the data
+        // Declare our Type
         Type type = new TypeToken<List<myClassTimeObject>>() {
         }.getType();
-        ArrayList<myClassTimeObject> QUEUE_DATA_FROM_PREFERENCES = gson.fromJson(json, type);
+        // Read the data
+        ArrayList<myClassTimeObject> QUEUE_DATA_FROM_PREFERENCES = gson.fromJson(appSharedPrefs.getString("classList", ""), type);
+        Log.d("SharedPref", "Reading Class List from SharedPreferences");
+        return QUEUE_DATA_FROM_PREFERENCES;
 
-        //Set it
-        setMyList(QUEUE_DATA_FROM_PREFERENCES);
-        Log.d("SharedPref", "Reading myTimeSensor to SharedPreferences");
     }
 
+    final protected class readClassListTask extends AsyncTask<Context, Void, List<myClassTimeObject>> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected List<myClassTimeObject> doInBackground(Context... params) {
+            Context context = params[0];
+            return getMyList(context);
+        }
+
+        protected void onPostExecute(List<myClassTimeObject> result) {
+
+        }
+    }
 }

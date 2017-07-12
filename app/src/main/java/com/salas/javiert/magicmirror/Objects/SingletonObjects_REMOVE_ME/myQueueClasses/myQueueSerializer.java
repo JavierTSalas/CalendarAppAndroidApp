@@ -1,4 +1,4 @@
-package com.salas.javiert.magicmirror.Objects.SingletonObjects.myQueueClasses;
+package com.salas.javiert.magicmirror.Objects.SingletonObjects_REMOVE_ME.myQueueClasses;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonSerializationContext;

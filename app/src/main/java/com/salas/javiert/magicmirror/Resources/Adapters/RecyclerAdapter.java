@@ -2,24 +2,27 @@ package com.salas.javiert.magicmirror.Resources.Adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.text.Editable;
 import android.text.InputType;
-import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.salas.javiert.magicmirror.Objects.SingletonObjects.myConnectionSingleton.connectionSettings;
-import com.salas.javiert.magicmirror.Objects.SingletonObjects.myQueueClasses.myQueueTask;
+import com.salas.javiert.magicmirror.Objects.SingletonObjects_REMOVE_ME.myConnectionSingleton.connectionSettings;
+import com.salas.javiert.magicmirror.Objects.SingletonObjects_REMOVE_ME.myConnectionSingleton.myConnectionSingleton;
+import com.salas.javiert.magicmirror.Objects.SingletonObjects_REMOVE_ME.myQueueClasses.myQueueTask;
 import com.salas.javiert.magicmirror.Objects.helperObjects.assignment_class;
 import com.salas.javiert.magicmirror.R;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -29,6 +32,7 @@ import java.util.List;
 public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyViewHolder> {
 
     // Question mark to make this a template
+    HashMap<Integer, MyViewHolder> mySaveMap = new HashMap<>();
     List<?> data = Collections.emptyList();
     View view;
     private LayoutInflater inflater;
@@ -95,14 +99,9 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyView
                     holder.settings_object_subtitle.setText(connectionSettings.getSubtext());
 
                     // Give our connectionSettings the views it needs
-                    connectionSettings.setTitleTextView(holder.settings_object_title);
-                    connectionSettings.setIvConnectionStatus(holder.settings_connection_status);
-                    connectionSettings.setIvLock(holder.settings_lock);
-                    connectionSettings.setSubTextView(holder.settings_object_subtitle);
-                    connectionSettings.setProgessBarView(holder.settings_loading);
+                    connectionSettings.loadFromHolder(holder);
 
-
-                    // When the user longClicks the textview unlock the edittext
+                    // When the user longClicks the textview toggle the lock on the edittext
                     holder.settings_object_title.setOnLongClickListener(new View.OnLongClickListener() {
                         @Override
                         public boolean onLongClick(View v) {
@@ -111,33 +110,44 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyView
                         }
                     });
 
-                    TextWatcher myWatcher = new TextWatcher() {
+
+                    EditText.OnEditorActionListener myActionListener = new EditText.OnEditorActionListener() {
                         @Override
-                        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                        public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                            // When the done button is pressed
+                            if (actionId == EditorInfo.IME_ACTION_DONE) {
 
-                        }
+                                // Save if we need to
+                                if (connectionSettings.getTitle().equals("Host"))
+                                    myConnectionSingleton.getInstance().setHost(holder.settings_object_subtitle.getText().toString(), holder.settings_object_subtitle.getContext());
+                                if (connectionSettings.getTitle().equals("Port"))
+                                    myConnectionSingleton.getInstance().setPort(Integer.getInteger(holder.settings_object_subtitle.getText().toString()), holder.settings_object_subtitle.getContext());
+                                if (connectionSettings.getTitle().equals("Directory"))
+                                    myConnectionSingleton.getInstance().setDirectory(holder.settings_object_subtitle.getText().toString(), holder.settings_object_subtitle.getContext());
 
-                        @Override
-                        public void onTextChanged(CharSequence s, int start, int before, int count) {
-                        }
+                                myConnectionSingleton.getInstance().saveURLToPreference(holder.settings_object_subtitle.getContext());
+                                Log.d("HAPPENING", "HAPPENING");
 
-                        @Override
-                        public void afterTextChanged(Editable s) {
-                            // Set the subtext
-                            connectionSettings.setSubtext(holder.settings_object_subtitle.getText().toString());
-                            connectionSettings.setConnectionSuccessful(false);
+                                // Tey the connection
+                                connectionSettings.tryConnection(holder.settings_connection_status.getContext());
 
-                            // Test our connection with the new text
-                            connectionSettings.tryConnection(holder.settings_loading.getContext());
+                                return true;
+                            }
+                            return false;
+
                         }
                     };
 
-                    holder.settings_object_subtitle.addTextChangedListener(myWatcher);
                     holder.settings_object_subtitle.setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
+                    holder.settings_object_subtitle.setOnEditorActionListener(myActionListener);
 
                     // Hide to use later
                     holder.settings_loading.setVisibility(View.GONE);
                     holder.settings_connection_status.setVisibility(View.GONE);
+
+                    // Restore any views states that we loaded form our SharedPreferences
+                    connectionSettings.restoreState();
+
 
                     break;
                 default:
@@ -145,9 +155,21 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyView
             }
     }
 
+
     @Override
     public int getItemCount() {
         return data.size();
+    }
+
+    public List<connectionSettings> getConnectionSettings() {
+        List<connectionSettings> myConnectionSettingsList = new ArrayList<>();
+        if (DetermineType() == typeOfObjectsList.SETTINGS) {
+            for (int i = 0; i < data.size(); i++)
+                myConnectionSettingsList.add((connectionSettings) data.get(i));
+            return myConnectionSettingsList;
+        }
+
+        return null;
     }
 
     // Possible classes that will be used with this RecyclerView
@@ -156,16 +178,15 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyView
     }
 
     // Define our custom ViewHolder for the recycler view
-    protected class MyViewHolder extends RecyclerView.ViewHolder {
+    public class MyViewHolder extends RecyclerView.ViewHolder {
         // For assignment_class
-        TextView assignment_class_title;
-        TextView assignment_class_id;
-
+        private TextView assignment_class_title;
+        private TextView assignment_class_id;
         // For connectionSettings
-        TextView settings_object_title;
-        ProgressBar settings_loading;
-        EditText settings_object_subtitle;
-        ImageView settings_connection_status, settings_lock;
+        private TextView settings_object_title;
+        private ProgressBar settings_loading;
+        private EditText settings_object_subtitle;
+        private ImageView settings_connection_status, settings_lock;
 
         public MyViewHolder(View itemView) {
             super(itemView);
@@ -186,6 +207,34 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyView
 
 
                 }
+        }
+
+        public TextView getAssignment_class_title() {
+            return assignment_class_title;
+        }
+
+        public TextView getAssignment_class_id() {
+            return assignment_class_id;
+        }
+
+        public TextView getSettings_object_title() {
+            return settings_object_title;
+        }
+
+        public ProgressBar getSettings_loading() {
+            return settings_loading;
+        }
+
+        public EditText getSettings_object_subtitle() {
+            return settings_object_subtitle;
+        }
+
+        public ImageView getSettings_connection_status() {
+            return settings_connection_status;
+        }
+
+        public ImageView getSettings_lock() {
+            return settings_lock;
         }
     }
 }

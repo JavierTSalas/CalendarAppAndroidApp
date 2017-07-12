@@ -32,6 +32,8 @@
         android:layout_width="368dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="26dp"
+        android:imeOptions="actionDone"
+        android:inputType="textNoSuggestions"
         android:text="TextView"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
