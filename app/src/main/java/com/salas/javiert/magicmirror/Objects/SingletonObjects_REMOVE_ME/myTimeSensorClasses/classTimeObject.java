@@ -13,13 +13,13 @@ import java.util.Date;
  * Created by javi6 on 7/2/2017.
  */
 
-public class myClassTimeObject {
+public class classTimeObject {
     private int id, class_id, day_of_week, room;
     private String building;
     private Date time_start, time_end;
 
 
-    public myClassTimeObject(int id, int class_id, String day_of_week, String time_start, String time_end, String building, int room) throws ParseException {
+    public classTimeObject(int id, int class_id, String day_of_week, String time_start, String time_end, String building, int room) throws ParseException {
         this.id = id;
         this.class_id = class_id;
         // Convert form String to int

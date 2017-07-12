@@ -32,14 +32,25 @@ import cz.msebera.android.httpclient.Header;
 
 public class loadClassList {
 
+    private static List<classTimeObject> myList = new ArrayList();
+    private static loadClassList instance = null;
+
 
     // Literally does nothing
     private loadClassList() {
     }
 
+    public static loadClassList getInstance() {
+
+        if (instance == null)
+            instance = new loadClassList();
+
+        return instance;
+    }
+
     // Download the data and populate myList
-    public List<myClassTimeObject> fetchFromInternet() {
-        final List<myClassTimeObject> returnList = new ArrayList<>();
+    public List<classTimeObject> fetchFromInternet() {
+        final List<classTimeObject> returnList = new ArrayList<>();
         DatabaseRestClient.get("outputclass.php", null, new JsonHttpResponseHandler() {
 
             JSONArray myJSONArrayResponse;
@@ -65,9 +76,9 @@ public class loadClassList {
                         JSONObject jObject = myJSONArrayResponse.getJSONObject(i);
 
 
-                        myClassTimeObject myClassTimeObject = null;
+                        classTimeObject myClassTimeObject = null;
                         try {
-                            myClassTimeObject = new myClassTimeObject(jObject.getInt("id"), jObject.getInt("class_id"), jObject.getString("day_of_week"), jObject.getString("time_start"), jObject.getString("time_start"), jObject.getString("building"), jObject.getInt("room"));
+                            myClassTimeObject = new classTimeObject(jObject.getInt("id"), jObject.getInt("class_id"), jObject.getString("day_of_week"), jObject.getString("time_start"), jObject.getString("time_start"), jObject.getString("building"), jObject.getInt("room"));
                         } catch (ParseException e) {
                             e.printStackTrace();
                         }
@@ -87,27 +98,39 @@ public class loadClassList {
 
     //Returns 0 if not in class, else returns the class we are currently in
     public int intOfClassInCurrently() {
-        for (myClassTimeObject classTime : getMyList()) {
+        myList = refreshList();
+        for (classTimeObject classTime : myList) {
             if (classTime.shouldSuggest())
                 return classTime.getClass_id();
         }
         return 0;
     }
 
-    public List<myClassTimeObject> getMyList() {
-        // If we want to get the data from the internet
-        return fetchFromInternet();
+    public List<classTimeObject> getList() {
+        refreshList();
+        return myList;
     }
 
+    public List<classTimeObject> getList(Context context) {
+        refreshList(context);
+        return myList;
+    }
 
-    public List<myClassTimeObject> getMyList(Context context) {
-        List<myClassTimeObject> returnList =
+    public void refreshList() {
+        // If we want to get the data from the internet
+        myList = fetchFromInternet();
+    }
+
+    public void refreshList(Context context) {
         // We need context to read SharedPreferences
-        return readFromSharedPerferences(context);
+        Context[] myTaskParams = {context, null, null};
+        readClassListFromPreferences myTask = new readClassListFromPreferences();
+        myList = (List<classTimeObject>) myTask.execute(myTaskParams);
+        myList = readFromSharedPerferences(context);
     }
 
     // Load our data
-    public synchronized ArrayList<myClassTimeObject> readFromSharedPerferences(Context context) {
+    public synchronized ArrayList<classTimeObject> readFromSharedPerferences(Context context) {
 
         SharedPreferences appSharedPrefs = PreferenceManager
                 .getDefaultSharedPreferences(context);
@@ -116,16 +139,16 @@ public class loadClassList {
         //TODO: Make this read "Please add an item to the queue" the queue is empty
 
         // Declare our Type
-        Type type = new TypeToken<List<myClassTimeObject>>() {
+        Type type = new TypeToken<List<classTimeObject>>() {
         }.getType();
         // Read the data
-        ArrayList<myClassTimeObject> QUEUE_DATA_FROM_PREFERENCES = gson.fromJson(appSharedPrefs.getString("classList", ""), type);
+        ArrayList<classTimeObject> QUEUE_DATA_FROM_PREFERENCES = gson.fromJson(appSharedPrefs.getString("classList", ""), type);
         Log.d("SharedPref", "Reading Class List from SharedPreferences");
         return QUEUE_DATA_FROM_PREFERENCES;
 
     }
 
-    final protected class readClassListTask extends AsyncTask<Context, Void, List<myClassTimeObject>> {
+    final protected class readClassListFromPreferences extends AsyncTask<Context, Void, List<classTimeObject>> {
 
         @Override
         protected void onPreExecute() {
@@ -133,13 +156,14 @@ public class loadClassList {
         }
 
         @Override
-        protected List<myClassTimeObject> doInBackground(Context... params) {
+        protected List<classTimeObject> doInBackground(Context... params) {
             Context context = params[0];
-            return getMyList(context);
+            refreshList(context);
+            return null;
         }
 
-        protected void onPostExecute(List<myClassTimeObject> result) {
-
+        protected void onPostExecute(List<classTimeObject> result) {
+            myList = result;
         }
     }
 }
