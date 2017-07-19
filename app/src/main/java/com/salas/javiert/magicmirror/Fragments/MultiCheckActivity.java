@@ -17,10 +17,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.salas.javiert.magicmirror.Objects.SingletonObjects_REMOVE_ME.myQueueClasses.myQueue;
-import com.salas.javiert.magicmirror.Objects.SingletonObjects_REMOVE_ME.myQueueClasses.myQueueItem;
-import com.salas.javiert.magicmirror.Objects.SingletonObjects_REMOVE_ME.myQueueClasses.myQueueTask;
-import com.salas.javiert.magicmirror.Objects.SingletonObjects_REMOVE_ME.myQueueClasses.mySendQueue;
+import com.salas.javiert.magicmirror.Objects.SingletonObjects.myQueueClasses.myQueue;
+import com.salas.javiert.magicmirror.Objects.SingletonObjects.myQueueClasses.myQueueItem;
+import com.salas.javiert.magicmirror.Objects.SingletonObjects.myQueueClasses.myQueueTask;
+import com.salas.javiert.magicmirror.Objects.SingletonObjects.myQueueClasses.mySendQueue;
 import com.salas.javiert.magicmirror.Objects.helperObjects.sendToServerObject;
 import com.salas.javiert.magicmirror.R;
 import com.salas.javiert.magicmirror.Views.CheckExpandableRecyclerView.DependentViews.myMultiCheckExpandGroup;

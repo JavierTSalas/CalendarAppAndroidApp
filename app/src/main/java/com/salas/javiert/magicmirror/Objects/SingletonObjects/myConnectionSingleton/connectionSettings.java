@@ -2,7 +2,7 @@
  * Copyright (c) 2017. Javier Salas
  */
 
-package com.salas.javiert.magicmirror.Objects.SingletonObjects_REMOVE_ME.myConnectionSingleton;
+package com.salas.javiert.magicmirror.Objects.SingletonObjects.myConnectionSingleton;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -20,6 +20,7 @@ import com.loopj.android.http.TextHttpResponseHandler;
 import com.salas.javiert.magicmirror.R;
 import com.salas.javiert.magicmirror.Resources.Adapters.RecyclerAdapter;
 import com.salas.javiert.magicmirror.Resources.DatabaseRestClient;
+import com.salas.javiert.magicmirror.Resources.Room.connection.Entities.connectionDataBaseItem;
 
 import java.io.UnsupportedEncodingException;
 
@@ -39,12 +40,29 @@ public class connectionSettings {
     private ImageView ivConnectionStatus, ivLock;
     private TextView tvTitle;
     private EditText etSubTextView;
+    private Integer id;
 
     public connectionSettings(String title, String subtext, Boolean connectionSuccessful, Boolean lockStatus) {
         this.title = title;
         this.subtext = subtext;
         this.connectionSuccessful = connectionSuccessful;
         this.isLocked = lockStatus;
+    }
+
+    public connectionSettings(connectionDataBaseItem conn) {
+        this.title = conn.getName();
+        this.subtext = conn.getSubtitle();
+        this.connectionSuccessful = conn.getConnectionSuccessful();
+        this.isLocked = conn.getLockStatus();
+        this.id = conn.getId();
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public Boolean getConnectionSuccessful() {
@@ -87,7 +105,7 @@ public class connectionSettings {
     }
 
     public boolean isServerAddressField() {
-        return (title.equals("Host") || title.equals("Port") || title.equals("Directory"));
+        return (title.equals("Host:Port") || title.equals("Directory"));
     }
 
     public boolean isSameAs(connectionSettings foo) {
@@ -131,7 +149,6 @@ public class connectionSettings {
             updateConnectionStauts();
 
         }
-        Log.d("isLoading", String.valueOf(spinning));
     }
 
     private void updateConnectionStauts() {

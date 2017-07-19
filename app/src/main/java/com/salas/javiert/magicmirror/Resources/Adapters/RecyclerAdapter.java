@@ -2,7 +2,9 @@ package com.salas.javiert.magicmirror.Resources.Adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
 import android.text.InputType;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -14,33 +16,38 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.salas.javiert.magicmirror.Objects.SingletonObjects_REMOVE_ME.myConnectionSingleton.connectionSettings;
-import com.salas.javiert.magicmirror.Objects.SingletonObjects_REMOVE_ME.myConnectionSingleton.myConnectionSingleton;
-import com.salas.javiert.magicmirror.Objects.SingletonObjects_REMOVE_ME.myQueueClasses.myQueueTask;
+import com.salas.javiert.magicmirror.Objects.SingletonObjects.myConnectionSingleton.connectionSettings;
+import com.salas.javiert.magicmirror.Objects.SingletonObjects.myConnectionSingleton.myConnectionSingleton;
+import com.salas.javiert.magicmirror.Objects.SingletonObjects.myQueueClasses.myQueueTask;
 import com.salas.javiert.magicmirror.Objects.helperObjects.assignment_class;
 import com.salas.javiert.magicmirror.R;
+import com.salas.javiert.magicmirror.Resources.SwipeHelper.helper.ItemTouchHelperAdapter;
+import com.salas.javiert.magicmirror.Resources.SwipeHelper.helper.OnStartDragListener;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 
 /**
  * Created by javi6 on 6/2/2017.
  */
 
-public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyViewHolder> {
+public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyViewHolder> implements ItemTouchHelperAdapter {
+
+    private final OnStartDragListener mDragStartListener;
 
     // Question mark to make this a template
-    HashMap<Integer, MyViewHolder> mySaveMap = new HashMap<>();
     List<?> data = Collections.emptyList();
+    List<connectionSettings> updatedFeilds = new ArrayList<>();
     View view;
     private LayoutInflater inflater;
 
-    public RecyclerAdapter(Context context, List<?> data) {
+    public RecyclerAdapter(Context context, List<?> data, OnStartDragListener dragStartListener) {
+        mDragStartListener = dragStartListener;
         inflater = LayoutInflater.from(context);
         this.data = data;
     }
+
 
     //This lets us template RecyclerAdapter so
     public typeOfObjectsList DetermineType() {
@@ -81,7 +88,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyView
     }
 
     @Override
-    public void onBindViewHolder(final MyViewHolder holder, int position) {
+    public void onBindViewHolder(final MyViewHolder holder, final int position) {
         Object object_from_list = data.get(position);
         if (!data.isEmpty())
             switch (DetermineType()) {
@@ -94,9 +101,10 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyView
                     break;
                 case SETTINGS:
                     final connectionSettings connectionSettings = (connectionSettings) object_from_list;
-                    Log.d("OnBind", connectionSettings.getTitle() + " " + connectionSettings.getSubtext());
                     holder.settings_object_title.setText(connectionSettings.getTitle());
                     holder.settings_object_subtitle.setText(connectionSettings.getSubtext());
+
+                    Log.d("OnBind", connectionSettings.getTitle() + " " + connectionSettings.getSubtext());
 
                     // Give our connectionSettings the views it needs
                     connectionSettings.loadFromHolder(holder);
@@ -106,10 +114,35 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyView
                         @Override
                         public boolean onLongClick(View v) {
                             connectionSettings.toggleLockEditText();
+                            modifiedConnection(connectionSettings);
                             return false;
                         }
                     });
 
+
+                    TextWatcher listForChanges = new TextWatcher() {
+                        @Override
+                        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                        }
+
+                        @Override
+                        public void onTextChanged(CharSequence s, int start, int before, int count) {
+                            // Save if we need to
+                            if (connectionSettings.getTitle().equals("Host:Port"))
+                                myConnectionSingleton.getInstance().setHostPort(holder.settings_object_subtitle.getText().toString(), holder.settings_object_subtitle.getContext());
+                            if (connectionSettings.getTitle().equals("Directory"))
+                                myConnectionSingleton.getInstance().setDirectory(holder.settings_object_subtitle.getText().toString(), holder.settings_object_subtitle.getContext());
+
+                            connectionSettings.setSubtext(holder.settings_object_subtitle.getText().toString());
+                            //modifiedConnection(connectionSettings);
+                        }
+
+                        @Override
+                        public void afterTextChanged(Editable s) {
+
+                        }
+                    };
 
                     EditText.OnEditorActionListener myActionListener = new EditText.OnEditorActionListener() {
                         @Override
@@ -118,27 +151,34 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyView
                             if (actionId == EditorInfo.IME_ACTION_DONE) {
 
                                 // Save if we need to
-                                if (connectionSettings.getTitle().equals("Host"))
-                                    myConnectionSingleton.getInstance().setHost(holder.settings_object_subtitle.getText().toString(), holder.settings_object_subtitle.getContext());
-                                if (connectionSettings.getTitle().equals("Port"))
-                                    myConnectionSingleton.getInstance().setPort(Integer.getInteger(holder.settings_object_subtitle.getText().toString()), holder.settings_object_subtitle.getContext());
+                                if (connectionSettings.getTitle().equals("Host:Port"))
+                                    myConnectionSingleton.getInstance().setHostPort(holder.settings_object_subtitle.getText().toString(), holder.settings_object_subtitle.getContext());
                                 if (connectionSettings.getTitle().equals("Directory"))
                                     myConnectionSingleton.getInstance().setDirectory(holder.settings_object_subtitle.getText().toString(), holder.settings_object_subtitle.getContext());
 
+                                connectionSettings.setSubtext(holder.settings_object_subtitle.getText().toString());
+
                                 myConnectionSingleton.getInstance().saveURLToPreference(holder.settings_object_subtitle.getContext());
-                                Log.d("HAPPENING", "HAPPENING");
 
                                 // Tey the connection
                                 connectionSettings.tryConnection(holder.settings_connection_status.getContext());
+
+                                Log.d("actionID", (actionId == EditorInfo.IME_ACTION_DONE) ? "TRUE" : "FALSE");
+
+
+                                modifiedConnection(connectionSettings);
+
 
                                 return true;
                             }
                             return false;
 
                         }
+
                     };
 
                     holder.settings_object_subtitle.setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
+                    holder.settings_object_subtitle.addTextChangedListener(listForChanges);
                     holder.settings_object_subtitle.setOnEditorActionListener(myActionListener);
 
                     // Hide to use later
@@ -155,21 +195,58 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyView
             }
     }
 
+    private void modifiedConnection(connectionSettings connectionSettings) {
+        // Save our changed feilds
+        if (!isNotInUpdatedFeilds(connectionSettings)) {
+            updatedFeilds.add(connectionSettings);
+            Log.d("updatedFeilds", "adding");
+        } else {
+            updateUdpatedFeilds(connectionSettings);
+            Log.d("updatedFeilds", "updating");
+        }
+    }
+
+    private void updateUdpatedFeilds(connectionSettings connectionSettings) {
+        for (int i = 0; i < updatedFeilds.size(); i++)
+            if (updatedFeilds.get(i).getTitle() == connectionSettings.getTitle()) {
+                updatedFeilds.set(i, connectionSettings);
+                return;
+            }
+    }
+
+    private boolean isNotInUpdatedFeilds(connectionSettings connectionSettings) {
+        for (connectionSettings conn : updatedFeilds)
+            if (conn.getTitle() == connectionSettings.getTitle())
+                return true;
+        return false;
+    }
+
 
     @Override
     public int getItemCount() {
         return data.size();
     }
 
-    public List<connectionSettings> getConnectionSettings() {
-        List<connectionSettings> myConnectionSettingsList = new ArrayList<>();
-        if (DetermineType() == typeOfObjectsList.SETTINGS) {
-            for (int i = 0; i < data.size(); i++)
-                myConnectionSettingsList.add((connectionSettings) data.get(i));
-            return myConnectionSettingsList;
-        }
+    public boolean haveChangesBeenMade() {
+        return (updatedFeilds.size() > 0);
+    }
 
-        return null;
+    public List<connectionSettings> getConnectionSettings() {
+        List<connectionSettings> myConnectionSettingsList = updatedFeilds;
+        Log.d("FETCH_FROM_ADAPTER", String.valueOf(myConnectionSettingsList.size()));
+        updatedFeilds = new ArrayList<>(); // Reset the list
+        return myConnectionSettingsList;
+    }
+
+    @Override
+    public boolean onItemMove(int fromPosition, int toPosition) {
+        return false;
+    }
+
+    @Override
+    public void onItemDismiss(int position) {
+        data.remove(position);
+        notifyItemRemoved(position);
     }
 
     // Possible classes that will be used with this RecyclerView

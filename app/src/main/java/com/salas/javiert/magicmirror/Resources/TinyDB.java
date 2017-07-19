@@ -43,6 +43,8 @@ import java.util.Map;
 
 public class TinyDB {
 
+    private static String DEFAULT_STRING = "";
+    private static Boolean DEFAULT_BOOLEAN = false;
     private SharedPreferences preferences;
     private String DEFAULT_APP_IMAGEDATA_DIRECTORY;
     private String lastImagePath = "";
@@ -72,6 +74,14 @@ public class TinyDB {
                 Environment.MEDIA_MOUNTED_READ_ONLY.equals(state);
     }
 
+    public static boolean isDefaultValue(String check) {
+        return check.equals(DEFAULT_STRING);
+    }
+
+    public static boolean isDefaultValue(boolean check) {
+        return check == DEFAULT_BOOLEAN;
+    }
+
     /**
      * Decodes the Bitmap from 'path' and returns it
      *
@@ -99,6 +109,8 @@ public class TinyDB {
     public String getSavedImagePath() {
         return lastImagePath;
     }
+
+    // Getters
 
     /**
      * Saves 'theBitmap' into folder 'theFolder' with the name 'theImageName'
@@ -133,8 +145,6 @@ public class TinyDB {
     public boolean putImageWithFullPath(String fullPath, Bitmap theBitmap) {
         return !(fullPath == null || theBitmap == null) && saveBitmap(fullPath, theBitmap);
     }
-
-    // Getters
 
     /**
      * Creates the path for the image with name 'imageName' in DEFAULT_APP.. directory
@@ -294,26 +304,6 @@ public class TinyDB {
         return newList;
     }
 
-    /**
-     * Get String value from SharedPreferences at 'key'. If key not found, return ""
-     *
-     * @param key SharedPreferences key
-     * @return String value at 'key' or "" (empty String) if key not found
-     */
-    public String getString(String key) {
-        return preferences.getString(key, "");
-    }
-
-    /**
-     * Get parsed ArrayList of String from SharedPreferences at 'key'
-     *
-     * @param key SharedPreferences key
-     * @return ArrayList of String
-     */
-    public ArrayList<String> getListString(String key) {
-        return new ArrayList<String>(Arrays.asList(TextUtils.split(preferences.getString(key, ""), "‚‗‚")));
-    }
-
 
 //    public ArrayList<Object> getListObject(String key, Class<?> mClass){
 //    	Gson gson = new Gson(); 
@@ -340,6 +330,26 @@ public class TinyDB {
 
 
     // Put methods
+
+    /**
+     * Get String value from SharedPreferences at 'key'. If key not found, return ""
+     *
+     * @param key SharedPreferences key
+     * @return String value at 'key' or "" (empty String) if key not found
+     */
+    public String getString(String key) {
+        return preferences.getString(key, "");
+    }
+
+    /**
+     * Get parsed ArrayList of String from SharedPreferences at 'key'
+     *
+     * @param key SharedPreferences key
+     * @return ArrayList of String
+     */
+    public ArrayList<String> getListString(String key) {
+        return new ArrayList<String>(Arrays.asList(TextUtils.split(preferences.getString(key, ""), "‚‗‚")));
+    }
 
     /**
      * Get boolean value from SharedPreferences at 'key'. If key not found, return 'defaultValue'
@@ -442,6 +452,27 @@ public class TinyDB {
     }
 
     /**
+     * Put ObJect any type into SharedPrefrences with 'key' and save
+     * @param key SharedPreferences key
+     * @param obj is the Object you want to put 
+     */
+//    public void putObject(String key, Object obj){
+//    	checkForNullKey(key);
+//    	Gson gson = new Gson(); 
+//    	putString(key, gson.toJson(obj));
+//    }
+//    
+//    public void putListObject(String key, ArrayList<Object> objArray){
+//    	checkForNullKey(key); 
+//    	Gson gson = new Gson(); 
+//    	ArrayList<String> objStrings = new ArrayList<String>();
+//    	for(Object obj : objArray){
+//    		objStrings.add(gson.toJson(obj));
+//    	}
+//    	putListString(key, objStrings);
+//    }
+
+    /**
      * Put String value into SharedPreferences with 'key' and save
      *
      * @param key   SharedPreferences key
@@ -464,27 +495,6 @@ public class TinyDB {
         String[] myStringList = stringList.toArray(new String[stringList.size()]);
         preferences.edit().putString(key, TextUtils.join("‚‗‚", myStringList)).apply();
     }
-
-    /**
-     * Put ObJect any type into SharedPrefrences with 'key' and save
-     * @param key SharedPreferences key
-     * @param obj is the Object you want to put 
-     */
-//    public void putObject(String key, Object obj){
-//    	checkForNullKey(key);
-//    	Gson gson = new Gson(); 
-//    	putString(key, gson.toJson(obj));
-//    }
-//    
-//    public void putListObject(String key, ArrayList<Object> objArray){
-//    	checkForNullKey(key); 
-//    	Gson gson = new Gson(); 
-//    	ArrayList<String> objStrings = new ArrayList<String>();
-//    	for(Object obj : objArray){
-//    		objStrings.add(gson.toJson(obj));
-//    	}
-//    	putListString(key, objStrings);
-//    }
 
     /**
      * Put boolean value into SharedPreferences with 'key' and save
@@ -596,4 +606,5 @@ public class TinyDB {
             throw new NullPointerException();
         }
     }
+
 }

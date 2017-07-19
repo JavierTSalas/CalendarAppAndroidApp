@@ -2,7 +2,7 @@
  * Copyright (c) 2017. Javier Salas
  */
 
-package com.salas.javiert.magicmirror.Objects.SingletonObjects_REMOVE_ME.myTimeSensorClasses;
+package com.salas.javiert.magicmirror.Objects.SingletonObjects.myTimeSensorClasses;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -98,7 +98,6 @@ public class loadClassList {
 
     //Returns 0 if not in class, else returns the class we are currently in
     public int intOfClassInCurrently() {
-        myList = refreshList();
         for (classTimeObject classTime : myList) {
             if (classTime.shouldSuggest())
                 return classTime.getClass_id();
@@ -107,21 +106,19 @@ public class loadClassList {
     }
 
     public List<classTimeObject> getList() {
-        refreshList();
         return myList;
     }
 
     public List<classTimeObject> getList(Context context) {
-        refreshList(context);
         return myList;
     }
 
-    public void refreshList() {
+    public void refreshListFromInternet() {
         // If we want to get the data from the internet
         myList = fetchFromInternet();
     }
 
-    public void refreshList(Context context) {
+    public void refreshListFromSharedPreferences(Context context) {
         // We need context to read SharedPreferences
         Context[] myTaskParams = {context, null, null};
         readClassListFromPreferences myTask = new readClassListFromPreferences();
@@ -158,7 +155,7 @@ public class loadClassList {
         @Override
         protected List<classTimeObject> doInBackground(Context... params) {
             Context context = params[0];
-            refreshList(context);
+            refreshListFromSharedPreferences(context);
             return null;
         }
 

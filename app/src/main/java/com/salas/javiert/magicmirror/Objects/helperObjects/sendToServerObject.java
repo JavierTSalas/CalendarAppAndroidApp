@@ -12,8 +12,8 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.loopj.android.http.TextHttpResponseHandler;
-import com.salas.javiert.magicmirror.Objects.SingletonObjects_REMOVE_ME.myQueueClasses.myQueueItem;
-import com.salas.javiert.magicmirror.Objects.SingletonObjects_REMOVE_ME.myQueueClasses.myQueueTask;
+import com.salas.javiert.magicmirror.Objects.SingletonObjects.myQueueClasses.myQueueItem;
+import com.salas.javiert.magicmirror.Objects.SingletonObjects.myQueueClasses.myQueueTask;
 import com.salas.javiert.magicmirror.Resources.DatabaseRestClient;
 
 import org.json.JSONException;
@@ -177,7 +177,7 @@ public class sendToServerObject {
 
         @Override
         protected Void doInBackground(Context... params) {
-            Log.d("Connection: ", "Attempting to connect to server...");
+            Log.d("connectionDataBaseItem: ", "Attempting to connect to server...");
             sendToServer(params[0]);
             return null;
         }

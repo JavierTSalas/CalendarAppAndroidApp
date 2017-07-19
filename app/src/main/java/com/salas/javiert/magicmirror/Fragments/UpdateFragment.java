@@ -30,8 +30,8 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.loopj.android.http.JsonHttpResponseHandler;
-import com.salas.javiert.magicmirror.Objects.SingletonObjects_REMOVE_ME.myQueueClasses.myQueue;
-import com.salas.javiert.magicmirror.Objects.SingletonObjects_REMOVE_ME.myQueueClasses.myQueueItem;
+import com.salas.javiert.magicmirror.Objects.SingletonObjects.myQueueClasses.myQueue;
+import com.salas.javiert.magicmirror.Objects.SingletonObjects.myQueueClasses.myQueueItem;
 import com.salas.javiert.magicmirror.Objects.helperObjects.assignment_class;
 import com.salas.javiert.magicmirror.Objects.helperObjects.class_class;
 import com.salas.javiert.magicmirror.R;
@@ -211,7 +211,13 @@ public class UpdateFragment extends Fragment {
 
 
                 Boolean done = (((Button) dialog.findViewById(R.id.bDone)).getText() == "DONE");
-                int weight = Integer.valueOf(((EditText) dialog.findViewById(R.id.etWeight)).getText().toString());
+                String textFromWeightFeild = ((EditText) dialog.findViewById(R.id.etWeight)).getText().toString();
+                int weight;
+                if (textFromWeightFeild.equals("")) {
+                    weight = 0;
+                } else {
+                    weight = Integer.valueOf(textFromWeightFeild);
+                }
 
 
                 myQueueItem item = null;
@@ -384,7 +390,7 @@ public class UpdateFragment extends Fragment {
                         e.printStackTrace();
                     }
                     populateClassListFromJSON();
-                    // Connection successful, writing in log for debugging purposes
+                    // connectionDataBaseItem successful, writing in log for debugging purposes
                     Log.d("Query", "Successfully loaded " + (jArray_classes.length()) + " indexes from classlist.php");
 
                 }

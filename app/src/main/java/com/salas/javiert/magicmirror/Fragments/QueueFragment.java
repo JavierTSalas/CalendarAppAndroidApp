@@ -17,8 +17,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.salas.javiert.magicmirror.Objects.SingletonObjects_REMOVE_ME.myQueueClasses.myQueue;
-import com.salas.javiert.magicmirror.Objects.SingletonObjects_REMOVE_ME.myQueueClasses.myQueueTask;
+import com.salas.javiert.magicmirror.Objects.SingletonObjects.myQueueClasses.myQueue;
+import com.salas.javiert.magicmirror.Objects.SingletonObjects.myQueueClasses.myQueueTask;
 import com.salas.javiert.magicmirror.R;
 import com.salas.javiert.magicmirror.Views.ExpandableRecyclerView.DependentViews.ExpandGroup;
 import com.salas.javiert.magicmirror.Views.ExpandableRecyclerView.myExpandRecyclerAdapter;

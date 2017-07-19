@@ -7,11 +7,9 @@ package com.salas.javiert.magicmirror.Activities;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
@@ -24,6 +22,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.salas.javiert.magicmirror.R;
+import com.salas.javiert.magicmirror.Resources.TinyDB;
 
 /**
  * Created by javi6 on 7/2/2017.
@@ -71,11 +70,13 @@ public class WelcomeScreen extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        TinyDB preferences = new TinyDB(getApplicationContext());
         // If this isn't the first time running
-        if (preferences.getBoolean("FirstTimeRunning", false) == true) {
-            Intent MainActivityInterent = new Intent(WelcomeScreen.this, MainActivity.class);
-            startActivity(MainActivityInterent);
+        if (preferences.getBoolean("WelcomeScreenHasBeenShown")) {
+            Intent MainActivityIntent = new Intent(WelcomeScreen.this, MainActivity.class);
+            startActivity(MainActivityIntent);
+        } else {
+            preferences.putBoolean("WelcomeScreenHasBeenShown", true);
         }
 
         // Code below this line will execute when it's the users first time running the app

@@ -23,11 +23,12 @@ import android.widget.Toast;
 import com.loopj.android.http.TextHttpResponseHandler;
 import com.salas.javiert.magicmirror.Fragments.AssignmentsFragment;
 import com.salas.javiert.magicmirror.Fragments.ConnectionFragment;
+import com.salas.javiert.magicmirror.Fragments.DatabaseFragment;
 import com.salas.javiert.magicmirror.Fragments.DoneCheckFragment;
 import com.salas.javiert.magicmirror.Fragments.MultiCheckActivity;
 import com.salas.javiert.magicmirror.Fragments.QueueFragment;
 import com.salas.javiert.magicmirror.Fragments.UpdateFragment;
-import com.salas.javiert.magicmirror.Objects.SingletonObjects_REMOVE_ME.myQueueClasses.myQueue;
+import com.salas.javiert.magicmirror.Objects.SingletonObjects.myQueueClasses.myQueue;
 import com.salas.javiert.magicmirror.Objects.helperObjects.assignment_class;
 import com.salas.javiert.magicmirror.R;
 import com.salas.javiert.magicmirror.Resources.DatabaseRestClient;
@@ -111,6 +112,12 @@ public class MainActivity extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(), "Check Selected", Toast.LENGTH_SHORT).show();
                         ConnectionFragment ConnectionFragment = new ConnectionFragment();
                         fragmentTransaction.replace(R.id.frame, ConnectionFragment);
+                        fragmentTransaction.commit();
+                        break;
+                    case R.id.nav_Database:
+                        Toast.makeText(getApplicationContext(), "Check Selected", Toast.LENGTH_SHORT).show();
+                        DatabaseFragment DatabaseFragment = new DatabaseFragment();
+                        fragmentTransaction.replace(R.id.frame, DatabaseFragment);
                         fragmentTransaction.commit();
                         break;
                     default:

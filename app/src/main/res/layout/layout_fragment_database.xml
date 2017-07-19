@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (c) 2017. Javier Salas
+  -->
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="ColumnID"
+            type="String"/>
+
+        <variable
+            name="TextView1Name"
+            type="String"/>
+
+        <variable
+            name="TextView2Name"
+            type="String"/>
+    </data>
+
+    <android.support.constraint.ConstraintLayout
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+
+        <TextView
+            android:id="@+id/tvActionID"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="181dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:text="@={TextView1Name}"
+            android:textAlignment="center"
+            app:layout_constraintBottom_toTopOf="@+id/Recycler"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            tools:layout_constraintBottom_creator="1"
+            tools:layout_constraintLeft_creator="1"
+            tools:layout_constraintRight_creator="1"/>
+
+        <TextView
+            android:id="@+id/tvColumnId"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="75dp"
+            android:text="@={TextView2Name}"
+            android:textAlignment="center"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:layout_constraintLeft_creator="1"
+            tools:layout_constraintRight_creator="1"
+            tools:layout_constraintTop_creator="1"/>
+
+        <EditText
+            android:id="@+id/etAction"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="74dp"
+            android:ems="10"
+            android:inputType="number"
+            android:text="@={ColumnID}"
+            app:layout_constraintLeft_toLeftOf="@+id/etColumn"
+            app:layout_constraintRight_toRightOf="@+id/etColumn"
+            app:layout_constraintTop_toBottomOf="@+id/etColumn"
+            tools:layout_constraintLeft_creator="1"
+            tools:layout_constraintRight_creator="1"
+            tools:layout_constraintTop_creator="1"/>
+
+        <EditText
+            android:id="@+id/etColumn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="25dp"
+            android:ems="10"
+            android:inputType="number"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvColumnId"
+            tools:layout_constraintLeft_creator="1"
+            tools:layout_constraintRight_creator="1"
+            tools:layout_constraintTop_creator="1"/>
+
+        <Button
+            android:id="@+id/bAction"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="76dp"
+            android:layout_marginTop="54dp"
+            android:text="SUBMIT"
+            app:layout_constraintLeft_toLeftOf="@+id/Recycler"
+            app:layout_constraintTop_toBottomOf="@+id/etAction"
+            tools:layout_constraintLeft_creator="1"
+            tools:layout_constraintTop_creator="1"/>
+
+        <Button
+            android:id="@+id/bQuery"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="77dp"
+            android:text="QUERY"
+            app:layout_constraintBottom_toTopOf="@+id/Recycler"
+            app:layout_constraintRight_toRightOf="@+id/Recycler"
+            tools:layout_constraintBottom_creator="1"
+            tools:layout_constraintRight_creator="1"/>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/Recycler"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="@+id/tvActionID"
+            app:layout_constraintRight_toRightOf="@+id/tvActionID"
+            app:layout_constraintTop_toBottomOf="@+id/bAction"
+            tools:layout_constraintBottom_creator="1"
+            tools:layout_constraintLeft_creator="1"
+            tools:layout_constraintRight_creator="1"
+            tools:layout_constraintTop_creator="1"/>
+
+    </android.support.constraint.ConstraintLayout>
+</layout>

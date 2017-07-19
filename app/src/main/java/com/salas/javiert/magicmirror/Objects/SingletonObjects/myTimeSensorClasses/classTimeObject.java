@@ -2,7 +2,7 @@
  * Copyright (c) 2017. Javier Salas
  */
 
-package com.salas.javiert.magicmirror.Objects.SingletonObjects_REMOVE_ME.myTimeSensorClasses;
+package com.salas.javiert.magicmirror.Objects.SingletonObjects.myTimeSensorClasses;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

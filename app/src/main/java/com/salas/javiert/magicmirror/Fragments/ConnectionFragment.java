@@ -4,13 +4,12 @@
 
 package com.salas.javiert.magicmirror.Fragments;
 
-import android.content.Context;
-import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
@@ -20,49 +19,42 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.loopj.android.http.TextHttpResponseHandler;
-import com.salas.javiert.magicmirror.Objects.SingletonObjects_REMOVE_ME.myConnectionSingleton.connectionSettings;
-import com.salas.javiert.magicmirror.Objects.SingletonObjects_REMOVE_ME.myConnectionSingleton.myConnectionSingleton;
+import com.salas.javiert.magicmirror.Objects.SingletonObjects.myConnectionSingleton.connectionSettings;
+import com.salas.javiert.magicmirror.Objects.SingletonObjects.myConnectionSingleton.myConnectionSingleton;
 import com.salas.javiert.magicmirror.R;
 import com.salas.javiert.magicmirror.Resources.Adapters.RecyclerAdapter;
-import com.salas.javiert.magicmirror.Resources.DatabaseRestClient;
+import com.salas.javiert.magicmirror.Resources.SwipeHelper.helper.OnStartDragListener;
+import com.salas.javiert.magicmirror.Resources.SwipeHelper.helper.SimpleItemTouchHelperCallback;
 
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
-
-import cz.msebera.android.httpclient.HttpEntity;
-import cz.msebera.android.httpclient.entity.StringEntity;
 
 /**
  * Created by javi6 on 7/2/2017.
  */
 
-public class ConnectionFragment extends Fragment {
-    final static int countOfIndex = 2;
-    public static boolean isAddressServerFeildDataFilled, isDoingWork;
-    public static int indexOfListOnScreen;
-    public static List<Integer> listOfIndexesOfData = generateEmptyListCountingTo();
-    public static List<Pair<Integer, Integer>> pairList = generateListPair();
-    ImageView ivCloud;
-    TextView tvConnectionStatus;
-    RecyclerView mRecyclerView;
-    List<connectionSettings> myConnectionSetting;
-    List<List<connectionSettings>> ListOfDataShowing = generateEmptyListsOfListconnectionSettings();
-    Boolean connectionSuccessful = false; // TODO: Save this
+public class ConnectionFragment extends Fragment implements OnStartDragListener {
+    //TODO: Make these non-static
+    final static int countOfIndex = 1; //This is zero based
+    private static int indexOfListOnScreen = 0;
+    private static List<Pair<Integer, Integer>> pairList = generateListPair();
+    private static List<Boolean> dataSetModified = generateBooleanList();
+    private List<List<connectionSettings>> dataSets = generateDataSetList(); // This is stupid but the only way I know to get this to work
+    private RecyclerView mRecyclerView;
+    private List<connectionSettings> myConnectionSetting;
+    private ItemTouchHelper mItemTouchHelper;
 
-    private static List<Integer> generateEmptyListCountingTo() {
-        List<Integer> countingList = new ArrayList<>();
-        for (int i = 0; i < countOfIndex; i++)
-            countingList.add(i);
-        return countingList;
+    private static List<Boolean> generateBooleanList() {
+        List<Boolean> myList = new ArrayList<>();
+        while (myList.size() < countOfIndex + 1)
+            myList.add(false);
+        return myList;
     }
 
     public static void swapLeft() {
+        // Wrap around
         if (indexOfListOnScreen == 0) {
             indexOfListOnScreen = countOfIndex;
         } else {
@@ -72,6 +64,7 @@ public class ConnectionFragment extends Fragment {
     }
 
     public static void swapRight() {
+        // Wrap around
         if (indexOfListOnScreen == countOfIndex) {
             indexOfListOnScreen = 0;
         } else {
@@ -84,109 +77,54 @@ public class ConnectionFragment extends Fragment {
         List<Pair<Integer, Integer>> myListOfPairs = new ArrayList<>();
         //TODO Get this from sharedPerferences or resources
         myListOfPairs.add(new Pair<Integer, Integer>(0, 2));
-        myListOfPairs.add(new Pair<Integer, Integer>(3, 7));
+        myListOfPairs.add(new Pair<Integer, Integer>(2, 4));
         return myListOfPairs;
     }
 
-    private List<List<connectionSettings>> generateEmptyListsOfListconnectionSettings() {
+    private List<List<connectionSettings>> generateDataSetList() {
         List<List<connectionSettings>> myList = new ArrayList<>();
-        for (int i = 0; i < indexOfListOnScreen; i++)
-            myList.add(new ArrayList<connectionSettings>());
-
+        List<connectionSettings> myListCeption = new ArrayList<>();
+        while (myList.size() < countOfIndex + 1)
+            myList.add(myListCeption);
         return myList;
-    }
-
-    public String getPingURL() {
-        final String pingURL = "outputtodo.php"; //TODO: This
-        return pingURL;
     }
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.layout_fragment_connection, container, false);
-        mRecyclerView = (RecyclerView) view.findViewById(R.id.settingsRecyclerView);
-        myConnectionSetting = initData(pairList.get(indexOfListOnScreen)); // Load from sharedPreferences
-        RecyclerAdapter mAdpater = new RecyclerAdapter(view.getContext(), myConnectionSetting);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
-        mRecyclerView.setAdapter(mAdpater);
-
-        final SwipeDetector swipeDetector = new SwipeDetector();
-        final swapRecyclerLists swapRecyclerViewsTask = new swapRecyclerLists();
-
-        RecyclerView.OnItemTouchListener listener = new RecyclerView.OnItemTouchListener() {
-            @Override
-            public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
-                return false;
-            }
-
-            @Override
-            public void onTouchEvent(RecyclerView rv, MotionEvent e) {
-
-                if (swipeDetector.swipeDetected()) {
-
-                    Log.d("swapRecyclerLists", "ACTION PRESSED");
-                    // The mess around the task prevents more than one task running
-                    switch (swipeDetector.getAction()) {
-
-
-                        case LR: {
-                            if (swapRecyclerViewsTask.getStatus() == AsyncTask.Status.FINISHED) {
-                                // My AsyncTask is done and onPostExecute was called
-                                Integer[] myTaskInts = {0, null, null};
-                                swapRecyclerViewsTask.execute(myTaskInts);
-                            } else if (swapRecyclerViewsTask.getStatus() == AsyncTask.Status.PENDING) {
-                                swapRecyclerViewsTask.execute();
-                            } else {
-                                Log.d("swapRecyclerLists", "Preventing another task running");
-
-                            }
-                        }
-                        break;
-
-                        case RL: {
-                            {
-                                if (swapRecyclerViewsTask.getStatus() == AsyncTask.Status.FINISHED) {
-                                    // My AsyncTask is done and onPostExecute was called
-                                    Integer[] myTaskInts = {1, null, null};
-                                    swapRecyclerViewsTask.execute(myTaskInts);
-                                } else if (swapRecyclerViewsTask.getStatus() == AsyncTask.Status.PENDING) {
-                                    swapRecyclerViewsTask.execute();
-                                } else {
-                                    Log.d("swapRecyclerLists", "Preventing another task running");
-
-                                }
-                            }
-                            break;
-                        }
-                    }
-                }
-            }
-
-            @Override
-            public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
-
-            }
-
-        };
-
-
-        mRecyclerView.setOnTouchListener(swipeDetector);
-        mRecyclerView.addOnItemTouchListener(listener);
-        mRecyclerView.setHasFixedSize(true);
 
         //Required for adding buttons to the ToolBar
         setHasOptionsMenu(true);
 
-        // The 'status'
-        tvConnectionStatus = (TextView) view.findViewById(R.id.tvConnectedToServer);
+        myConnectionSetting = initData(pairList.get(indexOfListOnScreen)); // Load from sharedPreferences
+        RecyclerAdapter mAdpater = new RecyclerAdapter(view.getContext(), myConnectionSetting, this);
+        mRecyclerView = (RecyclerView) view.findViewById(R.id.settingsRecyclerView);
 
-        // The image view
-        ivCloud = (ImageView) view.findViewById(R.id.ivConnection);
-        ivCloud.setOnClickListener(new View.OnClickListener() {
+
+        mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mRecyclerView.setAdapter(mAdpater);
+
+        ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(mAdpater) {
             @Override
-            public void onClick(View v) {
-                // tryConnection(getContext());
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int i) {
+                //super.onSwiped(viewHolder, i);
+                Log.d("SWIPE", String.valueOf(i));
+                Integer[] myTaskParams = {i, null, null};
+                swapRecyclerLists myTask = new swapRecyclerLists();
+                myTask.execute(myTaskParams);
+
+                // I don't know why these magic numbers work
+                // I just swiped the screen a lot and these were the values I found
+                if (i == 32)
+                    Log.d("SWIPE", "Left to right");
+                if (i == 16)
+                    Log.d("SWIPE", "Right to left");
+
             }
-        });
+        };
+
+        mItemTouchHelper = new ItemTouchHelper(callback);
+        mItemTouchHelper.attachToRecyclerView(mRecyclerView);
 
         return view;
     }
@@ -204,12 +142,14 @@ public class ConnectionFragment extends Fragment {
             case R.id.action_connection_load:
                 Toast.makeText(this.getContext(), "Action readFromSharedPerferences selected", Toast.LENGTH_SHORT)
                         .show();
-                reloadRecyclerView();
+                refreshContentsOfRecyclerView();
                 break;
             case R.id.action_connection_save:
                 Toast.makeText(this.getContext(), "Action save selected", Toast.LENGTH_SHORT)
                         .show();
-                saveFromRecyclerView();
+
+                RecyclerAdapter mAdapter = (RecyclerAdapter) mRecyclerView.getAdapter();
+                saveFromRecyclerView(mAdapter.haveChangesBeenMade());
                 break;
 
             default:
@@ -219,12 +159,18 @@ public class ConnectionFragment extends Fragment {
         return true;
     }
 
-    private void saveFromRecyclerView() {
-        myConnectionSingleton.getInstance().saveToPrefences(getContext(), ((RecyclerAdapter) mRecyclerView.getAdapter()).getConnectionSettings());
+    private void saveFromRecyclerView(boolean nullifyIndex) {
+        List<connectionSettings> updatedItems = ((RecyclerAdapter) mRecyclerView.getAdapter()).getConnectionSettings();
+        if (nullifyIndex) {
+            dataSetModified.set(indexOfListOnScreen, true);
+            dataSets.set(indexOfListOnScreen, new ArrayList<connectionSettings>());
+        }
+        myConnectionSingleton.getInstance().saveToPrefences(getContext(), updatedItems);
     }
 
     // Fetch the data from SharedPreferences and reset the adapter
-    private void reloadRecyclerView() {
+    // Use this when dataset is the same
+    private void refreshContentsOfRecyclerView() {
 
         List<connectionSettings> myTempList = initData(pairList.get(indexOfListOnScreen));
 
@@ -234,11 +180,32 @@ public class ConnectionFragment extends Fragment {
             mRecyclerView.getAdapter().notifyItemChanged(index);
             Log.d("Redrawing", "Child number " + String.valueOf(index));
         }
+        Toast.makeText(getActivity(), "Reloading RecyclerView Content with old content",
+                Toast.LENGTH_LONG).show();
+
+    }
+
+    // Fetch the data from SharedPreferences and reset the adapter
+    // Use this when dataset was changed and needs to be reset
+    private void redrawRecyclerView() {
+
+        List<connectionSettings> myTempList = initData(pairList.get(indexOfListOnScreen));
+        RecyclerAdapter mAdapter = new RecyclerAdapter(getContext(), myTempList, this);
+        mRecyclerView.swapAdapter(mAdapter, false);
+
+        // Get a list of indexes that need updating, only update those since we want the others to stay the same
+        for (int index = 0; index < myTempList.size(); index++) {
+            mRecyclerView.getAdapter().notifyItemChanged(index);
+            Log.d("Redrawing", "Child number " + String.valueOf(index));
+        }
+        Toast.makeText(getActivity(), "Reloading RecyclerView Content with new content , number:" + indexOfListOnScreen,
+                Toast.LENGTH_LONG).show();
 
     }
 
     private List<Integer> compareListsForChanges(List<connectionSettings> myConnectionSetting, List<connectionSettings> myTempList) {
         List<Integer> indexDifferent = new ArrayList<>();
+        Log.d("CompareList", "Comparing list of size:" + myConnectionSetting.size() + " and " + myTempList.size());
         for (int i = 0; i < myConnectionSetting.size(); i++)
             if (!myConnectionSetting.get(i).isSameAs(myTempList.get(i)))
                 indexDifferent.add(i);
@@ -247,51 +214,13 @@ public class ConnectionFragment extends Fragment {
 
     // Fetches the data from the preferences if there is none, then create default
     private List<connectionSettings> initData(Pair<Integer, Integer> myPair) {
-
-
         return myConnectionSingleton.getInstance().loadFromPreferences(getContext(), myPair);
     }
 
-    // If true set tvConnectionStatus to green else set to red
-    private void updateConnectionStatus() {
-        if (connectionSuccessful) {
-            tvConnectionStatus.setTextColor(Color.GREEN);
-        } else {
-            tvConnectionStatus.setTextColor(Color.RED);
-        }
-    }
 
-    private void tryConnection(Context context) {
-        Context[] myTaskParams = {context, null, null};
-        //This has do be done in a AsyncTask as to not block the main thread.
-        pingTask myTask = new pingTask();
-        myTask.execute(myTaskParams);
-        // WHEN THE TASKS FINISHES
-    }
+    @Override
+    public void onStartDrag(RecyclerView.ViewHolder viewHolder) {
 
-    private void pingFunction(Context context) throws UnsupportedEncodingException {
-        //Define our response handler
-        TextHttpResponseHandler response = new TextHttpResponseHandler() {
-            @Override
-            public void onFailure(int statusCode, cz.msebera.android.httpclient.Header[] headers, String responseString, Throwable throwable) {
-                connectionSuccessful = false;
-                Log.d("ConnectionTest", connectionSuccessful.toString());
-            }
-
-            @Override
-            public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, String responseString) {
-                connectionSuccessful = true;
-                Log.d("ConnectionTest", connectionSuccessful.toString());
-            }
-        };
-        DatabaseRestClient.post(context, getPingURL(), createPingEntity(), "application/x-www-form-urlencoded", response);
-    }
-
-    private HttpEntity createPingEntity() throws UnsupportedEncodingException {
-        StringEntity myEntitiy = new StringEntity("");
-        myEntitiy.setContentEncoding("UTF-8");
-        myEntitiy.setContentType("application/json");
-        return myEntitiy;
     }
 
     // TODO: Make this non-static, but there's only one instance of it so it every running so it shouldn't matter
@@ -370,39 +299,43 @@ public class ConnectionFragment extends Fragment {
         }
     }
 
-    private class pingTask extends AsyncTask<Context, Void, Void> {
-
-        //TODO:Loading
+    private class swapRecyclerLists extends AsyncTask<Integer, Void, Void> {
 
         @Override
-        protected Void doInBackground(Context... params) {
-            try {
-                pingFunction(params[0]);
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
+        protected void onPreExecute() {
+            super.onPreExecute();
+            RecyclerAdapter mAdapter = (RecyclerAdapter) mRecyclerView.getAdapter();
+            saveFromRecyclerView(mAdapter.haveChangesBeenMade());
+
+        }
+
+        @Override
+        protected Void doInBackground(Integer... params) {
+
+            // Set the indexOfListOnScreen
+            if (params[0].equals(16))
+                swapLeft();
+            if (params[0].equals(32))
+                swapRight();
+
+            // Try to get the data if we have it already loaded
+            if (dataSets.get(indexOfListOnScreen).size() > 0) {
+                myConnectionSetting = dataSets.get(indexOfListOnScreen);
+            } else {
+                // Reset the list of the data so we can fill it
+                myConnectionSetting = new ArrayList<>(initData(pairList.get(indexOfListOnScreen)));
+                dataSets.set(indexOfListOnScreen, myConnectionSetting);
+                Log.d("SwapTask", "Index in dataSets not found, fetching list form SharedPreferences and adding it to dataSets");
             }
+            Log.d("SwapTask", "Swapping lists");
             return null;
         }
 
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            updateConnectionStatus();
-        }
-    }
-
-    private class swapRecyclerLists extends AsyncTask<Integer, Void, Void> {
-
-        @Override
-        protected Void doInBackground(Integer... params) {
-            if (params[0].equals(0))
-                swapLeft();
-            if (params[0].equals(1))
-                swapRight();
-            myConnectionSetting = initData(pairList.get(indexOfListOnScreen));
-            reloadRecyclerView();
-            Log.d("SwapTask", "Swapping lists");
-            return null;
+            Log.d("SwapTask", "Redrawing RecyclerView");
+            redrawRecyclerView();
         }
     }
 }

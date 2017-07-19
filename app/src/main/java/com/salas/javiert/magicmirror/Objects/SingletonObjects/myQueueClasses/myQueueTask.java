@@ -1,4 +1,4 @@
-package com.salas.javiert.magicmirror.Objects.SingletonObjects_REMOVE_ME.myQueueClasses;
+package com.salas.javiert.magicmirror.Objects.SingletonObjects.myQueueClasses;
 
 import android.util.Log;
 

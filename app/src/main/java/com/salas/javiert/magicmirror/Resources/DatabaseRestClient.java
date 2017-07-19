@@ -12,7 +12,7 @@ import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.ResponseHandlerInterface;
 import com.loopj.android.http.SyncHttpClient;
-import com.salas.javiert.magicmirror.Objects.SingletonObjects_REMOVE_ME.myConnectionSingleton.myConnectionSingleton;
+import com.salas.javiert.magicmirror.Objects.SingletonObjects.myConnectionSingleton.myConnectionSingleton;
 
 import cz.msebera.android.httpclient.HttpEntity;
 
@@ -25,8 +25,8 @@ public class DatabaseRestClient {
 
     private static final String TAG = "DATEBASE CONNECTION ";
     //TODO: Get this form myConnectionSingleton
-    //private static final String BASE_URL = "http://192.168.56.1/learning/";
-    private static String BASE_URL = "http://10.0.0.21/learning/";
+    private static final String BASE_URL = "http://192.168.56.1/learning/";
+    //private static String BASE_URL = "http://10.0.0.21/learning/";
     private static AsyncHttpClient client = new SyncHttpClient();
 
     public static void get(String url, RequestParams params, JsonHttpResponseHandler responseHandler) {
@@ -34,7 +34,7 @@ public class DatabaseRestClient {
         try {
             client.get(getAbsoluteUrl(url), params, responseHandler);
         } catch (Exception e) {
-            Log.d("DatabaseClient", "Connection failed. See DatabaseRestClient e:" + e.toString());
+            Log.d("DatabaseClient", "connectionDataBaseItem failed. See DatabaseRestClient e:" + e.toString());
         }
     }
 
@@ -44,8 +44,8 @@ public class DatabaseRestClient {
     }
 
     private static String getAbsoluteUrl(String relativeUrl, Context context) {
-        myConnectionSingleton.getInstance().loadURLToPreference(context);
-        BASE_URL = myConnectionSingleton.getInstance().getURL();
+        myConnectionSingleton.getInstance().updateUrlFromPreferences(context);
+        // BASE_URL = myConnectionSingleton.getInstance().getURL();
         return BASE_URL + relativeUrl;
 
     }
