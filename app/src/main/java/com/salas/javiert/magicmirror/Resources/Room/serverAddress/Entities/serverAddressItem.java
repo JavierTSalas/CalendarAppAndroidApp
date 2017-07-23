@@ -2,7 +2,7 @@
  * Copyright (c) 2017. Javier Salas
  */
 
-package com.salas.javiert.magicmirror.Resources.Room.connection.Entities;
+package com.salas.javiert.magicmirror.Resources.Room.serverAddress.Entities;
 
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
@@ -14,7 +14,7 @@ import com.salas.javiert.magicmirror.Objects.SingletonObjects.myConnectionSingle
  */
 
 @Entity(tableName = "connection")
-public class connectionDataBaseItem {
+public class serverAddressItem {
     @PrimaryKey
     private int id;
     private String name;
@@ -22,7 +22,7 @@ public class connectionDataBaseItem {
     private Boolean connectionSuccessful;
     private Boolean lockStatus;
 
-    public connectionDataBaseItem(int id, String name, String subtitle, Boolean connectionSuccessful, Boolean lockStatus) {
+    public serverAddressItem(int id, String name, String subtitle, Boolean connectionSuccessful, Boolean lockStatus) {
         this.id = id;
         this.name = name;
         this.subtitle = subtitle;
@@ -30,7 +30,7 @@ public class connectionDataBaseItem {
         this.lockStatus = lockStatus;
     }
 
-    public connectionDataBaseItem(connectionSettings connSettings) {
+    public serverAddressItem(connectionSettings connSettings) {
         this.id = connSettings.getId();
         this.name = connSettings.getTitle();
         this.subtitle = connSettings.getSubtext();
@@ -38,7 +38,7 @@ public class connectionDataBaseItem {
         this.lockStatus = connSettings.getisLocked();
     }
 
-    public connectionDataBaseItem(Integer index) {
+    public serverAddressItem(Integer index) {
         this.id = index;
     }
 

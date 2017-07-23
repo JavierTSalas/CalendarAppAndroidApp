@@ -2,7 +2,7 @@
  * Copyright (c) 2017. Javier Salas
  */
 
-package com.salas.javiert.magicmirror.Resources.Room;
+package com.salas.javiert.magicmirror.Resources.Room.serverAddress;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
@@ -14,29 +14,27 @@ import android.util.Log;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static com.salas.javiert.magicmirror.Resources.Room.ConnectionDatabase.DATABASE_NAME;
-
 /**
- * Creates the {@link ConnectionDatabase} asynchronously, exposing a LiveData object to notify of creation.
+ * Creates the {@link serverAddressDatabase} asynchronously, exposing a LiveData object to notify of creation.
  */
-public class DatabaseCreator {
+public class serverAddressDatabaseCreator {
 
     // For Singleton instantiation
     private static final Object LOCK = new Object();
-    private static DatabaseCreator sInstance;
+    private static serverAddressDatabaseCreator sInstance;
     private final MutableLiveData<Boolean> mIsDatabaseCreated = new MutableLiveData<>();
     private final AtomicBoolean mInitializing = new AtomicBoolean(true);
-    private ConnectionDatabase mDb;
+    private serverAddressDatabase mDb;
 
-    private DatabaseCreator() {
+    private serverAddressDatabaseCreator() {
         mIsDatabaseCreated.setValue(false);
     }
 
-    public synchronized static DatabaseCreator getInstance(Context context) {
+    public synchronized static serverAddressDatabaseCreator getInstance(Context context) {
         if (sInstance == null) {
             synchronized (LOCK) {
                 if (sInstance == null) {
-                    sInstance = new DatabaseCreator();
+                    sInstance = new serverAddressDatabaseCreator();
                 }
             }
         }
@@ -51,7 +49,7 @@ public class DatabaseCreator {
     }
 
     @Nullable
-    public ConnectionDatabase getDatabase() {
+    public serverAddressDatabase getDatabase() {
         return mDb;
     }
 
@@ -62,33 +60,33 @@ public class DatabaseCreator {
      */
     public void createDb(Context context) {
 
-        Log.d("DatabaseCreator", "Creating DB from " + Thread.currentThread().getName());
+        Log.d("serverAddressDBCreator", "Creating DB from " + Thread.currentThread().getName());
 
         if (!mInitializing.compareAndSet(true, false)) {
             return; // Already initializing
         }
 
         // If there is no database then make one
-        if (mIsDatabaseCreated.getValue() == false) ;
+        if (mIsDatabaseCreated.getValue() == false)
         new AsyncTask<Context, Void, Void>() {
 
             @Override
             protected Void doInBackground(Context... params) {
-                Log.d("DatabaseCreator",
+                Log.d("serverAddressDBCreator",
                         "Starting bg job " + Thread.currentThread().getName());
 
                 Context context = params[0].getApplicationContext();
 
                 // Reset the database to have new data on every run.
-                context.deleteDatabase(DATABASE_NAME);
+                // context.deleteDatabase(serverAddressDatabase.DATABASE_NAME);
 
                 // Build the database!
-                ConnectionDatabase db = Room.databaseBuilder(context.getApplicationContext(),
-                        ConnectionDatabase.class, DATABASE_NAME).build();
+                serverAddressDatabase db = Room.databaseBuilder(context.getApplicationContext(),
+                        serverAddressDatabase.class, serverAddressDatabase.DATABASE_NAME).build();
 
                 // Add some data to the database
-                DatabaseInitUtil.initializeDb(db, context);
-                Log.d("DatabaseCreator",
+                serverAddressDatabaseInitUtil.initializeDb(db, context);
+                Log.d("serverAddressDBCreator",
                         "DB was populated in thread " + Thread.currentThread().getName());
 
                 mDb = db;

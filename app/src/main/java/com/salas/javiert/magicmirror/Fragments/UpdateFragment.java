@@ -390,7 +390,7 @@ public class UpdateFragment extends Fragment {
                         e.printStackTrace();
                     }
                     populateClassListFromJSON();
-                    // connectionDataBaseItem successful, writing in log for debugging purposes
+                    // serverAddressItem successful, writing in log for debugging purposes
                     Log.d("Query", "Successfully loaded " + (jArray_classes.length()) + " indexes from classlist.php");
 
                 }

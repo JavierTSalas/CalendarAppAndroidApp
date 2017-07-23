@@ -2,24 +2,37 @@
  * Copyright (c) 2017. Javier Salas
  */
 
-package com.salas.javiert.magicmirror.Views.LiveDataTest;
+package com.salas.javiert.magicmirror.Views.DataBindingTest.DatabaseFragment.Fragment;
 
 import android.databinding.BaseObservable;
 import android.databinding.Bindable;
 
-import com.android.databinding.library.baseAdapters.BR;
+import com.salas.javiert.magicmirror.BR;
 
 /**
  * Created by javi6 on 7/19/2017.
  */
 
-public class DatabaseData extends BaseObservable {
+public class fragmentDataBindingObject extends BaseObservable {
     private String ColumnID, TextView1, TextView2;
+    private Boolean isLoading;
 
-    public DatabaseData(String columnID, String textView1, String textView2) {
+    public fragmentDataBindingObject(String columnID, String textView1, String textView2, Boolean loading) {
         ColumnID = columnID;
         TextView1 = textView1;
         TextView2 = textView2;
+        isLoading = loading;
+
+    }
+
+    @Bindable
+    public Boolean getIsLoading() {
+        return isLoading;
+    }
+
+    public void setIsLoading(Boolean isLoading) {
+        this.isLoading = isLoading;
+        notifyPropertyChanged(BR.isLoading);
     }
 
     @Bindable
@@ -29,7 +42,7 @@ public class DatabaseData extends BaseObservable {
 
     public void setTextView1(String s) {
         this.ColumnID = s;
-        notifyPropertyChanged(BR.TextView1Name);
+        notifyPropertyChanged(BR.textView1);
     }
 
     @Bindable
@@ -39,7 +52,7 @@ public class DatabaseData extends BaseObservable {
 
     public void setTextView2(String s) {
         this.ColumnID = s;
-        notifyPropertyChanged(BR.TextView2Name);
+        notifyPropertyChanged(BR.textView2);
     }
 
     @Bindable
@@ -50,6 +63,6 @@ public class DatabaseData extends BaseObservable {
 
     public void setColumnID(String s) {
         this.ColumnID = s;
-        notifyPropertyChanged(BR.ColumnID);
+        notifyPropertyChanged(BR.columnId);
     }
 }

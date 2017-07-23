@@ -5,8 +5,6 @@
 package com.salas.javiert.magicmirror.Fragments;
 
 import android.arch.lifecycle.LifecycleFragment;
-import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.ViewModelProviders;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -15,14 +13,13 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
 
 import com.salas.javiert.magicmirror.R;
-import com.salas.javiert.magicmirror.Resources.Room.DatabaseCreator;
-import com.salas.javiert.magicmirror.Resources.Room.connection.Entities.connectionDataBaseItem;
-import com.salas.javiert.magicmirror.Views.LiveDataTest.ConnectionListViewModel;
-import com.salas.javiert.magicmirror.Views.LiveDataTest.LiveDataAdapter;
+import com.salas.javiert.magicmirror.Resources.Room.serverAddress.Entities.serverAddressItem;
+import com.salas.javiert.magicmirror.Resources.Room.serverAddress.serverAddressDatabase;
+import com.salas.javiert.magicmirror.Resources.Room.serverAddress.serverAddressDatabaseCreator;
+import com.salas.javiert.magicmirror.Views.DataBindingTest.DatabaseFragment.Fragment.ConnectionListViewModel;
+import com.salas.javiert.magicmirror.Views.DataBindingTest.DatabaseFragment.Fragment.RecyclerViewClasses.dataBindingAdapter;
 import com.salas.javiert.magicmirror.databinding.LayoutFragmentDatabaseBinding;
 
 import java.util.ArrayList;
@@ -33,15 +30,11 @@ import java.util.List;
  */
 
 public class DatabaseFragment extends LifecycleFragment {
-    public static int COLUMN;
-    EditText etAction, etColumn;
-    Button bAction, bQuery;
-
 
     private LayoutFragmentDatabaseBinding mBinding;
 
     private ConnectionListViewModel model;
-    private LiveDataAdapter mAdapter;
+    private dataBindingAdapter mAdapter;
     private RecyclerView mRecycler;
 
 
@@ -55,26 +48,23 @@ public class DatabaseFragment extends LifecycleFragment {
 
         configDataBind(mBinding);
 
-        etAction = (EditText) view.findViewById(R.id.etAction);
-        etColumn = (EditText) view.findViewById(R.id.etColumn);
-        bAction = (Button) view.findViewById(R.id.bAction);
-        bAction.setOnClickListener(new View.OnClickListener() {
+        mBinding.bAction.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                clearList();
             }
 
 
         });
-        bQuery = (Button) view.findViewById(R.id.bQuery);
-        bQuery.setOnClickListener(new View.OnClickListener() {
+        mBinding.bQuery.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 queryAction();
             }
         });
 
-        mRecycler = (RecyclerView) view.findViewById(R.id.Recycler);
-        mAdapter = new LiveDataAdapter(new ArrayList<connectionDataBaseItem>());
+        mRecycler = mBinding.Recycler;
+        mAdapter = new dataBindingAdapter(new ArrayList<serverAddressItem>());
         mRecycler.setLayoutManager(new LinearLayoutManager(this.getContext()));
 
         mRecycler.setAdapter(mAdapter);
@@ -83,27 +73,38 @@ public class DatabaseFragment extends LifecycleFragment {
         return view;
     }
 
+    private void clearList() {
+        List<serverAddressItem> myList = new ArrayList<>();
+        mAdapter.setItems(myList);
+    }
+
     private void configDataBind(LayoutFragmentDatabaseBinding mBinding) {
         int ColumdID = 1;
         String Tv1 = "Please enter a column number";
         String Tv2 = "Please enter a action number";
+        String b1 = "SAVE";
+        String b2 = "QUERY";
 
 
         mBinding.setColumnID(String.valueOf(ColumdID));
         mBinding.setTextView1Name(Tv1);
         mBinding.setTextView2Name(Tv2);
+        mBinding.setIsLoading(true);
+        mBinding.bAction.setText(b1);
+        mBinding.bQuery.setText(b2);
     }
 
     private void createDb() {
-        DatabaseCreator.getInstance(getContext()).createDb(getContext());
+        final serverAddressDatabaseCreator serverAddressDatabaseCreator = com.salas.javiert.magicmirror.Resources.Room.serverAddress.serverAddressDatabaseCreator.getInstance(getContext());
+        if (serverAddressDatabaseCreator.isDatabaseCreated().getValue() == false)
+            serverAddressDatabaseCreator.createDb(getContext());
+        serverAddressDatabaseCreator.createDb(getContext());
     }
 
     private void queryAction() {
-        final DatabaseCreator databaseCreator = DatabaseCreator.getInstance(this.getContext());
-        int ColumnNumber = Integer.valueOf(mBinding.getColumnID());
-        if (databaseCreator.isDatabaseCreated().getValue() == false)
-            databaseCreator.createDb(getContext());
-        model.setMyLiveList(databaseCreator.getDatabase().connectionDao().getIndex(ColumnNumber));
+        final serverAddressDatabaseCreator serverAddressDatabaseCreator = com.salas.javiert.magicmirror.Resources.Room.serverAddress.serverAddressDatabaseCreator.getInstance(this.getContext());
+        serverAddressDatabase db = serverAddressDatabaseCreator.getDatabase();
+        mAdapter.setItems(db.serverAddressDao().getConnections(0, Integer.valueOf(mBinding.getColumnID())));
     }
     //Fill the string arrays from the resources, we need context to use getResources()
 
@@ -111,21 +112,30 @@ public class DatabaseFragment extends LifecycleFragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+/*
 
-        // I don't know what this does
-        // TODO:Understand this
+        // Create our factory
         ConnectionListViewModel.Factory factory = new ConnectionListViewModel.Factory(getActivity().getApplication());
+
+        // Make our viewModel
         model = ViewModelProviders.of(this, factory).get(ConnectionListViewModel.class);
 
-        model.getLiveData().observe(DatabaseFragment.this, new Observer<List<connectionDataBaseItem>>() {
+        // Observe it
+        model.getLiveData().observe(DatabaseFragment.this, new Observer<List<serverAddressItem>>() {
             @Override
-            public void onChanged(@Nullable List<connectionDataBaseItem> connectionDataBaseItems) {
-                if (connectionDataBaseItems != null)
-                    mAdapter.setItems(connectionDataBaseItems);
+            public void onChanged(@Nullable List<serverAddressItem> serverAddressItems) {
+                //
+                mBinding.setIsLoading(true);
+                try {
+                    if (serverAddressItems != null)
+                        mAdapter.setItems(serverAddressItems);
+                } finally {
+                    mBinding.setIsLoading(false);
+                }
             }
         });
 
-        createDb();
+*/
 
     }
 

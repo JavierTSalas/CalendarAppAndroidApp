@@ -5,11 +5,13 @@ android {
     buildToolsVersion "25.0.3"
     defaultConfig {
         applicationId "com.salas.javiert.magicmirror"
-        minSdkVersion 23
+        minSdkVersion 16
         targetSdkVersion 25
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        multiDexEnabled true //important
 
         javaCompileOptions {
             annotationProcessorOptions {
@@ -54,4 +56,5 @@ dependencies {
     annotationProcessor "android.arch.lifecycle:compiler:1.0.0-alpha3"
 
     testCompile 'junit:junit:4.12'
+
 }

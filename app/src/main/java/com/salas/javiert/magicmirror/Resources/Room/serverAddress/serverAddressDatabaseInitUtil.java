@@ -1,14 +1,13 @@
 /*
  * Copyright (c) 2017. Javier Salas
- * This class initializes the database if there is not one
  */
 
-package com.salas.javiert.magicmirror.Resources.Room;
+package com.salas.javiert.magicmirror.Resources.Room.serverAddress;
 
 import android.content.Context;
 
 import com.salas.javiert.magicmirror.R;
-import com.salas.javiert.magicmirror.Resources.Room.connection.Entities.connectionDataBaseItem;
+import com.salas.javiert.magicmirror.Resources.Room.serverAddress.Entities.serverAddressItem;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,7 +17,7 @@ import java.util.List;
  * Created by javi6 on 7/18/2017.
  */
 
-class DatabaseInitUtil {
+class serverAddressDatabaseInitUtil {
     private static List<String> ConnectionData;
     private static List<String> ConnectionDataDefault;
 
@@ -28,27 +27,27 @@ class DatabaseInitUtil {
         ConnectionDataDefault = Arrays.asList(context.getResources().getStringArray(R.array.connection_data_defaults));
     }
 
-    public static void initializeDb(ConnectionDatabase db, Context context) {
+    public static void initializeDb(serverAddressDatabase db, Context context) {
         setUpStringArrays(context);
-        List<connectionDataBaseItem> dataBaseItems = generateDefaultData();
+        List<serverAddressItem> dataBaseItems = generateDefaultData();
         saveToDB(db, dataBaseItems);
     }
 
-    private static void saveToDB(ConnectionDatabase db, List<connectionDataBaseItem> dataBaseItems) {
+    private static void saveToDB(serverAddressDatabase db, List<serverAddressItem> dataBaseItems) {
         db.beginTransaction();
         try {
-            db.connectionDao().insertAll(dataBaseItems);
+            db.serverAddressDao().insertAll(dataBaseItems);
             db.setTransactionSuccessful();
         } finally {
             db.endTransaction();
         }
     }
 
-    private static List<connectionDataBaseItem> generateDefaultData() {
-        List<connectionDataBaseItem> mList = new ArrayList<>();
+    private static List<serverAddressItem> generateDefaultData() {
+        List<serverAddressItem> mList = new ArrayList<>();
         for (int i = 0; i < ConnectionData.size(); i++)
             mList.add(
-                    new connectionDataBaseItem(
+                    new serverAddressItem(
                             i,
                             ConnectionData.get(i),
                             ConnectionDataDefault.get(i),

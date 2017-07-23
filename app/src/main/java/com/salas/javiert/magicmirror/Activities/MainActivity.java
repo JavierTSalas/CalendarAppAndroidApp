@@ -151,6 +151,9 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
+        // Disable drawer turning when pulling the Drawer open form the side of the screen
+        mToggle.setDrawerSlideAnimationEnabled(false);
+
 
         mDrawerLayout.addDrawerListener(mToggle);
         mToggle.syncState();

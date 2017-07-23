@@ -2,7 +2,7 @@
  * Copyright (c) 2017. Javier Salas
  */
 
-package com.salas.javiert.magicmirror.Views.LiveDataTest;
+package com.salas.javiert.magicmirror.Views.DataBindingTest.DatabaseFragment.Fragment;
 
 import android.content.Context;
 
@@ -21,7 +21,7 @@ public class DatabasePresenter implements DatabaseDataContract.Presenter {
     }
 
     @Override
-    public void onShowData(DatabaseData databaseData) {
+    public void onShowData(fragmentDataBindingObject databaseData) {
         view.showData(databaseData);
     }
 }

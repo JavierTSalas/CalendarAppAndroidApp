@@ -34,7 +34,7 @@ public class DatabaseRestClient {
         try {
             client.get(getAbsoluteUrl(url), params, responseHandler);
         } catch (Exception e) {
-            Log.d("DatabaseClient", "connectionDataBaseItem failed. See DatabaseRestClient e:" + e.toString());
+            Log.d("DatabaseClient", "serverAddressItem failed. See DatabaseRestClient e:" + e.toString());
         }
     }
 

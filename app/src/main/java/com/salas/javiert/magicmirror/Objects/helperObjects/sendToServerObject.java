@@ -177,7 +177,7 @@ public class sendToServerObject {
 
         @Override
         protected Void doInBackground(Context... params) {
-            Log.d("connectionDataBaseItem: ", "Attempting to connect to server...");
+            Log.d("serverAddressItem: ", "Attempting to connect to server...");
             sendToServer(params[0]);
             return null;
         }

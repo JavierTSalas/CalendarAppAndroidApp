@@ -20,7 +20,7 @@ import com.loopj.android.http.TextHttpResponseHandler;
 import com.salas.javiert.magicmirror.R;
 import com.salas.javiert.magicmirror.Resources.Adapters.RecyclerAdapter;
 import com.salas.javiert.magicmirror.Resources.DatabaseRestClient;
-import com.salas.javiert.magicmirror.Resources.Room.connection.Entities.connectionDataBaseItem;
+import com.salas.javiert.magicmirror.Resources.Room.serverAddress.Entities.serverAddressItem;
 
 import java.io.UnsupportedEncodingException;
 
@@ -49,7 +49,7 @@ public class connectionSettings {
         this.isLocked = lockStatus;
     }
 
-    public connectionSettings(connectionDataBaseItem conn) {
+    public connectionSettings(serverAddressItem conn) {
         this.title = conn.getName();
         this.subtext = conn.getSubtitle();
         this.connectionSuccessful = conn.getConnectionSuccessful();
