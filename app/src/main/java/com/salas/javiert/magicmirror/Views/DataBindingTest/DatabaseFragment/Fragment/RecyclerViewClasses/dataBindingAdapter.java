@@ -20,7 +20,7 @@ import java.util.List;
  * Created by javi6 on 7/18/2017.
  */
 
-public class dataBindingAdapter extends RecyclerView.Adapter<bindingViewHolder<serverAddressItem>> {
+public class dataBindingAdapter extends RecyclerView.Adapter<bindingViewHolder> {
 
     private List<serverAddressItem> dataBaseItemList;
 
@@ -29,14 +29,15 @@ public class dataBindingAdapter extends RecyclerView.Adapter<bindingViewHolder<s
     }
 
     @Override
-    public bindingViewHolder<serverAddressItem> onCreateViewHolder(ViewGroup parent, int viewType) {
+    public bindingViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-        View returnView = layoutInflater.inflate(R.layout.recyclerview_row_livedata, parent, false);
+        View returnView = layoutInflater.inflate(R.layout.recyclerview_row_databind, parent, false);
         return new bindingViewHolder(returnView);
     }
 
     @Override
-    public void onBindViewHolder(bindingViewHolder<serverAddressItem> holder, int position) {
+    public void onBindViewHolder(bindingViewHolder holder, int position) {
+        holder.bind(new childObserver((dataBaseItemList.get(position))));
     }
 
     @Override

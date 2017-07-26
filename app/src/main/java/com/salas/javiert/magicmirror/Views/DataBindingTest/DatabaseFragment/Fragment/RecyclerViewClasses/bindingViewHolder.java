@@ -10,13 +10,15 @@ import android.databinding.DataBindingUtil;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
+import com.salas.javiert.magicmirror.databinding.RecyclerviewRowDatabindBinding;
+
 /**
  * Created by javi6 on 7/22/2017.
  */
 
-public class bindingViewHolder<T> extends RecyclerView.ViewHolder {
+public class bindingViewHolder extends RecyclerView.ViewHolder {
 
-    private final T binding;
+    private RecyclerviewRowDatabindBinding binding;
 
     public bindingViewHolder(View itemView) {
         super(itemView);
@@ -24,7 +26,12 @@ public class bindingViewHolder<T> extends RecyclerView.ViewHolder {
     }
 
 
-    public T getBinding() {
+    public RecyclerviewRowDatabindBinding getBinding() {
         return binding;
+    }
+
+    public void bind(childObserver item) {
+        binding.setData(item);
+        binding.executePendingBindings();
     }
 }

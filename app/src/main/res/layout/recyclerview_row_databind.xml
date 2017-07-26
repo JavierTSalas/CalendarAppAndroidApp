@@ -13,7 +13,7 @@
 
         <variable
             name="data"
-            type="com.salas.javiert.magicmirror.Resources.Room.serverAddress.Entities.serverAddressItem"/>
+            type="com.salas.javiert.magicmirror.Views.DataBindingTest.DatabaseFragment.Fragment.RecyclerViewClasses.childObserver"/>
     </data>
 
     <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"

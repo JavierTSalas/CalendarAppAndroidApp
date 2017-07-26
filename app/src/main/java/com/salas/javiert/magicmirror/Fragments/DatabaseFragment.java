@@ -6,6 +6,7 @@ package com.salas.javiert.magicmirror.Fragments;
 
 import android.arch.lifecycle.LifecycleFragment;
 import android.databinding.DataBindingUtil;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
@@ -94,17 +95,37 @@ public class DatabaseFragment extends LifecycleFragment {
         mBinding.bQuery.setText(b2);
     }
 
-    private void createDb() {
-        final serverAddressDatabaseCreator serverAddressDatabaseCreator = com.salas.javiert.magicmirror.Resources.Room.serverAddress.serverAddressDatabaseCreator.getInstance(getContext());
-        if (serverAddressDatabaseCreator.isDatabaseCreated().getValue() == false)
-            serverAddressDatabaseCreator.createDb(getContext());
-        serverAddressDatabaseCreator.createDb(getContext());
-    }
-
     private void queryAction() {
         final serverAddressDatabaseCreator serverAddressDatabaseCreator = com.salas.javiert.magicmirror.Resources.Room.serverAddress.serverAddressDatabaseCreator.getInstance(this.getContext());
-        serverAddressDatabase db = serverAddressDatabaseCreator.getDatabase();
-        mAdapter.setItems(db.serverAddressDao().getConnections(0, Integer.valueOf(mBinding.getColumnID())));
+
+
+        new AsyncTask<Void, Void, Void>() {
+
+            List<serverAddressItem> fetchedList;
+
+            @Override
+            protected void onPreExecute() {
+                if (!serverAddressDatabaseCreator.isDatabaseCreated().getValue())
+                    serverAddressDatabaseCreator.createDb(getContext());
+                mBinding.setIsLoading(true);
+                super.onPreExecute();
+            }
+
+            @Override
+            protected Void doInBackground(Void... params) {
+                serverAddressDatabase db = serverAddressDatabaseCreator.getDatabase();
+                fetchedList = db.serverAddressDao().getConnections(0, Integer.valueOf(mBinding.getColumnID()));
+
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                super.onPostExecute(aVoid);
+                mAdapter.setItems(fetchedList);
+                mBinding.setIsLoading(false);
+            }
+        }.execute();
     }
     //Fill the string arrays from the resources, we need context to use getResources()
 
