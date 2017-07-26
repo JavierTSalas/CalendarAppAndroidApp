@@ -145,7 +145,7 @@
             android:layout_height="0dp"
             android:layout_marginBottom="8dp"
             android:layout_marginTop="8dp"
-            android:visibility="@{!isLoading ? View.VISIBLE : View.GONE}"
+            android:visibility="@{!isLoading ? View.VISIBLE : View.INVISIBLE}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="@+id/tvActionID"
             app:layout_constraintRight_toRightOf="@+id/tvActionID"
@@ -154,6 +154,7 @@
             tools:layout_constraintLeft_creator="1"
             tools:layout_constraintRight_creator="1"
             tools:layout_constraintTop_creator="1"/>
+        <!--TODO make this View.GONE instead of View.INVISIBLE -->
 
     </android.support.constraint.ConstraintLayout>
 </layout>
