@@ -14,6 +14,10 @@
         <variable
             name="data"
             type="com.salas.javiert.magicmirror.Views.DataBindingTest.DatabaseFragment.Fragment.RecyclerViewClasses.childObserver"/>
+
+        <variable
+            name="handler"
+            type="com.salas.javiert.magicmirror.Views.DataBindingTest.DatabaseFragment.Fragment.RecyclerViewClasses.childHandler"/>
     </data>
 
     <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -62,6 +66,7 @@
             android:layout_width="35dp"
             android:layout_height="35dp"
             android:layout_marginTop="26dp"
+            android:src="@{data.connectionSuccessful ? @drawable/icons8_checkmark_16 : @drawable/icons8_delete_16}"
             android:visibility="@{data.lockStatus ? View.VISIBLE : View.GONE}"
             app:layout_constraintHorizontal_bias="0.954"
             app:layout_constraintLeft_toLeftOf="parent"

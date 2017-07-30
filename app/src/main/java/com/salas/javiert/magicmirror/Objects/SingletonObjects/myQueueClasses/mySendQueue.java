@@ -1,5 +1,8 @@
 /*
  * Copyright (c) 2017. Javier Salas
+ * Just another instance of myQueue
+ * This probably isn't a good practice
+ * TODO: Not do this
  */
 
 package com.salas.javiert.magicmirror.Objects.SingletonObjects.myQueueClasses;

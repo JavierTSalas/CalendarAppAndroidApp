@@ -130,7 +130,7 @@ public class myExpandRecyclerAdapter extends ExpandableRecyclerViewAdapter<Title
                         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                             Log.v("item", (String) parent.getItemAtPosition(position));
                             myAssignment.class_id = position;
-                            Log.d("Set", myAssignment.class_id.toString());
+                            Log.d(titleChildViewHolder.getClass().getSimpleName(), "User has selected index: " + myAssignment.class_id.toString());
                         }
 
                         @Override
@@ -245,7 +245,7 @@ public class myExpandRecyclerAdapter extends ExpandableRecyclerViewAdapter<Title
 
                             myQueueItem item = null;
                             try {
-                                item = new myQueueItem(new assignment_class(myAssignment, ModifiedAssignment));
+                                item = new myQueueItem(ModifiedAssignment);
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }

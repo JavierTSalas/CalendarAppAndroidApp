@@ -93,6 +93,7 @@ public class myQueueItem {
     }
 
     public String toString() {
+        // Return the desired string for the type of the object
         if (myTable == TABLE.ASSIGNMENTS)
             return ((assignment_class) o).ass_name.toString();
         if (myTable == TABLE.OCCUR)

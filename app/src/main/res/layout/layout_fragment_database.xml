@@ -40,61 +40,36 @@
         <TextView
             android:id="@+id/tvActionID"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="181dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
+            android:layout_height="16dp"
+            android:layout_marginBottom="169dp"
+            android:layout_marginEnd="32dp"
+            android:layout_marginLeft="32dp"
+            android:layout_marginRight="32dp"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="8dp"
             android:text="@={TextView1Name}"
             android:textAlignment="center"
             app:layout_constraintBottom_toTopOf="@+id/Recycler"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             tools:layout_constraintBottom_creator="1"
             tools:layout_constraintLeft_creator="1"
-            tools:layout_constraintRight_creator="1"/>
-
-        <TextView
-            android:id="@+id/tvColumnId"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="75dp"
-            android:text="@={TextView2Name}"
-            android:textAlignment="center"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:layout_constraintLeft_creator="1"
             tools:layout_constraintRight_creator="1"
-            tools:layout_constraintTop_creator="1"/>
+            />
 
         <EditText
             android:id="@+id/etAction"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="74dp"
+            android:layout_marginEnd="71dp"
+            android:layout_marginRight="71dp"
+            android:layout_marginTop="36dp"
             android:ems="10"
             android:inputType="number"
             android:text="@={ColumnID}"
-            app:layout_constraintLeft_toLeftOf="@+id/etColumn"
-            app:layout_constraintRight_toRightOf="@+id/etColumn"
-            app:layout_constraintTop_toBottomOf="@+id/etColumn"
-            tools:layout_constraintLeft_creator="1"
-            tools:layout_constraintRight_creator="1"
-            tools:layout_constraintTop_creator="1"/>
-
-        <EditText
-            android:id="@+id/etColumn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="25dp"
-            android:ems="10"
-            android:inputType="number"
-            app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvColumnId"
-            tools:layout_constraintLeft_creator="1"
+            app:layout_constraintTop_toBottomOf="@+id/tvActionID"
             tools:layout_constraintRight_creator="1"
             tools:layout_constraintTop_creator="1"/>
 
@@ -102,7 +77,7 @@
             android:id="@+id/bAction"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
+            android:layout_marginLeft="76dp"
             android:layout_marginStart="76dp"
             android:layout_marginTop="43dp"
             android:text="SUBMIT"
@@ -117,7 +92,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
             android:layout_marginEnd="77dp"
-            android:layout_marginRight="8dp"
+            android:layout_marginRight="77dp"
             android:layout_marginTop="8dp"
             android:text="QUERY"
             app:layout_constraintBottom_toTopOf="@+id/Recycler"
@@ -136,7 +111,9 @@
             android:visibility="@{isLoading ? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="@+id/Recycler"
-            app:layout_constraintRight_toRightOf="@+id/Recycler"/>
+            app:layout_constraintRight_toRightOf="@+id/Recycler"
+            tools:layout_constraintLeft_creator="1"
+            tools:layout_constraintRight_creator="1"/>
         <!--We are using visibility since app:visibleGone is not supported by ProgressBar-->
 
         <android.support.v7.widget.RecyclerView

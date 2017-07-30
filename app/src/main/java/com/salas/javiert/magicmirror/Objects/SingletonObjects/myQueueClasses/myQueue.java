@@ -48,14 +48,7 @@ public class myQueue {
     public void removeQueueItem(myQueueItem item) {
         int position = findCorrectQueueTask(item);
         QueueTaskList.get(position).remove(item);
-        cleanList();
-    }
-
-    //Removes the myQueueItem from a myQueueTask
-    private void removeFromQueueTask(myQueueTask myTask, myQueueItem item) {
-        for (int index = 0; index < myTask.getMyTaskList().size(); index++) {
-
-        }
+        clearList();
     }
 
     //Returns the index of QueueTaskList that has the same enums as Item
@@ -70,6 +63,13 @@ public class myQueue {
             }
         addQueueTask(new myQueueTask(item));
         return (QueueTaskList.size() - 1); //Minus one since the size of a list is n+1 indexes
+    }
+
+    public int indexTaskListOfItem(myQueueItem item) {
+        for (myQueueTask task : QueueTaskList)
+            if (task.MatchingEnums(item))
+                return QueueTaskList.indexOf(task);
+        return 0;
     }
 
     //Not used
@@ -146,7 +146,7 @@ public class myQueue {
     }
 
     //If an myQueueTask is empty in myQueueTasList then it is deleted
-    private void cleanList() {
+    private void clearList() {
         for (int index = 0; index < QueueTaskList.size(); index++) {
             if (QueueTaskList.get(index).getMyTaskList().size() == 0)
                 QueueTaskList.remove(index);
@@ -168,32 +168,5 @@ public class myQueue {
         for (myQueueItem item : itemsToRemove)
             getInstance().removeQueueItem(item);
     }
-
-
-    /*
-
-        JSONArray Assignments = new JSONArray();
-        Assignments.put(newAssign.toJSONObject());
-
-        ^^This part is done by myQueueTask class
-
-        vv This part is done by this class vv
-
-        JSONObject ParamObject = new JSONObject();
-        ParamObject.put("Assignments", Assignments);
-
-
-        vv A loop will do this part vv
-
-
-        StringEntity myEntitiy = new StringEntity(ParamObject.toString());
-        myEntitiy.setContentEncoding("UTF-8");
-        myEntitiy.setContentType("application/json");
-
-
-        DatabaseRestClient.post(this, "input.php", myEntitiy, "application/x-www-form-urlencoded", response);
-
-
-     */
 
 }

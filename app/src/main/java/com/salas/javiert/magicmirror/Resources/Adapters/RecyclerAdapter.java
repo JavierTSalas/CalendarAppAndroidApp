@@ -100,6 +100,8 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyView
 
                     break;
                 case SETTINGS:
+
+
                     final connectionSettings connectionSettings = (connectionSettings) object_from_list;
                     holder.settings_object_title.setText(connectionSettings.getTitle());
                     holder.settings_object_subtitle.setText(connectionSettings.getSubtext());
@@ -196,17 +198,17 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyView
     }
 
     private void modifiedConnection(connectionSettings connectionSettings) {
-        // Save our changed feilds
-        if (!isNotInUpdatedFeilds(connectionSettings)) {
+        // Save our changed fields
+        if (!isNotInUpdatedFields(connectionSettings)) {
             updatedFeilds.add(connectionSettings);
             Log.d("updatedFeilds", "adding");
         } else {
-            updateUdpatedFeilds(connectionSettings);
+            updateUdpatedFields(connectionSettings);
             Log.d("updatedFeilds", "updating");
         }
     }
 
-    private void updateUdpatedFeilds(connectionSettings connectionSettings) {
+    private void updateUdpatedFields(connectionSettings connectionSettings) {
         for (int i = 0; i < updatedFeilds.size(); i++)
             if (updatedFeilds.get(i).getTitle() == connectionSettings.getTitle()) {
                 updatedFeilds.set(i, connectionSettings);
@@ -214,7 +216,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyView
             }
     }
 
-    private boolean isNotInUpdatedFeilds(connectionSettings connectionSettings) {
+    private boolean isNotInUpdatedFields(connectionSettings connectionSettings) {
         for (connectionSettings conn : updatedFeilds)
             if (conn.getTitle() == connectionSettings.getTitle())
                 return true;
