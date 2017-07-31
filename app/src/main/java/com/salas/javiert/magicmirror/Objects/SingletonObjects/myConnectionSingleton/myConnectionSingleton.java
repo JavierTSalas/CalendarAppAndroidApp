@@ -5,10 +5,14 @@
 package com.salas.javiert.magicmirror.Objects.SingletonObjects.myConnectionSingleton;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.util.Log;
 import android.util.Pair;
 
 import com.salas.javiert.magicmirror.R;
+import com.salas.javiert.magicmirror.Resources.Room.serverAddress.Entities.serverAddressItem;
+import com.salas.javiert.magicmirror.Resources.Room.serverAddress.serverAddressDatabase;
+import com.salas.javiert.magicmirror.Resources.Room.serverAddress.serverAddressDatabaseCreator;
 import com.salas.javiert.magicmirror.Resources.TinyDB;
 
 import java.util.ArrayList;
@@ -51,7 +55,7 @@ public class myConnectionSingleton {
 
     public synchronized void saveToPrefences(Context context, List<connectionSettings> dataToBeSaved) {
         if (dataToBeSaved != null && dataToBeSaved.size() > 0) {
-            // Seperate into list that we can store
+            // Separate into list that we can store
             // We don't really want to use GSON for this as we would be storing the views which is useless to us next time we launch the app
             List<String> connectionNameList = getconnectionNameList(dataToBeSaved);
             List<String> connectionSubstringList = getconnectionSubstringList(dataToBeSaved);
@@ -63,6 +67,32 @@ public class myConnectionSingleton {
             //Setup the ararys
             setUpStringArrays(context);
             saveConnectionPreferences(context, connectionNameList, connectionSubstringList, connectionStatusList, connectionSubstringLockStauts);
+        }
+    }
+
+    public void saveToRoom(Context context, List<serverAddressItem> items) {
+        serverAddressDatabaseCreator creator = serverAddressDatabaseCreator.getInstance(context);
+        final serverAddressDatabase db = creator.getDatabase();
+
+        if (items != null && items.size() > 0) {
+            new AsyncTask<List<serverAddressItem>, Void, Void>() {
+
+                serverAddressDatabase localdb;
+
+                @Override
+                protected void onPreExecute() {
+                    super.onPreExecute();
+                    localdb = db;
+                }
+
+                @Override
+                protected Void doInBackground(List<serverAddressItem>... params) {
+                    localdb.serverAddressDao().insertAll(params[0]);
+                    return null;
+                }
+
+
+            }.execute(items);
         }
     }
 

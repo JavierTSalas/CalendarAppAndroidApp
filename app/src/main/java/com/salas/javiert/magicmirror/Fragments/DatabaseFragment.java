@@ -11,15 +11,18 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.salas.javiert.magicmirror.Objects.SingletonObjects.myConnectionSingleton.connectionSettings;
+import com.salas.javiert.magicmirror.Objects.SingletonObjects.myConnectionSingleton.myConnectionSingleton;
 import com.salas.javiert.magicmirror.R;
 import com.salas.javiert.magicmirror.Resources.Room.serverAddress.Entities.serverAddressItem;
 import com.salas.javiert.magicmirror.Resources.Room.serverAddress.serverAddressDatabase;
 import com.salas.javiert.magicmirror.Resources.Room.serverAddress.serverAddressDatabaseCreator;
-import com.salas.javiert.magicmirror.Views.DataBindingTest.DatabaseFragment.Fragment.ConnectionListViewModel;
 import com.salas.javiert.magicmirror.Views.DataBindingTest.DatabaseFragment.Fragment.RecyclerViewClasses.dataBindingAdapter;
 import com.salas.javiert.magicmirror.databinding.LayoutFragmentDatabaseBinding;
 
@@ -32,12 +35,35 @@ import java.util.List;
 
 public class DatabaseFragment extends LifecycleFragment {
 
+    // Variables for swapping the RecyclerViews
+    final static int countOfIndex = 1; //This is zero based
+    private static int indexOfListOnScreen = 0;
     private LayoutFragmentDatabaseBinding mBinding;
-
-    private ConnectionListViewModel model;
     private dataBindingAdapter mAdapter;
     private RecyclerView mRecycler;
+    private List<Pair<Integer, Integer>> pairList = Generator.generateListPair();
+    private List<Boolean> dataSetModified = Generator.generateBooleanList();
+    private List<List<connectionSettings>> dataSets = Generator.generateDataSetList();
 
+    public static void swapLeft() {
+        // Wrap around
+        if (indexOfListOnScreen == 0) {
+            indexOfListOnScreen = countOfIndex;
+        } else {
+            indexOfListOnScreen--;
+        }
+
+    }
+
+    public static void swapRight() {
+        // Wrap around
+        if (indexOfListOnScreen == countOfIndex) {
+            indexOfListOnScreen = 0;
+        } else {
+            indexOfListOnScreen++;
+        }
+
+    }
 
     @Nullable
     @Override
@@ -78,6 +104,7 @@ public class DatabaseFragment extends LifecycleFragment {
         List<serverAddressItem> myList = new ArrayList<>();
         mAdapter.setItems(myList);
     }
+    //Fill the string arrays from the resources, we need context to use getResources()
 
     private void configDataBind(LayoutFragmentDatabaseBinding mBinding) {
         int ColumdID = 1;
@@ -97,7 +124,6 @@ public class DatabaseFragment extends LifecycleFragment {
 
     private void queryAction() {
         final serverAddressDatabaseCreator serverAddressDatabaseCreator = com.salas.javiert.magicmirror.Resources.Room.serverAddress.serverAddressDatabaseCreator.getInstance(this.getContext());
-
 
         new AsyncTask<Void, Void, Void>() {
 
@@ -126,39 +152,64 @@ public class DatabaseFragment extends LifecycleFragment {
                 mBinding.setIsLoading(false);
             }
         }.execute();
+
+
     }
-    //Fill the string arrays from the resources, we need context to use getResources()
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-/*
+    }
 
-        // Create our factory
-        ConnectionListViewModel.Factory factory = new ConnectionListViewModel.Factory(getActivity().getApplication());
+    // Fetches the data from room if there is none, then create default (this is done elsewhere but I thought it should be mentioned)
+    private List<connectionSettings> initData(Pair<Integer, Integer> myPair) {
+        return myConnectionSingleton.getInstance().loadFromPreferences(getContext(), myPair);
+    }
 
-        // Make our viewModel
-        model = ViewModelProviders.of(this, factory).get(ConnectionListViewModel.class);
+    private List<Integer> compareListsForChanges(List<connectionSettings> myConnectionSetting, List<connectionSettings> myTempList) {
+        List<Integer> indexDifferent = new ArrayList<>();
+        Log.d("CompareList", "Comparing list of size:" + myConnectionSetting.size() + " and " + myTempList.size());
+        for (int i = 0; i < myConnectionSetting.size(); i++)
+            if (!myConnectionSetting.get(i).isSameAs(myTempList.get(i)))
+                indexDifferent.add(i);
+        return indexDifferent;
+    }
 
-        // Observe it
-        model.getLiveData().observe(DatabaseFragment.this, new Observer<List<serverAddressItem>>() {
-            @Override
-            public void onChanged(@Nullable List<serverAddressItem> serverAddressItems) {
-                //
-                mBinding.setIsLoading(true);
-                try {
-                    if (serverAddressItems != null)
-                        mAdapter.setItems(serverAddressItems);
-                } finally {
-                    mBinding.setIsLoading(false);
-                }
-            }
-        });
+    private void saveFromRecyclerView(boolean createNewArrayAtIndex) {
+        List<serverAddressItem> updatedItems = mAdapter.getConnectionSettings();
+        if (createNewArrayAtIndex) {
+            dataSetModified.set(indexOfListOnScreen, true);
+            dataSets.set(indexOfListOnScreen, new ArrayList<connectionSettings>());
+        }
 
-*/
 
+        myConnectionSingleton.getInstance().saveToRoom(getContext(), updatedItems);
     }
 
 
+    protected static class Generator {
+        private static List<Pair<Integer, Integer>> generateListPair() {
+            List<Pair<Integer, Integer>> myListOfPairs = new ArrayList<>();
+            //TODO Get this from sharedPerferences or resources
+            myListOfPairs.add(new Pair<Integer, Integer>(0, 2));
+            myListOfPairs.add(new Pair<Integer, Integer>(2, 4));
+            return myListOfPairs;
+        }
+
+        private static List<List<connectionSettings>> generateDataSetList() {
+            List<List<connectionSettings>> myList = new ArrayList<>();
+            List<connectionSettings> myListCeption = new ArrayList<>();
+            while (myList.size() < countOfIndex + 1)
+                myList.add(myListCeption);
+            return myList;
+        }
+
+        private static List<Boolean> generateBooleanList() {
+            List<Boolean> myList = new ArrayList<>();
+            while (myList.size() < countOfIndex + 1)
+                myList.add(false);
+            return myList;
+        }
+    }
 }

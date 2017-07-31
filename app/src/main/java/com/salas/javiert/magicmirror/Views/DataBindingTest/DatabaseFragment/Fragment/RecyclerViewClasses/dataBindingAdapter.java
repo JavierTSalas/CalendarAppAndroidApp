@@ -166,7 +166,6 @@ public class dataBindingAdapter extends RecyclerView.Adapter<bindingViewHolder> 
         Log.d("dataBindingAdapter", "Changing data");
     }
 
-
     private void modifiedConnection(childObserver child) {
         // Save our changed fields
         if (!isNotInUpdatedFeilds(child)) {
@@ -193,4 +192,7 @@ public class dataBindingAdapter extends RecyclerView.Adapter<bindingViewHolder> 
         return false;
     }
 
+    public List<serverAddressItem> getConnectionSettings() {
+        return dataBaseItemList;
+    }
 }
