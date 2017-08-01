@@ -22,7 +22,6 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.salas.javiert.magicmirror.Objects.SingletonObjects.myConnectionSingleton.connectionSettings;
-import com.salas.javiert.magicmirror.Objects.SingletonObjects.myConnectionSingleton.myConnectionSingleton;
 import com.salas.javiert.magicmirror.R;
 import com.salas.javiert.magicmirror.Resources.Adapters.RecyclerAdapter;
 import com.salas.javiert.magicmirror.Resources.SwipeHelper.helper.OnStartDragListener;
@@ -165,7 +164,7 @@ public class ConnectionFragment extends Fragment implements OnStartDragListener 
             dataSetModified.set(indexOfListOnScreen, true);
             dataSets.set(indexOfListOnScreen, new ArrayList<connectionSettings>());
         }
-        myConnectionSingleton.getInstance().saveToPrefences(getContext(), updatedItems);
+        //myConnectionSingleton.getInstance().saveToPrefences(getContext(), updatedItems); // FIXME: 7/31/2017 
     }
 
     // Fetch the data from SharedPreferences and reset the adapter
@@ -214,7 +213,7 @@ public class ConnectionFragment extends Fragment implements OnStartDragListener 
 
     // Fetches the data from the preferences if there is none, then create default
     private List<connectionSettings> initData(Pair<Integer, Integer> myPair) {
-        return myConnectionSingleton.getInstance().loadFromPreferences(getContext(), myPair);
+        return null; //myConnectionSingleton.getInstance().loadFromPreferences(getContext(), myPair); // FIXME: 7/31/2017 
     }
 
 

@@ -7,16 +7,11 @@ package com.salas.javiert.magicmirror.Objects.SingletonObjects.myConnectionSingl
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.util.Pair;
 
-import com.salas.javiert.magicmirror.R;
 import com.salas.javiert.magicmirror.Resources.Room.serverAddress.Entities.serverAddressItem;
 import com.salas.javiert.magicmirror.Resources.Room.serverAddress.serverAddressDatabase;
 import com.salas.javiert.magicmirror.Resources.Room.serverAddress.serverAddressDatabaseCreator;
-import com.salas.javiert.magicmirror.Resources.TinyDB;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -25,10 +20,8 @@ import java.util.List;
 
 public class myConnectionSingleton {
 
-    private static List<connectionSettings> myList = new ArrayList();
     private static myConnectionSingleton instance = null;
     private String hostPort;
-    private List<String> ConnectionData, ConnectionDataDefault;
     private String directory;
     private String TAG = "connectionSingleton";
 
@@ -37,37 +30,12 @@ public class myConnectionSingleton {
 
     }
 
-    //Everytime you need an instance, call this
+    //Every time you need an instance, call this
     public static myConnectionSingleton getInstance() {
         if (instance == null)
             instance = new myConnectionSingleton();
 
         return instance;
-    }
-
-    public synchronized List<connectionSettings> loadFromPreferences(Context context, Pair<Integer, Integer> myPair) {
-        // Setup the ararys
-        setUpStringArrays(context);
-        // Get the items that we need Pair<n,m> index n - (m - 1)  of string array from resources
-        return readConnectionPreferences(context, myPair);
-
-    }
-
-    public synchronized void saveToPrefences(Context context, List<connectionSettings> dataToBeSaved) {
-        if (dataToBeSaved != null && dataToBeSaved.size() > 0) {
-            // Separate into list that we can store
-            // We don't really want to use GSON for this as we would be storing the views which is useless to us next time we launch the app
-            List<String> connectionNameList = getconnectionNameList(dataToBeSaved);
-            List<String> connectionSubstringList = getconnectionSubstringList(dataToBeSaved);
-            List<Boolean> connectionStatusList = getconnectionStatusList(dataToBeSaved);
-            List<Boolean> connectionSubstringLockStauts = getconnectionSubstringLockStauts(dataToBeSaved);
-
-            Log.d(TAG, "Saving " + dataToBeSaved.size() + " items");
-
-            //Setup the ararys
-            setUpStringArrays(context);
-            saveConnectionPreferences(context, connectionNameList, connectionSubstringList, connectionStatusList, connectionSubstringLockStauts);
-        }
     }
 
     public void saveToRoom(Context context, List<serverAddressItem> items) {
@@ -96,6 +64,218 @@ public class myConnectionSingleton {
         }
     }
 
+    // Load the components needed to construct the URL
+    public void refreshURLFields(final Context context) {
+        final serverAddressDatabaseCreator serverAddressDatabaseCreator = com.salas.javiert.magicmirror.Resources.Room.serverAddress.serverAddressDatabaseCreator.getInstance(context);
+
+        new AsyncTask<Object, Object, List<serverAddressItem>>() {
+
+            List<serverAddressItem> fetchedList;
+
+            @Override
+            protected void onPreExecute() {
+                if (!serverAddressDatabaseCreator.isDatabaseCreated().getValue())
+                    serverAddressDatabaseCreator.createDb(context);
+                super.onPreExecute();
+            }
+
+            @Override
+            protected List<serverAddressItem> doInBackground(Object... params) {
+                serverAddressDatabase db = serverAddressDatabaseCreator.getDatabase();
+                fetchedList = db.serverAddressDao().getConnections(0, 1);
+
+                return fetchedList;
+            }
+
+            @Override
+            protected void onPostExecute(List<serverAddressItem> aVoid) {
+                super.onPostExecute(aVoid);
+                myConnectionSingleton.getInstance().setHostPort(aVoid.get(0).getName(), context);
+                myConnectionSingleton.getInstance().setDirectory(aVoid.get(1).getName(), context);
+            }
+        }.execute();
+    }
+
+    // Save the components needed to construct the URL
+    public void saveURLToPreference(final Context context) {
+        final serverAddressDatabaseCreator serverAddressDatabaseCreator = com.salas.javiert.magicmirror.Resources.Room.serverAddress.serverAddressDatabaseCreator.getInstance(context);
+
+        new AsyncTask<Object, Object, List<serverAddressItem>>() {
+
+            List<serverAddressItem> fetchedList;
+
+            @Override
+            protected void onPreExecute() {
+                if (!serverAddressDatabaseCreator.isDatabaseCreated().getValue())
+                    serverAddressDatabaseCreator.createDb(context);
+                super.onPreExecute();
+            }
+
+            @Override
+            protected List<serverAddressItem> doInBackground(Object... params) {
+                serverAddressDatabase db = serverAddressDatabaseCreator.getDatabase();
+                fetchedList = db.serverAddressDao().getConnections(0, 1);
+                fetchedList.get(0).setName((getHostPort() == null) ? "" : getHostPort());
+                fetchedList.get(1).setName((getDirectory() == null) ? "" : getDirectory());
+                return fetchedList;
+            }
+
+            @Override
+            protected void onPostExecute(List<serverAddressItem> items) {
+                super.onPostExecute(items);
+                serverAddressDatabase db = serverAddressDatabaseCreator.getDatabase();
+                db.serverAddressDao().updateItems(items.get(0), items.get(1));
+            }
+        }.execute();
+
+
+    }
+
+    private String getHostPort() {
+        return hostPort;
+    }
+
+    private String getDirectory() {
+        return directory;
+    }
+
+    public void setHostPort(final String hostPort, final Context context) {
+        this.hostPort = hostPort;
+        final serverAddressDatabaseCreator serverAddressDatabaseCreator = com.salas.javiert.magicmirror.Resources.Room.serverAddress.serverAddressDatabaseCreator.getInstance(context);
+        new AsyncTask<Object, Object, serverAddressItem>() {
+
+            serverAddressItem fetchedItem;
+
+            @Override
+            protected void onPreExecute() {
+                if (!serverAddressDatabaseCreator.isDatabaseCreated().getValue())
+                    serverAddressDatabaseCreator.createDb(context);
+                super.onPreExecute();
+            }
+
+            @Override
+            protected serverAddressItem doInBackground(Object... params) {
+                serverAddressDatabase db = serverAddressDatabaseCreator.getDatabase();
+                fetchedItem = db.serverAddressDao().getIndex(0);
+                fetchedItem.setName((hostPort == null) ? "" : hostPort);
+                return fetchedItem;
+            }
+
+            @Override
+            protected void onPostExecute(serverAddressItem item) {
+                super.onPostExecute(item);
+                serverAddressDatabase db = serverAddressDatabaseCreator.getDatabase();
+                db.serverAddressDao().updateItems(item);
+            }
+        }.execute();
+
+        saveURLStatus(context, false);
+
+    }
+
+    public void setDirectory(final String directory, final Context context) {
+        this.directory = directory;
+
+        final serverAddressDatabaseCreator serverAddressDatabaseCreator = com.salas.javiert.magicmirror.Resources.Room.serverAddress.serverAddressDatabaseCreator.getInstance(context);
+        new AsyncTask<Object, Object, serverAddressItem>() {
+
+            serverAddressItem fetchedItem;
+
+            @Override
+            protected void onPreExecute() {
+                if (!serverAddressDatabaseCreator.isDatabaseCreated().getValue())
+                    serverAddressDatabaseCreator.createDb(context);
+                super.onPreExecute();
+            }
+
+            @Override
+            protected serverAddressItem doInBackground(Object... params) {
+                serverAddressDatabase db = serverAddressDatabaseCreator.getDatabase();
+                fetchedItem = db.serverAddressDao().getIndex(1);
+                fetchedItem.setName((directory == null) ? "" : directory);
+                return fetchedItem;
+            }
+
+            @Override
+            protected void onPostExecute(serverAddressItem item) {
+                super.onPostExecute(item);
+                serverAddressDatabase db = serverAddressDatabaseCreator.getDatabase();
+                db.serverAddressDao().updateItems(item);
+            }
+        }.execute();
+
+        saveURLStatus(context, false);
+    }
+
+    public String getURL() {
+        return "http://" + getHostPort() +
+                ((getDirectory() == null && getDirectory().length() > 0) ? "" : "/" + getDirectory() + "/");
+    }
+
+    // Saves the serverAddressFields to Boolean
+    public void saveURLStatus(final Context context, final Boolean connectedSuccessfully) {
+
+        final serverAddressDatabaseCreator serverAddressDatabaseCreator = com.salas.javiert.magicmirror.Resources.Room.serverAddress.serverAddressDatabaseCreator.getInstance(context);
+        new AsyncTask<Object, Object, List<serverAddressItem>>() {
+
+            List<serverAddressItem> fetchedItem;
+
+            @Override
+            protected void onPreExecute() {
+                if (!serverAddressDatabaseCreator.isDatabaseCreated().getValue())
+                    serverAddressDatabaseCreator.createDb(context);
+                super.onPreExecute();
+            }
+
+            @Override
+            protected List<serverAddressItem> doInBackground(Object... params) {
+                serverAddressDatabase db = serverAddressDatabaseCreator.getDatabase();
+                fetchedItem = db.serverAddressDao().getConnections(0, 1);
+                fetchedItem.get(0).setConnectionSuccessful(connectedSuccessfully);
+                fetchedItem.get(1).setConnectionSuccessful(connectedSuccessfully);
+                return fetchedItem;
+            }
+
+            @Override
+            protected void onPostExecute(List<serverAddressItem> items) {
+                super.onPostExecute(items);
+                serverAddressDatabase db = serverAddressDatabaseCreator.getDatabase();
+                db.serverAddressDao().updateItems(items.get(0), items.get(1));
+            }
+        }.execute();
+
+        Log.d(TAG, connectedSuccessfully.toString());
+    }
+
+    /*
+    //Fill the string arrays from the resources, we need context to use getResources()
+    private void setUpStringArrays(Context context) {
+        ConnectionData = Arrays.asList(context.getResources().getStringArray(R.array.connection_data));
+        ConnectionDataDefault = Arrays.asList(context.getResources().getStringArray(R.array.connection_data_defaults));
+    }
+    public synchronized List<connectionSettings> loadFromPreferences(Context context, Pair<Integer, Integer> myPair) {
+        // Setup the ararys
+        setUpStringArrays(context);
+        // Get the items that we need Pair<n,m> index n - (m - 1)  of string array from resources
+        return readConnectionPreferences(context, myPair);
+
+    }
+    public synchronized void saveToPrefences(Context context, List<connectionSettings> dataToBeSaved) {
+        if (dataToBeSaved != null && dataToBeSaved.size() > 0) {
+            // Separate into list that we can store
+            // We don't really want to use GSON for this as we would be storing the views which is useless to us next time we launch the app
+            List<String> connectionNameList = getconnectionNameList(dataToBeSaved);
+            List<String> connectionSubstringList = getconnectionSubstringList(dataToBeSaved);
+            List<Boolean> connectionStatusList = getconnectionStatusList(dataToBeSaved);
+            List<Boolean> connectionSubstringLockStauts = getconnectionSubstringLockStauts(dataToBeSaved);
+
+            Log.d(TAG, "Saving " + dataToBeSaved.size() + " items");
+
+            //Setup the ararys
+            setUpStringArrays(context);
+            saveConnectionPreferences(context, connectionNameList, connectionSubstringList, connectionStatusList, connectionSubstringLockStauts);
+        }
+    }
     // Split the list of connectionSettings to the list that we want to save
     private List<String> getconnectionNameList(List<connectionSettings> dataToBeSaved) {
         List<String> returnList = new ArrayList<>();
@@ -103,28 +283,24 @@ public class myConnectionSingleton {
             returnList.add(data.getTitle());
         return returnList;
     }
-
     private List<Boolean> getconnectionSubstringLockStauts(List<connectionSettings> dataToBeSaved) {
         List<Boolean> mReturnList = new ArrayList<>();
         for (connectionSettings data : dataToBeSaved)
             mReturnList.add(data.getisLocked());
         return mReturnList;
     }
-
     private List<Boolean> getconnectionStatusList(List<connectionSettings> dataToBeSaved) {
         List<Boolean> returnList = new ArrayList<>();
         for (connectionSettings data : dataToBeSaved)
             returnList.add(data.getConnectionSuccessful());
         return returnList;
     }
-
     private List<String> getconnectionSubstringList(List<connectionSettings> dataToBeSaved) {
         List<String> returnList = new ArrayList<>();
         for (connectionSettings data : dataToBeSaved)
             returnList.add(data.getSubtext());
         return returnList;
     }
-
     // Read connectionPreferences using SharedPreferences
     private synchronized List<connectionSettings> readConnectionPreferences(Context context, Pair<Integer, Integer> myPair) {
         TinyDB appSharedPrefs = new TinyDB(context);
@@ -180,7 +356,6 @@ public class myConnectionSingleton {
         }
         return myList;
     }
-
     // Save connectionPreferences using SharedPreferences
     private synchronized void saveConnectionPreferences(Context context, List<String> connectionNameList, List<String> connectionSubstringList, List<Boolean> connectionStatusList, List<Boolean> connectionSubstringLockStauts) {
         TinyDB prefsEditor = new TinyDB(context);
@@ -205,8 +380,6 @@ public class myConnectionSingleton {
 
 
     }
-
-
     // Return the index of connectionData where the string value of the last index of connectionNameList is found
     // Returns start if it is not is found
     private int lastCollision(int start, List<String> connectionData, List<String> connectionNameList) {
@@ -215,7 +388,6 @@ public class myConnectionSingleton {
                 return j;
         return start;
     }
-
     // Returns the first index where a String in connectionData and connectionNameList match
     // Returns 0 if no match
     private int firstCollision(List<String> connectionData, List<String> connectionNameList) {
@@ -226,81 +398,7 @@ public class myConnectionSingleton {
 
         return 0;
     }
-
-    // Load the components needed to construct the URL
-    public void updateUrlFromPreferences(Context context) {
-        TinyDB appSharedPrefs = new TinyDB(context);
-
-        setUpStringArrays(context);
-
-        String hostPort = appSharedPrefs.getString(ConnectionData.get(0));
-        if (TinyDB.isDefaultValue(hostPort)) {
-            this.setHostPort(ConnectionDataDefault.get(0), context);
-        } else {
-            this.setHostPort(hostPort, context);
-        }
-        String directory = appSharedPrefs.getString(ConnectionData.get(1));
-        if (TinyDB.isDefaultValue(directory)) {
-            this.setDirectory(ConnectionDataDefault.get(1), context);
-        } else {
-            this.setDirectory(directory, context);
-        }
-    }
-
-    // Save the components needed to construct the URL
-    public void saveURLToPreference(Context context) {
-        TinyDB prefsEditor = new TinyDB(context);
-        prefsEditor.putString("Host:Port", (getHostPort() == null) ? "" : getHostPort());
-        prefsEditor.putString("Directory", (getDirectory() == null) ? "" : getDirectory());
-
-    }
-
-    private String getHostPort() {
-        return hostPort;
-    }
-
-    private String getDirectory() {
-        return directory;
-    }
-
-    public void setHostPort(String host, Context context) {
-        this.hostPort = host;
-        TinyDB prefsEditor = new TinyDB(context);
-
-        prefsEditor.putString(ConnectionData.get(0), (host == null) ? "" : host);
-        saveURLStatus(context, false);
-    }
-
-    public void setDirectory(String directory, Context context) {
-        this.directory = directory;
-        TinyDB prefsEditor = new TinyDB(context);
-
-        prefsEditor.putString(ConnectionData.get(1), (directory == null) ? "" : directory);
-        saveURLStatus(context, false);
-    }
-
-    public String getURL() {
-        return "http://" + getHostPort() +
-                ((getDirectory() == null && getDirectory().length() > 0) ? "" : "/" + getDirectory() + "/");
-    }
-
-    // Saves the serverAdressFields to Boolean
-    public synchronized void saveURLStatus(Context context, Boolean connectedSuccessfully) {
-        TinyDB prefsEditor = new TinyDB(context);
-
-
-        prefsEditor.putBoolean("Host:Port" + "_ConnectionStatus", connectedSuccessfully);
-        prefsEditor.putBoolean("Host:Port" + "_LockStatus", connectedSuccessfully);
-        prefsEditor.putBoolean("Directory" + "_ConnectionStatus", connectedSuccessfully);
-        prefsEditor.putBoolean("Directory" + "_LockStatus", connectedSuccessfully);
-        Log.d("saveUrlStatus", connectedSuccessfully.toString());
-    }
-
-    //Fill the string arrays from the resources, we need context to use getResources()
-    private void setUpStringArrays(Context context) {
-        ConnectionData = Arrays.asList(context.getResources().getStringArray(R.array.connection_data));
-        ConnectionDataDefault = Arrays.asList(context.getResources().getStringArray(R.array.connection_data_defaults));
-    }
+    */
 
 
 }

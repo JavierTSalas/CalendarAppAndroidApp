@@ -192,7 +192,11 @@ public class dataBindingAdapter extends RecyclerView.Adapter<bindingViewHolder> 
         return false;
     }
 
-    public List<serverAddressItem> getConnectionSettings() {
+    public List<serverAddressItem> getModifiedItems() {
         return dataBaseItemList;
+    }
+
+    public boolean haveChangesBeenMade() {
+        return (modifiedFields != null && modifiedFields.size() > 0);
     }
 }

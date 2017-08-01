@@ -4,7 +4,6 @@
 
 package com.salas.javiert.magicmirror.Resources.Room.serverAddress.Dao;
 
-import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
@@ -28,11 +27,14 @@ public interface serverAddressDao {
     @Update(onConflict = OnConflictStrategy.REPLACE)
     void setConnectionDataBaseItem(serverAddressItem... item);
 
+    @Update(onConflict = OnConflictStrategy.REPLACE)
+    void updateItems(serverAddressItem... item);
+
     @Query("SELECT * FROM connection WHERE id BETWEEN :floor AND :ceiling")
     List<serverAddressItem> getConnections(Integer floor, Integer ceiling);
 
     @Query("SELECT * FROM connection WHERE id = :selection")
-    LiveData<List<serverAddressItem>> getIndex(Integer selection);
+    serverAddressItem getIndex(Integer selection);
 
     @Delete
     void deleteIndex(serverAddressItem selection);

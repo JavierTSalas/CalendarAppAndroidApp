@@ -44,7 +44,7 @@ public class DatabaseRestClient {
     }
 
     private static String getAbsoluteUrl(String relativeUrl, Context context) {
-        myConnectionSingleton.getInstance().updateUrlFromPreferences(context);
+        myConnectionSingleton.getInstance().refreshURLFields(context);
         // BASE_URL = myConnectionSingleton.getInstance().getURL();
         return BASE_URL + relativeUrl;
 
