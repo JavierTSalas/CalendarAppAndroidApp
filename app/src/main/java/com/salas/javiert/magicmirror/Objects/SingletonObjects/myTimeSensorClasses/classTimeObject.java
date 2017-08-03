@@ -30,7 +30,7 @@ public class classTimeObject {
         //Convert the strings to DateTime
         SimpleDateFormat spf = new SimpleDateFormat("HH:mm:ss");
         this.time_start = spf.parse(time_start);
-        this.time_start = spf.parse(time_end);
+        this.time_end = spf.parse(time_end);
     }
 
     public int getClass_id() {
@@ -72,7 +72,7 @@ public class classTimeObject {
         return runningSum;
     }
 
-    //Return if the we should suggest this class to be shown
+    // Return if the we should suggest this class to be shown
     public boolean shouldSuggest() {
         return isFifteenMinutesAfter() || isOccuring();
     }

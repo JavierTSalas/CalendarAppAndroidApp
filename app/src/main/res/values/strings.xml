@@ -11,17 +11,17 @@
     <string name="skip">SKIP</string>
     <string name="start">GOT IT</string>
 
-    <string name="slide_1_title">CalendarApp</string>
-    <string name="slide_1_desc">This app lets you manage your school calendar!</string>
+    <string name="slide_1_title">School Planner</string>
+    <string name="slide_1_desc">A calendar app for school work</string>
 
-    <string name="slide_2_title">Manage your assignments</string>
-    <string name="slide_2_desc">Add + Remove assignments plus some extra features to make your life easier!</string>
+    <string name="slide_2_title">Separate your classes</string>
+    <string name="slide_2_desc">Divide and conquer your homework</string>
 
-    <string name="slide_3_title">Have reoccuing assignments?</string>
-    <string name="slide_3_desc">We\'ll take care of those for you!</string>
+    <string name="slide_3_title"></string>
+    <string name="slide_3_desc">Your assignment are organized for you</string>
 
-    <string name="slide_4_title">Setup</string>
-    <string name="slide_4_desc">Lets start by setting up a connection to your database!</string>
+    <string name="slide_4_title">Never forget to add an assignment</string>
+    <string name="slide_4_desc">A notification will show up during and after class so you can add new assignment easily. (see settings to turn this off)</string>
 
     <string name="credits_for_icons">Thanks to icons8 for the following icons:</string>
     <string name="icons_used_from_icons9">Calendar,Plus,Settings,Refresh,Download from the Cloud</string>

@@ -118,6 +118,10 @@ public class loadClassList {
         myList = fetchFromInternet();
     }
 
+    public void refreshFromRoom() {
+        //TODO this
+    }
+
     public void refreshListFromSharedPreferences(Context context) {
         // We need context to read SharedPreferences
         Context[] myTaskParams = {context, null, null};
