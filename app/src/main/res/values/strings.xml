@@ -29,31 +29,5 @@
     <string name="action_connection_save">Save current connection settings</string>
 
 
-    <string-array name="class_list">
-        <item>Non School Activitiy</item>
-        <item>Computer Organization I</item>
-        <item>French Reading and Conversation</item>
-        <item>Discrete Mathematics</item>
-        <item>General Physics B</item>
-        <item>General Physics B Lab</item>
-    </string-array>
 
-    <string-array name="connection_data">
-        <item>Host:Port</item>
-        <item>Directory</item>
-        <item>assignment_interface</item>
-        <item>todo_interface</item>
-        <item>occur_interface</item>
-        <item>class_times_interface</item>
-        <item>classes_interface</item>
-    </string-array>
-    <string-array name="connection_data_defaults">
-        <item>localhost</item>
-        <item>learning</item>
-        <item>interfaceassignments.php</item>
-        <item>interfacetodo.php</item>
-        <item>interfaceoccur.php</item>
-        <item>interfaceclasstimes.php</item>
-        <item>interfaceclasses.php</item>
-    </string-array>
 </resources>

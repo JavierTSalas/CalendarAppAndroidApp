@@ -4,7 +4,6 @@
 
 package com.salas.javiert.magicmirror.Activities;
 
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -17,7 +16,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.Toast;
 
 import com.loopj.android.http.TextHttpResponseHandler;
@@ -47,8 +45,6 @@ public class MainActivity extends AppCompatActivity {
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mToggle;
     private NavigationView navigationView;
-    private Button mButton;
-    private InsertTask myTask;
     private Toolbar mToolbar;
 
 
@@ -68,10 +64,10 @@ public class MainActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 
 
-                //Checking if the item is in checked state or not, if not make it in checked state
+                // Checking if the item is in checked state or not, if not make it in checked state
                 item.setChecked(!item.isChecked());
 
-                //Closing drawer on item click
+                // Closing drawer on item click
                 mDrawerLayout.closeDrawers();
                 android.support.v4.app.FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
 
@@ -219,30 +215,6 @@ public class MainActivity extends AppCompatActivity {
         DatabaseRestClient.post(this, "input.php", myEntitiy, "application/x-www-form-urlencoded", response);
     }
 
-    private class InsertTask extends AsyncTask<Void, Void, Void> {
 
-
-        @Override
-        protected void onPreExecute() {
-        }
-
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            try {
-                InsertAssignment();
-            } catch (JSONException e) {
-                e.printStackTrace();
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-        }
-    }
 }
 

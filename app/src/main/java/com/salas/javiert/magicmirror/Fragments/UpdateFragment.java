@@ -256,10 +256,10 @@ public class UpdateFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.layout_fragment_update, container, false);
-        //Required for adding buttons to the ToolBar
+        // Required for adding buttons to the ToolBar
         setHasOptionsMenu(true);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.RecyclerView);
-        //Start up our AsyncTask - See bottom of the file for desc of the task
+        // Start up our AsyncTask - See bottom of the file for desc of the task
         myTask = new UpdateFragment.FetchAssignments();
         myTask.execute();
 

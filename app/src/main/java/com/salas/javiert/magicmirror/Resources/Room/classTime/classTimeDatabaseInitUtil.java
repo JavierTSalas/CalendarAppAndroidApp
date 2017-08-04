@@ -22,8 +22,7 @@ public class classTimeDatabaseInitUtil {
 
     //Fill the string arrays from the resources, we need context to use getResources()
     private static void setUpStringArrays(Context context) {
-        DefaultClassList = Arrays.asList(context.getResources().getStringArray(R.array.connection_data));
-         =Arrays.asList(context.getResources().getStringArray(R.array.connection_data_defaults));
+        DefaultClassList = Arrays.asList(context.getResources().getStringArray(R.array.class_list_default));
     }
 
     public static void initializeDb(classTimeDatabase db, Context context) {

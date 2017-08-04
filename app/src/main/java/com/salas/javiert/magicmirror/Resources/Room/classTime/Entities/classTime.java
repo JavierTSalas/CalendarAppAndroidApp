@@ -7,8 +7,6 @@ package com.salas.javiert.magicmirror.Resources.Room.classTime.Entities;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
 
-import java.util.Date;
-
 /**
  * Created by Javier on 8/2/2017.
  */
@@ -19,7 +17,7 @@ public class classTime {
     private int id;
     private int class_id, day_of_week, room;
     private String building;
-    private Date time_start, time_end;
+    private Long time_start, time_end;
 
     public int getId() {
         return id;
@@ -61,19 +59,19 @@ public class classTime {
         this.building = building;
     }
 
-    public Date getTime_start() {
+    public Long getTime_start() {
         return time_start;
     }
 
-    public void setTime_start(Date time_start) {
+    public void setTime_start(Long time_start) {
         this.time_start = time_start;
     }
 
-    public Date getTime_end() {
+    public Long getTime_end() {
         return time_end;
     }
 
-    public void setTime_end(Date time_end) {
+    public void setTime_end(Long time_end) {
         this.time_end = time_end;
     }
 }
