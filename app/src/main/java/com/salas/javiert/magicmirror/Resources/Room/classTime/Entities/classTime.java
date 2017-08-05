@@ -13,7 +13,7 @@ import android.arch.persistence.room.PrimaryKey;
 
 @Entity(tableName = "classes")
 public class classTime {
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
     private int id;
     private int class_id, day_of_week, room;
     private String building;

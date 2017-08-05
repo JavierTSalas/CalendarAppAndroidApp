@@ -24,11 +24,11 @@ import cz.msebera.android.httpclient.HttpEntity;
 public class DatabaseRestClient {
 
     private static final String TAG = "DATEBASE CONNECTION ";
-    //private static final String BASE_URL = "http://192.168.56.1/learning/";
+    private static final String BASE_URL = "http://192.168.56.1/learning/";
     //private static String BASE_URL = "http://10.0.0.21/learning/";
 
     // Get the base URL from myConnectionSingleton
-    private static final String BASE_URL = myConnectionSingleton.getInstance().getURL();
+    //private static final String BASE_URL = myConnectionSingleton.getInstance().getURL();
     private static AsyncHttpClient client = new SyncHttpClient();
 
     public static void get(String url, RequestParams params, JsonHttpResponseHandler responseHandler) {
