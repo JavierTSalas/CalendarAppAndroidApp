@@ -37,6 +37,8 @@ import java.util.Locale;
 import java.util.Random;
 
 /**
+ * https://stackoverflow.com/questions/31606871/how-to-achieve-a-full-screen-dialog-as-described-in-material-guidelines
+ *
  * Created by javi6 on 8/9/2017.
  */
 
@@ -75,6 +77,9 @@ public class NewAssignmentFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable final Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         dataBiding = DataBindingUtil.inflate(inflater, R.layout.dialog_new_assignment_event, null, false);
+
+        dataBiding.tbDialogNewAssignmentToolbar.setTitle("New Assignment");
+
 
         new AsyncTask<Void, Void, Void>() {
             @Override
