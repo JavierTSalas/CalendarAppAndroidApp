@@ -2,27 +2,24 @@
  * Copyright (c) 2017. Javier Salas
  */
 
-package com.salas.javiert.magicmirror.Resources.Room.assignments.savedAssignments.Entities;
+package com.salas.javiert.magicmirror.Objects.bindableObjects;
 
-import android.arch.persistence.room.Entity;
-import android.arch.persistence.room.PrimaryKey;
+import android.databinding.BaseObservable;
 
-import com.salas.javiert.magicmirror.Objects.bindableObjects.bindableAssignment;
+import com.salas.javiert.magicmirror.Resources.Room.assignments.savedAssignments.Entities.savedAssignment;
 
 /**
- * Created by javi6 on 8/4/2017.
+ * Created by javi6 on 8/6/2017.
  */
 
-@Entity(tableName = "saved_assignments")
-public class savedAssignment {
-    @PrimaryKey(autoGenerate = true)
+public class bindableAssignment extends BaseObservable {
     private int id;
-    private int classId;
+    private int classId, reminderID;
     private long dueTime, CompletionTime, assignedTime;
     private String name;
     private boolean completed;
 
-    public savedAssignment(bindableAssignment item) {
+    public bindableAssignment(savedAssignment item) {
         this.id = item.getId();
         this.classId = item.getClassId();
         this.dueTime = item.getDueTime();
@@ -31,17 +28,8 @@ public class savedAssignment {
         this.completed = this.isCompleted();
     }
 
-    public savedAssignment() {
+    public bindableAssignment() {
 
-    }
-
-
-    public boolean isCompleted() {
-        return completed;
-    }
-
-    public void setCompleted(boolean completed) {
-        this.completed = completed;
     }
 
     public int getId() {
@@ -50,6 +38,7 @@ public class savedAssignment {
 
     public void setId(int id) {
         this.id = id;
+        notifyChange(); //TODO Not this
     }
 
     public int getClassId() {
@@ -58,6 +47,7 @@ public class savedAssignment {
 
     public void setClassId(int classId) {
         this.classId = classId;
+        notifyChange(); //TODO Not this
     }
 
     public long getDueTime() {
@@ -66,6 +56,7 @@ public class savedAssignment {
 
     public void setDueTime(long dueTime) {
         this.dueTime = dueTime;
+        notifyChange(); //TODO Not this
     }
 
     public long getCompletionTime() {
@@ -74,6 +65,7 @@ public class savedAssignment {
 
     public void setCompletionTime(long completionTime) {
         CompletionTime = completionTime;
+        notifyChange(); //TODO Not this
     }
 
     public long getAssignedTime() {
@@ -82,6 +74,7 @@ public class savedAssignment {
 
     public void setAssignedTime(long assignedTime) {
         this.assignedTime = assignedTime;
+        notifyChange(); //TODO Not this
     }
 
     public String getName() {
@@ -90,5 +83,16 @@ public class savedAssignment {
 
     public void setName(String name) {
         this.name = name;
+        notifyChange(); //TODO Not this
     }
+
+    public boolean isCompleted() {
+        return completed;
+    }
+
+    public void setCompleted(boolean completed) {
+        this.completed = completed;
+        notifyChange(); //TODO Not this
+    }
+
 }

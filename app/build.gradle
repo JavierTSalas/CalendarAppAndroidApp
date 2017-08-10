@@ -8,7 +8,10 @@ android {
         minSdkVersion 16
         targetSdkVersion 25
         versionCode 1
-        versionName "1.0"
+
+        // Use vector drawables
+        vectorDrawables.useSupportLibrary = true
+
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
         multiDexEnabled true //important
@@ -60,6 +63,7 @@ dependencies {
     annotationProcessor "android.arch.lifecycle:compiler:1.0.0-alpha3"
 
     // Calendar view
+    // TODO not use this
     compile 'com.github.sundeepk:compact-calendar-view:2.0.2.2'
 
     testCompile 'junit:junit:4.12'

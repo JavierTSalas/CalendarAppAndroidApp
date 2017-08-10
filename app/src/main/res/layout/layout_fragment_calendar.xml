@@ -3,6 +3,7 @@
   ~ Copyright (c) 2017. Javier Salas
   -->
 
+
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -10,42 +11,43 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#ffe95451"
-        android:orientation="horizontal"
-        android:weightSum="10">
+    <android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
+                                       android:layout_width="match_parent"
+                                       android:layout_height="40dp"
+                                       android:background="@drawable/white_grey_border_bottom">
 
-        <TextView
-            android:id="@+id/tvCalendarTitle"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="2"
-            android:text="tvCalendarTitle"
-            android:textAlignment="center"
-            android:textColor="@color/AlmostBlack"
-            android:textSize="24sp"/>
+            android:layout_height="match_parent"
+            android:weightSum="10">
 
-        <TextView
-            android:id="@+id/tvFakeButtonPlus"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="4"
-            android:text="+"
-            android:textAlignment="center"
-            android:textSize="24sp"/>
+            <TextView
+                android:id="@+id/tvToolbarTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="6"
+                android:text="June - 2017"
+                android:textSize="30dp"/>
 
-        <TextView
-            android:id="@+id/tvFakeButtonCircle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="right"
-            android:layout_weight="4"
-            android:text="O"
-            android:textAlignment="center"
-            android:textSize="24sp"/>
-    </LinearLayout>
+            <ImageView
+                android:id="@+id/ivToolbarToday"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_gravity="center"
+                android:layout_weight="2"
+                app:srcCompat="@drawable/ic_today_black_24dp"/>
+
+            <ImageView
+                android:id="@+id/ivToolbarPlus"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_gravity="center"
+                android:layout_weight="2"
+                app:srcCompat="@drawable/ic_add_circle_outline_black_24dp"/>
+        </LinearLayout>
+
+    </android.support.v7.widget.Toolbar>
 
     <com.github.sundeepk.compactcalendarview.CompactCalendarView
         android:id="@+id/compactcalendar_view"
@@ -63,7 +65,8 @@
 
     <android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:background="#ffe95451"/>
 
 
 </LinearLayout>

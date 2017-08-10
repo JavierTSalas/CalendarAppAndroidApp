@@ -30,20 +30,20 @@ import cz.msebera.android.httpclient.Header;
  * Created by javi6 on 7/2/2017.
  */
 
-public class loadClassList {
+public class classTimeSensor {
 
     private static List<classTimeObject> myList = new ArrayList();
-    private static loadClassList instance = null;
+    private static classTimeSensor instance = null;
 
 
     // Literally does nothing
-    private loadClassList() {
+    private classTimeSensor() {
     }
 
-    public static loadClassList getInstance() {
+    public static classTimeSensor getInstance() {
 
         if (instance == null)
-            instance = new loadClassList();
+            instance = new classTimeSensor();
 
         return instance;
     }
@@ -68,7 +68,6 @@ public class loadClassList {
                 Log.d("Query", "Successfully loaded " + (myJSONArrayResponse.length()) + " indexes from outputassignment.php");
 
             }
-
 
             private void loadSchedule() {
                 try {
@@ -147,6 +146,15 @@ public class loadClassList {
         Log.d("SharedPref", "Reading Class List from SharedPreferences");
         return QUEUE_DATA_FROM_PREFERENCES;
 
+    }
+
+    public ArrayList<String> getStringList() {
+        ArrayList<String> mList = new ArrayList<>();
+        for (classTimeObject timeObjects : myList) {
+            // TODO use the room version
+            mList.add(timeObjects.getName());
+        }
+        return mList;
     }
 
     final protected class readClassListFromPreferences extends AsyncTask<Context, Void, List<classTimeObject>> {

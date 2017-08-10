@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (c) 2017. Javier Salas
+  -->
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="data"
+            type="com.salas.javiert.magicmirror.Objects.bindableObjects.bindableAssignment"/>
+    </data>
+
+    <FrameLayout
+        android:id="@+id/frameLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <View
+            android:id="@+id/fadeBackground"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:alpha="0"
+            android:background="@android:color/black"
+            android:layerType="hardware"
+            android:visibility="gone"/>
+
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="@color/colorWhite"
+            android:orientation="vertical"
+            android:weightSum="1"
+            tools:layout_editor_absoluteX="0dp"
+            tools:layout_editor_absoluteY="25dp">
+
+
+            <ImageView
+                android:id="@+id/ivDialogNewAssignmentTop"
+                android:layout_width="237dp"
+                android:layout_height="50dp"
+                android:layout_marginLeft="0dp"
+                android:layout_marginTop="-10dp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@color/bg_screen"/>
+
+            <ImageView
+                android:id="@+id/ivDialogNewAssignmentCancel"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginRight="4dp"
+                android:layout_marginTop="4dp"
+                app:layout_constraintRight_toRightOf="@+id/ivDialogNewAssignmentTop"
+                app:layout_constraintTop_toTopOf="@+id/ivDialogNewAssignmentTop"
+                app:srcCompat="@drawable/ic_close_black_24dp"/>
+
+            <EditText
+                android:id="@+id/etDialogNewAssignmentName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="0dp"
+                android:layout_marginLeft="0dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="0dp"
+                android:hint="@string/DefaultAssignmentName"
+                android:text="@={data.name}"
+                android:textColor="@color/AlmostBlack"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="@+id/ivDialogNewAssignmentTop"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintLeft_toLeftOf="@+id/ivDialogNewAssignmentTop"
+                app:layout_constraintRight_toLeftOf="@+id/ivDialogNewAssignmentCancel"
+                app:layout_constraintTop_toTopOf="@+id/ivDialogNewAssignmentTop"
+                app:layout_constraintVertical_bias="1.0"/>
+
+            <EditText
+                android:id="@+id/etDialogNewAssignmentDate"
+                android:layout_width="102dp"
+                android:layout_height="44dp"
+                android:layout_marginLeft="0dp"
+                android:layout_marginTop="8dp"
+                android:ems="10"
+                android:focusable="false"
+                app:layout_constraintLeft_toLeftOf="@+id/tvDialogNewAssignmentDue"
+                app:layout_constraintTop_toBottomOf="@+id/tvDialogNewAssignmentDue"/>
+
+            <EditText
+                android:id="@+id/etDialogNewAssignmentTime"
+                android:layout_width="95dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:ems="10"
+                android:focusable="false"
+                android:inputType="time"
+                app:layout_constraintBaseline_toBaselineOf="@+id/etDialogNewAssignmentDate"
+                app:layout_constraintLeft_toRightOf="@+id/etDialogNewAssignmentDate"/>
+
+            <TextView
+                android:id="@+id/tvDialogNewAssignmentDue"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:ems="10"
+                android:gravity="start"
+                android:inputType="textPersonName"
+                android:text="Due"
+                android:textAlignment="textStart"
+                android:textSize="10sp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/ivDialogNewAssignmentTop"/>
+
+            <TextView
+                android:id="@+id/tvDialogNewAssignmentClass"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="0dp"
+                android:layout_marginTop="12dp"
+                android:ems="10"
+                android:gravity="start"
+                android:inputType="textPersonName"
+                android:text="Class"
+                android:textAlignment="textStart"
+                android:textSize="10sp"
+                app:layout_constraintLeft_toLeftOf="@+id/etDialogNewAssignmentDate"
+                app:layout_constraintTop_toBottomOf="@+id/etDialogNewAssignmentDate"/>
+
+            <Spinner
+                android:id="@+id/spDialogNewAssignmentClassSelector"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="0dp"
+                android:layout_marginTop="8dp"
+                app:layout_constraintLeft_toLeftOf="@+id/tvDialogNewAssignmentClass"
+                app:layout_constraintTop_toBottomOf="@+id/tvDialogNewAssignmentClass"/>
+
+            <TextView
+                android:id="@+id/tvDialogNewAssignmentNotificationText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="0dp"
+                android:layout_marginTop="12dp"
+                android:text="Remind me before due"
+                android:textSize="10sp"
+                app:layout_constraintLeft_toLeftOf="@+id/tvDialogNewAssignmentClass"
+                app:layout_constraintTop_toBottomOf="@+id/spDialogNewAssignmentClassSelector"/>
+
+            <Button
+                android:id="@+id/bDialogNewAssignmentDone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="58dp"
+                android:layout_marginTop="-1dp"
+                android:text="Done"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/spDialogNewAssignmentTimeInterval"/>
+
+            <Spinner
+                android:id="@+id/spDialogNewAssignmentTimeInterval"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="0dp"
+                android:layout_marginTop="8dp"
+                app:layout_constraintLeft_toLeftOf="@+id/tvDialogNewAssignmentNotificationText"
+                app:layout_constraintTop_toBottomOf="@+id/tvDialogNewAssignmentNotificationText"/>
+
+        </android.support.constraint.ConstraintLayout>
+    </FrameLayout>
+</layout>

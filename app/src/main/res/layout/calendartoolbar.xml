@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (c) 2017. Javier Salas
+  -->
+
+<android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
+                                   xmlns:app="http://schemas.android.com/apk/res-auto"
+                                   android:layout_width="match_parent"
+                                   android:layout_height="50dp"
+                                   android:background="@color/colorPrimary">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:weightSum="10">
+
+        <TextView
+            android:id="@+id/tvToolbarTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="6"
+            android:text="June - 2017"
+            android:textSize="30dp"/>
+
+        <ImageView
+            android:id="@+id/ivToolbarToday"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center"
+            android:layout_weight="2"
+            app:srcCompat="@drawable/ic_today_black_24dp"/>
+
+        <ImageView
+            android:id="@+id/ivToolbarPlus"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_gravity="center"
+            android:layout_weight="2"
+            app:srcCompat="@drawable/ic_add_circle_outline_black_24dp"/>
+    </LinearLayout>
+
+</android.support.v7.widget.Toolbar>

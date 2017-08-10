@@ -4,6 +4,8 @@
 
 package com.salas.javiert.magicmirror.Fragments;
 
+import android.app.Dialog;
+import android.content.Context;
 import android.graphics.Color;
 import android.icu.util.Calendar;
 import android.os.AsyncTask;
@@ -41,11 +43,39 @@ import java.util.Locale;
  */
 
 public class CalendarFragment extends Fragment {
+    private final static String TAG = "CalendarFragment";
     private CompactCalendarView compactCalendarView;
     private Date dateSeleceted;
+    private Dialog dialog;
     private generatingTask generatingTask;
     private TextView calendarTitle;
+    private calendarFragmentListener mCallback;
 
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        // This makes sure that the container activity has implemented
+        // the callback interface. If not, it throws an exception
+        try {
+            mCallback = (calendarFragmentListener) context;
+            Log.d("callback", "sucessufully created");
+        } catch (ClassCastException e) {
+            throw new ClassCastException(context.toString()
+                    + " must implement OnHeadlineSelectedListener");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        //If we a no longer viewing this fragment we should cancel the AsyncTask
+        // generatingTask populates the calendar
+        if (generatingTask != null && generatingTask.getStatus() == AsyncTask.Status.RUNNING) {
+            generatingTask.cancel(true);
+        }
+        Log.d("Fragments", "CalendarFragment has been closed. Canceling AsyncTask()");
+        mCallback = null;
+        super.onDetach();
+    }
 
     @Nullable
     @Override
@@ -55,19 +85,27 @@ public class CalendarFragment extends Fragment {
         setHasOptionsMenu(true);
 
 
+        // Inflate the view
         final View view = inflater.inflate(R.layout.layout_fragment_calendar, container, false);
+
+        // Define our calendar
         compactCalendarView = (CompactCalendarView) view.findViewById(R.id.compactcalendar_view);
         // Set first day of week to Monday, defaults to Monday so calling setFirstDayOfWeek is not necessary
         // Use constants provided by Java Calendar class
         compactCalendarView.setFirstDayOfWeek(Calendar.MONDAY);
 
 
-        calendarTitle = ((TextView) view.findViewById(R.id.tvCalendarTitle));
-
+        // Define the title
+        calendarTitle = ((TextView) view.findViewById(R.id.tvToolbarTitle));
         generateEventList();
 
+        // Set the toolbar to today's date
         updateTitle(compactCalendarView.getFirstDayOfCurrentMonth());
 
+        // Set the default dateSelected so we don't get errors if the users doesn't click on another date and we need to use it
+        dateSeleceted = compactCalendarView.getFirstDayOfCurrentMonth();
+
+        // Set the listener
         compactCalendarView.setListener(new CompactCalendarView.CompactCalendarViewListener() {
             @Override
             public void onDayClick(Date dateClicked) {
@@ -80,18 +118,23 @@ public class CalendarFragment extends Fragment {
             @Override
             public void onMonthScroll(Date firstDayOfNewMonth) {
                 updateTitle(firstDayOfNewMonth);
+                dateSeleceted = firstDayOfNewMonth;
             }
         });
 
-
-        view.findViewById(R.id.tvFakeButtonPlus).setOnClickListener(new View.OnClickListener() {
+        // If the user wants to add an event
+        view.findViewById(R.id.ivToolbarPlus).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                createAddDialog();
+                mCallback.onClickNew(dateSeleceted, new savedAssignment());
+                Log.d(TAG, "Inflating without animation");
             }
         });
 
-        view.findViewById(R.id.tvFakeButtonCircle).setOnClickListener(new View.OnClickListener() {
+
+        // If the user wants to go back to today
+        // TODO animate this
+        view.findViewById(R.id.ivToolbarToday).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // Change the date to today
@@ -104,16 +147,11 @@ public class CalendarFragment extends Fragment {
         return view;
     }
 
-    private void createAddDialog() {
-
-    }
-
     private void updateTitle(Date firstDayOfNewMonth) {
         SimpleDateFormat sdf = new SimpleDateFormat("MMMM - yyyy", Locale.getDefault());
         String formattedDate = sdf.format(firstDayOfNewMonth);
         calendarTitle.setText(formattedDate);
     }
-
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -144,19 +182,7 @@ public class CalendarFragment extends Fragment {
     }
 
 
-    @Override
-    public void onDetach() {
-        //If we a no longer viewing this fragment we should cancel the AsyncTask
-        // generatingTask populates the calendar
-        if (generatingTask != null && generatingTask.getStatus() == AsyncTask.Status.RUNNING) {
-            generatingTask.cancel(true);
-        }
-        Log.d("Fragments", "CalendarFragment has been closed. Canceling AsyncTask()");
-        super.onDetach();
-    }
-
     private void addNewEvent() {
-        // Create dialog
         // Add to room
         // Add to RecyclerView
         // Add to calendar
@@ -226,6 +252,10 @@ public class CalendarFragment extends Fragment {
         // TODO get color code for a class
         int color = Color.GREEN;
         return new Event(color, assignment.due.getTime(), assignment);
+    }
+
+    public interface calendarFragmentListener {
+        void onClickNew(Date dateSeleceted, savedAssignment savedAssignment);
     }
 
     private class generatingTask extends AsyncTask<Void, Void, Void> {
