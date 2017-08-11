@@ -67,7 +67,7 @@ public class CalendarFragment extends Fragment {
 
     @Override
     public void onDetach() {
-        //If we a no longer viewing this fragment we should cancel the AsyncTask
+        // If we a no longer viewing this fragment we should cancel the AsyncTask
         // generatingTask populates the calendar
         if (generatingTask != null && generatingTask.getStatus() == AsyncTask.Status.RUNNING) {
             generatingTask.cancel(true);
@@ -155,6 +155,7 @@ public class CalendarFragment extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        menu.clear();
         inflater.inflate(R.menu.toolbar_connections, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }

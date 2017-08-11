@@ -118,7 +118,7 @@ public class TempMainActivity extends AppCompatActivity implements CalendarFragm
 
         // Lay the fragment on top of our other fragment
         // testing
-        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
         transaction.add(R.id.outerFrame, newAssignmentFragment);
         transaction.addToBackStack(null);
 

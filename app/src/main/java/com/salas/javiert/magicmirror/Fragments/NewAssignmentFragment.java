@@ -5,23 +5,31 @@
 package com.salas.javiert.magicmirror.Fragments;
 
 import android.app.DatePickerDialog;
+import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
-import android.graphics.Color;
 import android.icu.util.Calendar;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
+import android.support.v4.app.DialogFragment;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.salas.javiert.magicmirror.Objects.SingletonObjects.myTimeSensorClasses.classTimeSensor;
@@ -34,24 +42,57 @@ import com.salas.javiert.magicmirror.databinding.DialogNewAssignmentEventBinding
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
-import java.util.Random;
 
 /**
  * https://stackoverflow.com/questions/31606871/how-to-achieve-a-full-screen-dialog-as-described-in-material-guidelines
- *
+ * <p>
  * Created by javi6 on 8/9/2017.
  */
 
-public class NewAssignmentFragment extends Fragment {
+public class NewAssignmentFragment extends DialogFragment {
 
     public final static String ITEM_KEY = "myBindableAssignment";
     public final static String DATE_KEY = "myDate";
+    public final static String TAG = "NewAssignmentFragment";
 
     DialogNewAssignmentEventBinding dataBiding;
     bindableAssignment item = new bindableAssignment();
     Date dateSeleceted = new Date();
     newAssignmentFragmentListener mCallback;
     private long extraTime;
+
+    @NonNull
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        Dialog dialog = super.onCreateDialog(savedInstanceState);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        return dialog;
+    }
+
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        menu.clear();
+        getActivity().getMenuInflater().inflate(R.menu.dialog_new_assignment, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        Toast.makeText(getContext(), id, Toast.LENGTH_LONG).show();
+
+        if (id == R.id.action_save) {
+            // handle confirmation button click here
+            return true;
+        } else if (id == android.R.id.home) {
+            // handle close button click here
+            getFragmentManager().popBackStack();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
 
     @Override
     public void onAttach(Context context) {
@@ -64,6 +105,7 @@ public class NewAssignmentFragment extends Fragment {
             throw new ClassCastException(context.toString()
                     + " must implement OnHeadlineSelectedListener");
         }
+
     }
 
     @Override
@@ -76,10 +118,21 @@ public class NewAssignmentFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable final Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
-        dataBiding = DataBindingUtil.inflate(inflater, R.layout.dialog_new_assignment_event, null, false);
+        dataBiding = DataBindingUtil.inflate(inflater, R.layout.dialog_new_assignment_event, container, false);
 
+        // Set our title
         dataBiding.tbDialogNewAssignmentToolbar.setTitle("New Assignment");
 
+        ((AppCompatActivity) getActivity()).setSupportActionBar(dataBiding.tbDialogNewAssignmentToolbar);
+
+        ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setHomeButtonEnabled(true);
+            actionBar.setHomeAsUpIndicator(android.R.drawable.ic_menu_close_clear_cancel);
+        }
+
+        setHasOptionsMenu(true);
 
         new AsyncTask<Void, Void, Void>() {
             @Override
@@ -244,30 +297,7 @@ public class NewAssignmentFragment extends Fragment {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 Log.d("ItemSelect", "Name:" + dataBiding.getData().getName());
                 dataBiding.getData().setClassId(position);
-                int randomColor;
-                Random random = new Random();
 
-                // Random color for testing
-                switch (random.nextInt() % 4) {
-                    case 0:
-                        randomColor = Color.GREEN;
-                        break;
-                    case 1:
-                        randomColor = Color.RED;
-                        break;
-                    case 2:
-                        randomColor = Color.MAGENTA;
-                        break;
-                    case 3:
-                        randomColor = Color.YELLOW;
-                        break;
-                    default:
-                        randomColor = Color.BLUE;
-                        break;
-
-                }
-
-                dataBiding.ivDialogNewAssignmentTop.setColorFilter(randomColor); // TODO get color for class ID
             }
 
             @Override
@@ -276,16 +306,7 @@ public class NewAssignmentFragment extends Fragment {
             }
         });
 
-
-        // Grey out our backdrop
-        dataBiding.fadeBackground.setAlpha(0.5f);
-        dataBiding.fadeBackground.setVisibility(View.VISIBLE);
-        dataBiding.fadeBackground.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mCallback.onUserDismiss();
-            }
-        });
+/*
 
         // When the user clicks the cancel button
         dataBiding.ivDialogNewAssignmentCancel.setOnClickListener(new View.OnClickListener() {
@@ -303,7 +324,7 @@ public class NewAssignmentFragment extends Fragment {
                 mCallback.onUserDismiss();
             }
         });
-
+*/
     }
 
     private savedAssignment generateAssignment() {
