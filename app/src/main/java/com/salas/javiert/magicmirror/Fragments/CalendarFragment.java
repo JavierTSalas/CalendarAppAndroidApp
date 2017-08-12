@@ -25,7 +25,6 @@ import android.widget.Toast;
 
 import com.github.sundeepk.compactcalendarview.CompactCalendarView;
 import com.github.sundeepk.compactcalendarview.domain.Event;
-import com.salas.javiert.magicmirror.Objects.helperObjects.assignment_class;
 import com.salas.javiert.magicmirror.R;
 import com.salas.javiert.magicmirror.Resources.Room.assignments.savedAssignments.Entities.savedAssignment;
 import com.salas.javiert.magicmirror.Resources.Room.assignments.savedAssignments.savedAssignmentDataBaseCreator;
@@ -249,14 +248,14 @@ public class CalendarFragment extends Fragment {
         generatingTask.execute();
     }
 
-    public Event makeEventFromAssignment(assignment_class assignment) {
+    public void makeEventFromAssignment(savedAssignment savedAssignment) {
         // TODO get color code for a class
         int color = Color.GREEN;
-        return new Event(color, assignment.due.getTime(), assignment);
+        compactCalendarView.addEvent(new Event(color, savedAssignment.getDueTime(), savedAssignment), true);
     }
 
     public interface calendarFragmentListener {
-        void onClickNew(Date dateSeleceted, savedAssignment savedAssignment);
+        void onClickNew(Date dateSelected, savedAssignment savedAssignment);
     }
 
     private class generatingTask extends AsyncTask<Void, Void, Void> {

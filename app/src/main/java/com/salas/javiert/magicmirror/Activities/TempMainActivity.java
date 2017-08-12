@@ -4,10 +4,13 @@
 
 package com.salas.javiert.magicmirror.Activities;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -29,6 +32,11 @@ import java.util.Date;
  */
 
 public class TempMainActivity extends AppCompatActivity implements CalendarFragment.calendarFragmentListener, NewAssignmentFragment.newAssignmentFragmentListener {
+
+    private static final String CALENDAR_FRAGMENT_TAG = "CALENDAR";
+    private static final String NEW_ASSIGNMENT_FRAGMENT_TAG = "NEW";
+    private static boolean isCalendarFragmentAttached = true;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,7 +50,7 @@ public class TempMainActivity extends AppCompatActivity implements CalendarFragm
         // Set our default fragment
         final android.support.v4.app.FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         CalendarFragment calendarFragment = new CalendarFragment();
-        fragmentTransaction.replace(R.id.innerFrame, calendarFragment);
+        fragmentTransaction.replace(R.id.innerFrame, calendarFragment, CALENDAR_FRAGMENT_TAG);
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
 
@@ -83,22 +91,89 @@ public class TempMainActivity extends AppCompatActivity implements CalendarFragm
 
     // CalendarFragment interface
     @Override
-    public void onClickNew(Date dateSeleceted, savedAssignment savedAssignment) {
+    public void onClickNew(Date dateSelected, savedAssignment savedAssignment) {
         //TODO
         // Open a list on the button // FAB?
         // Open the respective fragment
-        inflateNewAssignmentFragment(dateSeleceted, savedAssignment);
+        NewAssignmentFragment bundledFragment = bundledFragment(dateSelected, savedAssignment);
+
+
+        // Lay the fragment on top of our other fragment
+        // testing
+
+        // Get the fragment that is inflated
+        openOuterFragmentHideInnerFragment(bundledFragment);
+
     }
 
+    private void openOuterFragmentHideInnerFragment(final NewAssignmentFragment bundledFragment) {
 
-    private void inflateNewAssignmentFragment(Date dateSeleceted, savedAssignment item) {
+        new AsyncTask<Void, Void, Void>() {
+            FragmentManager fragmentManager = getSupportFragmentManager();
+
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+                // Open OuterFragment
+                fragmentManager.beginTransaction()
+                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                        .add(R.id.outerFrame, bundledFragment, NEW_ASSIGNMENT_FRAGMENT_TAG)
+                        .addToBackStack(null)
+                        .commit();
+            }
+
+            @Override
+            protected Void doInBackground(Void... params) {
+                // Pause InnerFragment
+                if (isCalendarFragmentAttached) {
+                    // Reset the transition
+                    fragmentManager.beginTransaction()
+                            .hide(fragmentManager.findFragmentByTag(CALENDAR_FRAGMENT_TAG))
+                            .commit();
+                    isCalendarFragmentAttached = false;
+                }
+                return null;
+            }
+        }.execute();
+
+    }
+
+    private void closeOuterFragmentShowInnerFragment() {
+        new AsyncTask<Void, Void, Void>() {
+            FragmentManager fragmentManager = getSupportFragmentManager();
+
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+                // Resume InnerFragment
+                if (!isCalendarFragmentAttached) {
+                    fragmentManager.beginTransaction()
+                            .show(fragmentManager.findFragmentByTag(CALENDAR_FRAGMENT_TAG))
+                            .commit();
+                    isCalendarFragmentAttached = true;
+                }
+            }
+
+            @Override
+            protected Void doInBackground(Void... params) {
+                // Remove OuterFragment
+                fragmentManager.beginTransaction().
+                        remove(fragmentManager.findFragmentByTag(NEW_ASSIGNMENT_FRAGMENT_TAG))
+                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE)
+                        .commit();
+                return null;
+            }
+        }.execute();
+
+    }
+
+    private NewAssignmentFragment bundledFragment(Date dateSeleceted, savedAssignment item) {
         // Pass the object as a gson string to NewAssignmentFragment
         // TODO make a bundle to do this but for prototyping this should be fine
 
 
         Log.d("Inflater", "inflating");
 
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         NewAssignmentFragment newAssignmentFragment = new NewAssignmentFragment();
 
 
@@ -116,25 +191,23 @@ public class TempMainActivity extends AppCompatActivity implements CalendarFragm
         newAssignmentFragment.setArguments(args);
 
 
-        // Lay the fragment on top of our other fragment
-        // testing
-        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-        transaction.add(R.id.outerFrame, newAssignmentFragment);
-        transaction.addToBackStack(null);
-
-        // Commit
-        Log.d("Inflater", "commit");
-        transaction.commit();
+        return newAssignmentFragment;
     }
 
     // NewAssignmentFragment Interface
     @Override
     public void onUserDismiss() {
-        getSupportFragmentManager().popBackStack();
+        closeOuterFragmentShowInnerFragment();
     }
 
     @Override
     public void onUserComplete(savedAssignment savedAssignment) {
+        Fragment fragment = getSupportFragmentManager().findFragmentByTag(CALENDAR_FRAGMENT_TAG);
+        // Safe type casting
+        if (fragment instanceof CalendarFragment) {
+            ((CalendarFragment) fragment).makeEventFromAssignment(savedAssignment);
+
+        }
         Log.d("interface", "User complete");
     }
 }

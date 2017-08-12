@@ -8,6 +8,7 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.databinding.DataBindingUtil;
 import android.icu.util.Calendar;
 import android.os.AsyncTask;
@@ -16,6 +17,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -84,10 +86,25 @@ public class NewAssignmentFragment extends DialogFragment {
 
         if (id == R.id.action_save) {
             // handle confirmation button click here
+            mCallback.onUserComplete(generateAssignment());
+            mCallback.onUserDismiss();
             return true;
         } else if (id == android.R.id.home) {
             // handle close button click here
-            getFragmentManager().popBackStack();
+            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+            builder.setTitle("Discard this assignment?");
+            builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                }
+            });
+            builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    mCallback.onUserDismiss();
+                }
+            });
+            builder.show();
             return true;
         }
 
@@ -295,7 +312,6 @@ public class NewAssignmentFragment extends DialogFragment {
         dataBiding.spDialogNewAssignmentClassSelector.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                Log.d("ItemSelect", "Name:" + dataBiding.getData().getName());
                 dataBiding.getData().setClassId(position);
 
             }
