@@ -245,6 +245,7 @@ public class NewAssignmentFragment extends DialogFragment {
         });
 
 
+
         // When the user clicks the time field
         dataBiding.etDialogNewAssignmentTime.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -349,6 +350,7 @@ public class NewAssignmentFragment extends DialogFragment {
         boundData.setDueTime(dateSeleceted.getTime() + extraTime);
         // Set the completion boolean
         boundData.setCompleted(false);
+        boundData.setAssignedTime(new Date().getTime());
 
         // TODO Create a reminder oject
         // TODO Create a reoccuring field

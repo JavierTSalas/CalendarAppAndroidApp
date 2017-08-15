@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (c) 2017. Javier Salas
+  -->
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/ic_cal"
+        android:icon="@drawable/ic_add_circle_outline_black_24dp"
+        android:title="Add"/>
+
+    <item
+        android:id="@+id/ic_settings"
+        android:icon="@drawable/ic_settings"
+        android:title="Calendar Preferences"/>
+
+
+</menu>

@@ -18,6 +18,7 @@ public class bindableAssignment extends BaseObservable {
     private long dueTime, CompletionTime, assignedTime;
     private String name;
     private boolean completed;
+    private String desc;
 
     public bindableAssignment(savedAssignment item) {
         this.id = item.getId();
@@ -25,7 +26,8 @@ public class bindableAssignment extends BaseObservable {
         this.dueTime = item.getDueTime();
         this.assignedTime = item.getAssignedTime();
         this.name = item.getName();
-        this.completed = this.isCompleted();
+        this.completed = item.isCompleted();
+        this.desc = item.getDesc();
     }
 
     public bindableAssignment() {
@@ -95,4 +97,12 @@ public class bindableAssignment extends BaseObservable {
         notifyChange(); //TODO Not this
     }
 
+    public String getDesc() {
+        return desc;
+    }
+
+    public void setDesc(String desc) {
+        this.desc = desc;
+        notifyChange(); //TODO Not this
+    }
 }

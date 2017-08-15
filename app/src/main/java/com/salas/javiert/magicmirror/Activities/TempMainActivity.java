@@ -35,7 +35,8 @@ public class TempMainActivity extends AppCompatActivity implements CalendarFragm
 
     private static final String CALENDAR_FRAGMENT_TAG = "CALENDAR";
     private static final String NEW_ASSIGNMENT_FRAGMENT_TAG = "NEW";
-    private static boolean isCalendarFragmentAttached = true;
+    private static final String TAG = "MainActivity";
+    private static boolean isCalendarFragmentVisible = true;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -97,11 +98,9 @@ public class TempMainActivity extends AppCompatActivity implements CalendarFragm
         // Open the respective fragment
         NewAssignmentFragment bundledFragment = bundledFragment(dateSelected, savedAssignment);
 
-
-        // Lay the fragment on top of our other fragment
-        // testing
-
-        // Get the fragment that is inflated
+        // Since our outerFragment (the view we want to inflate) is larger than the fragment that is already inflated
+        // (The smaller frame in CalendarFragment.java) fragment. If we inflate our outerFragment we should hide the
+        // other one since the user shouldn't be interacting with it.
         openOuterFragmentHideInnerFragment(bundledFragment);
 
     }
@@ -114,7 +113,7 @@ public class TempMainActivity extends AppCompatActivity implements CalendarFragm
             @Override
             protected void onPreExecute() {
                 super.onPreExecute();
-                // Open OuterFragment
+                // Inflate outerFrame
                 fragmentManager.beginTransaction()
                         .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                         .add(R.id.outerFrame, bundledFragment, NEW_ASSIGNMENT_FRAGMENT_TAG)
@@ -124,13 +123,13 @@ public class TempMainActivity extends AppCompatActivity implements CalendarFragm
 
             @Override
             protected Void doInBackground(Void... params) {
-                // Pause InnerFragment
-                if (isCalendarFragmentAttached) {
-                    // Reset the transition
+                // Pause the fragment that we are covering
+                if (isCalendarFragmentVisible) {
+                    // Hide the fragment that we aren't seeing
                     fragmentManager.beginTransaction()
                             .hide(fragmentManager.findFragmentByTag(CALENDAR_FRAGMENT_TAG))
                             .commit();
-                    isCalendarFragmentAttached = false;
+                    isCalendarFragmentVisible = false;
                 }
                 return null;
             }
@@ -145,18 +144,19 @@ public class TempMainActivity extends AppCompatActivity implements CalendarFragm
             @Override
             protected void onPreExecute() {
                 super.onPreExecute();
-                // Resume InnerFragment
-                if (!isCalendarFragmentAttached) {
+                // We want to open the inner fragment
+                if (!isCalendarFragmentVisible) {
                     fragmentManager.beginTransaction()
                             .show(fragmentManager.findFragmentByTag(CALENDAR_FRAGMENT_TAG))
                             .commit();
-                    isCalendarFragmentAttached = true;
+                    isCalendarFragmentVisible = true;
                 }
             }
 
             @Override
             protected Void doInBackground(Void... params) {
-                // Remove OuterFragment
+                // Then remove the outerFrame. We remove it instead of hiding it since
+                // we don't want to keep it in memory anymore
                 fragmentManager.beginTransaction().
                         remove(fragmentManager.findFragmentByTag(NEW_ASSIGNMENT_FRAGMENT_TAG))
                         .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE)
@@ -167,6 +167,9 @@ public class TempMainActivity extends AppCompatActivity implements CalendarFragm
 
     }
 
+    // Creates a NewAssignmentFragment with a bundle of a Date and savedAssignment GSON formatted strings
+    // Date is used to set elements to a desired date (mainly today or a selected date on the calendar)
+    // savedAssignment is used to create a new bindableAssignment(savedAssignment) to be bound to the layout
     private NewAssignmentFragment bundledFragment(Date dateSeleceted, savedAssignment item) {
         // Pass the object as a gson string to NewAssignmentFragment
         // TODO make a bundle to do this but for prototyping this should be fine
@@ -207,7 +210,7 @@ public class TempMainActivity extends AppCompatActivity implements CalendarFragm
         if (fragment instanceof CalendarFragment) {
             ((CalendarFragment) fragment).makeEventFromAssignment(savedAssignment);
 
+            Log.d(TAG, "Event counter:" + ((CalendarFragment) fragment).getEventCountForLong(savedAssignment.getDueTime()));
         }
-        Log.d("interface", "User complete");
     }
 }

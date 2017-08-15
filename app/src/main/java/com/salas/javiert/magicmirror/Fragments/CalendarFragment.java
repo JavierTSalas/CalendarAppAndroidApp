@@ -4,7 +4,6 @@
 
 package com.salas.javiert.magicmirror.Fragments;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.icu.util.Calendar;
@@ -12,6 +11,8 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
@@ -25,7 +26,9 @@ import android.widget.Toast;
 
 import com.github.sundeepk.compactcalendarview.CompactCalendarView;
 import com.github.sundeepk.compactcalendarview.domain.Event;
+import com.salas.javiert.magicmirror.Objects.bindableObjects.bindableAssignment;
 import com.salas.javiert.magicmirror.R;
+import com.salas.javiert.magicmirror.Resources.Adapters.calendarFragmentReyclerAdapter;
 import com.salas.javiert.magicmirror.Resources.Room.assignments.savedAssignments.Entities.savedAssignment;
 import com.salas.javiert.magicmirror.Resources.Room.assignments.savedAssignments.savedAssignmentDataBaseCreator;
 import com.salas.javiert.magicmirror.Resources.Room.assignments.savedEvent.Entities.savedEvent;
@@ -45,10 +48,11 @@ public class CalendarFragment extends Fragment {
     private final static String TAG = "CalendarFragment";
     private CompactCalendarView compactCalendarView;
     private Date dateSeleceted;
-    private Dialog dialog;
     private generatingTask generatingTask;
+    private calendarFragmentReyclerAdapter mAdapter;
     private TextView calendarTitle;
     private calendarFragmentListener mCallback;
+    private RecyclerView mRecyclerView;
 
     @Override
     public void onAttach(Context context) {
@@ -79,13 +83,16 @@ public class CalendarFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        // Inflate the view
+        final View view = inflater.inflate(R.layout.layout_fragment_calendar, container, false);
 
         //Required for adding buttons to the ToolBar
         setHasOptionsMenu(true);
 
-
-        // Inflate the view
-        final View view = inflater.inflate(R.layout.layout_fragment_calendar, container, false);
+        mRecyclerView = (RecyclerView) view.findViewById(R.id.rvCalendarFragment);
+        mAdapter = new calendarFragmentReyclerAdapter(new ArrayList<bindableAssignment>());
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
+        mRecyclerView.setAdapter(mAdapter);
 
         // Define our calendar
         compactCalendarView = (CompactCalendarView) view.findViewById(R.id.compactcalendar_view);
@@ -102,24 +109,7 @@ public class CalendarFragment extends Fragment {
         updateTitle(compactCalendarView.getFirstDayOfCurrentMonth());
 
         // Set the default dateSelected so we don't get errors if the users doesn't click on another date and we need to use it
-        dateSeleceted = compactCalendarView.getFirstDayOfCurrentMonth();
-
-        // Set the listener
-        compactCalendarView.setListener(new CompactCalendarView.CompactCalendarViewListener() {
-            @Override
-            public void onDayClick(Date dateClicked) {
-                dateSeleceted = dateClicked;
-                List<Event> events = compactCalendarView.getEvents(dateClicked);
-                // Update the adapter with this
-                // FIXME: 8/4/2017
-            }
-
-            @Override
-            public void onMonthScroll(Date firstDayOfNewMonth) {
-                updateTitle(firstDayOfNewMonth);
-                dateSeleceted = firstDayOfNewMonth;
-            }
-        });
+        dateSeleceted = new Date();
 
         // If the user wants to add an event
         view.findViewById(R.id.ivToolbarPlus).setOnClickListener(new View.OnClickListener() {
@@ -129,7 +119,6 @@ public class CalendarFragment extends Fragment {
                 Log.d(TAG, "Inflating without animation");
             }
         });
-
 
         // If the user wants to go back to today
         // TODO animate this
@@ -143,7 +132,40 @@ public class CalendarFragment extends Fragment {
             }
         });
 
+        // Set the listener
+        compactCalendarView.setListener(new CompactCalendarView.CompactCalendarViewListener() {
+            @Override
+            public void onDayClick(Date dateClicked) {
+                dateSeleceted = dateClicked;
+                List<Event> events = compactCalendarView.getEvents(dateClicked);
+                Log.d(TAG, "Sending events " + events.size());
+                mAdapter.setItems(getBindableAssignmentsFromEventList(events));
+            }
+
+            @Override
+            public void onMonthScroll(Date firstDayOfNewMonth) {
+                updateTitle(firstDayOfNewMonth);
+                dateSeleceted = firstDayOfNewMonth;
+            }
+        });
+
+
         return view;
+    }
+
+    private List<bindableAssignment> getBindableAssignmentsFromEventList(List<Event> EventList) {
+        List<bindableAssignment> mList = new ArrayList<>();
+        if (EventList != null || EventList.size() != 0) {
+            for (Event e : EventList) {
+                // Safe casting
+                if (e.getData() instanceof savedAssignment) {
+                    mList.add(new bindableAssignment((savedAssignment) e.getData()));
+                    Log.d(TAG, "Converting event to bindableassignment");
+                }
+
+            }
+        }
+        return mList;
     }
 
     private void updateTitle(Date firstDayOfNewMonth) {
@@ -181,6 +203,13 @@ public class CalendarFragment extends Fragment {
         return true;
     }
 
+    public int getEventCountForLong(Long l) {
+        // If we aren't attached
+        if (mCallback == null) {
+            return 0;
+        }
+        return compactCalendarView.getEvents(l).size();
+    }
 
     private void addNewEvent() {
         // Add to room
