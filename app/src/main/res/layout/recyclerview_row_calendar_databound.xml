@@ -29,28 +29,64 @@
 
         <ProgressBar
             android:id="@+id/pbAssignmneDaysLeft"
-            style="?android:attr/progressBarStyle"
+            style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="48dp"
             android:layout_height="0dp"
             android:layout_marginBottom="8dp"
-            android:layout_marginLeft="8dp"
+            android:layout_marginLeft="0dp"
+            android:layout_marginRight="0dp"
             android:layout_marginTop="8dp"
+            android:indeterminate="false"
+            android:progressDrawable="@drawable/circular_progess_bar"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintLeft_toLeftOf="@+id/tvAssignmentMM"
+            app:layout_constraintRight_toRightOf="@+id/tvAssignmentMM"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.0"/>
+
+        <TextView
+            android:id="@+id/tvAssignmentCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="0dp"
+            android:layout_marginRight="0dp"
+            android:layout_marginTop="6dp"
+            android:text="1"
+            android:textSize="12sp"
+            android:visibility="gone"
+            app:layout_constraintLeft_toLeftOf="@+id/pbAssignmneDaysLeft"
+            app:layout_constraintRight_toRightOf="@+id/pbAssignmneDaysLeft"
+            app:layout_constraintTop_toTopOf="@+id/pbAssignmneDaysLeft"/>
+
+        <TextView
+            android:id="@+id/tvAssignmentIncrement"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginLeft="0dp"
+            android:layout_marginRight="0dp"
+            android:text="Days"
+            android:textAlignment="center"
+            android:textSize="8sp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintLeft_toLeftOf="@+id/pbAssignmneDaysLeft"
+            app:layout_constraintRight_toRightOf="@+id/pbAssignmneDaysLeft"
+            app:layout_constraintTop_toBottomOf="@+id/tvAssignmentCount"/>
 
         <TextView
             android:id="@+id/tvAssignmentTitle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
+            android:layout_marginLeft="16dp"
             android:layout_marginRight="8dp"
-            android:layout_marginTop="0dp"
+            android:layout_marginTop="8dp"
             android:text="@={data.name}"
-            app:layout_constraintLeft_toRightOf="@+id/pbAssignmneDaysLeft"
-            app:layout_constraintRight_toLeftOf="@+id/tvAssignmentMM"
-            app:layout_constraintTop_toTopOf="@+id/pbAssignmneDaysLeft"/>
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@+id/ivAssignemntCalIcon"
+            app:layout_constraintTop_toTopOf="parent"/>
 
         <TextView
             android:id="@+id/tvAssignmentClass"
@@ -60,13 +96,25 @@
             android:layout_marginRight="0dp"
             android:layout_marginTop="4dp"
             android:text="Biology"
-            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintLeft_toLeftOf="@+id/tvAssignmentTitle"
-            app:layout_constraintRight_toRightOf="@+id/tvAssignmentTitle"
+            app:layout_constraintRight_toRightOf="@+id/tvAssignmentDueTime"
             app:layout_constraintTop_toBottomOf="@+id/tvAssignmentTitle"
             tools:layout_constraintLeft_creator="1"
             tools:layout_constraintRight_creator="1"
             tools:layout_constraintTop_creator="1"/>
+
+        <ImageView
+            android:id="@+id/ivAssignemntCalIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_marginBottom="4dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginTop="0dp"
+            app:layout_constraintBottom_toTopOf="@+id/tvAssignmentClass"
+            app:layout_constraintRight_toLeftOf="@+id/tvAssignmentDueTime"
+            app:layout_constraintTop_toTopOf="@+id/tvAssignmentTitle"
+            app:layout_constraintVertical_bias="0.0"
+            app:srcCompat="@drawable/ic_event_black_24dp"/>
 
         <TextView
             android:id="@+id/tvAssignmentMM"
@@ -93,34 +141,34 @@
             app:layout_constraintTop_toBottomOf="@+id/tvAssignmentMM"
             app:layout_constraintVertical_bias="0.333"/>
 
-        <TextView
-            android:id="@+id/tvAssignmentIncrement"
+        <ImageView
+            android:id="@+id/tvAssignmentHighlight"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginBottom="8dp"
+            android:layout_marginBottom="0dp"
             android:layout_marginLeft="0dp"
-            android:layout_marginRight="0dp"
-            android:text="Days"
-            android:textAlignment="center"
-            android:textSize="8sp"
+            android:layout_marginRight="4dp"
+            android:layout_marginTop="0dp"
+            android:background="@color/bg_screen"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintLeft_toLeftOf="@+id/pbAssignmneDaysLeft"
-            app:layout_constraintRight_toRightOf="@+id/pbAssignmneDaysLeft"
-            app:layout_constraintTop_toBottomOf="@+id/tvAssignmentCount"/>
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@+id/tvAssignmentTitle"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0"/>
 
         <TextView
-            android:id="@+id/tvAssignmentCount"
+            android:id="@+id/tvAssignmentDueTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="0dp"
-            android:layout_marginRight="0dp"
-            android:layout_marginTop="6dp"
-            android:text="1"
-            android:textSize="12sp"
-            app:layout_constraintLeft_toLeftOf="@+id/pbAssignmneDaysLeft"
-            app:layout_constraintRight_toRightOf="@+id/pbAssignmneDaysLeft"
-            app:layout_constraintTop_toTopOf="@+id/pbAssignmneDaysLeft"/>
+            android:layout_marginBottom="0dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginTop="0dp"
+            android:text="12:59 AM"
+            app:layout_constraintBottom_toBottomOf="@+id/ivAssignemntCalIcon"
+            app:layout_constraintRight_toLeftOf="@+id/tvAssignmentMM"
+            app:layout_constraintTop_toTopOf="@+id/ivAssignemntCalIcon"
+            app:layout_constraintVertical_bias="0.0"/>
 
     </android.support.constraint.ConstraintLayout>
 </layout>

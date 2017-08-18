@@ -73,7 +73,7 @@ public class WelcomeScreen extends Activity {
         TinyDB preferences = new TinyDB(getApplicationContext());
         // If this isn't the first time running
         if (preferences.getBoolean("WelcomeScreenHasBeenShown")) {
-            Intent MainActivityIntent = new Intent(WelcomeScreen.this, TempMainActivity.class);
+            Intent MainActivityIntent = new Intent(WelcomeScreen.this, CalendarActivity.class);
             startActivity(MainActivityIntent);
         } else {
             preferences.putBoolean("WelcomeScreenHasBeenShown", true);

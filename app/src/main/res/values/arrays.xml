@@ -42,4 +42,10 @@
         <item>interfaceclasstimes.php</item>
         <item>interfaceclasses.php</item>
     </string-array>
+    <string-array name="calendarToolbarDropdownActions">
+        <item>Add a new assignment</item>
+        <item>Add a new class</item>
+        <item>Add a reminder</item>
+        <item>Add a break</item>
+    </string-array>
 </resources>

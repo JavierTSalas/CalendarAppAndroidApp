@@ -4,6 +4,7 @@
 
 package com.salas.javiert.magicmirror.Fragments;
 
+import android.annotation.TargetApi;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
@@ -12,6 +13,7 @@ import android.content.DialogInterface;
 import android.databinding.DataBindingUtil;
 import android.icu.util.Calendar;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -71,7 +73,6 @@ public class NewAssignmentFragment extends DialogFragment {
         return dialog;
     }
 
-
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         menu.clear();
@@ -86,7 +87,8 @@ public class NewAssignmentFragment extends DialogFragment {
 
         if (id == R.id.action_save) {
             // handle confirmation button click here
-            mCallback.onUserComplete(generateAssignment());
+            if (userHasCorrectFields())
+                mCallback.onUserComplete(generateAssignment());
             mCallback.onUserDismiss();
             return true;
         } else if (id == android.R.id.home) {
@@ -109,6 +111,10 @@ public class NewAssignmentFragment extends DialogFragment {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private boolean userHasCorrectFields() {
+        return false;
     }
 
     @Override
@@ -212,11 +218,11 @@ public class NewAssignmentFragment extends DialogFragment {
         // Get the users default Date format
         String modifiedDate = FileDataUtil.getModifiedDate(Locale.getDefault(), dateSeleceted.getTime());
         // Set default text to the selected date
-        dataBiding.etDialogNewAssignmentDate.setText(modifiedDate);
+        dataBiding.etAssignemntDueStartDate.setText(modifiedDate);
 
 
         // date listener for the user to pick the date
-        final DatePickerDialog.OnDateSetListener dateSetListener = new DatePickerDialog.OnDateSetListener() {
+        final DatePickerDialog.OnDateSetListener dateSetListenerStart = new DatePickerDialog.OnDateSetListener() {
 
             @Override
             public void onDateSet(DatePicker view, int year, int monthOfYear,
@@ -229,25 +235,56 @@ public class NewAssignmentFragment extends DialogFragment {
                 // Get the users default Date format
                 String modifiedDate = FileDataUtil.getModifiedDate(Locale.getDefault(), dateSeleceted.getTime());
                 // Update the text
-                dataBiding.etDialogNewAssignmentDate.setText(modifiedDate);
+                dataBiding.etAssignemntDueStartDate.setText(modifiedDate);
+
+            }
+
+        };
+
+        // date listener for the user to pick the date
+        final DatePickerDialog.OnDateSetListener dateSetListenerEnd = new DatePickerDialog.OnDateSetListener() {
+
+            @Override
+            public void onDateSet(DatePicker view, int year, int monthOfYear,
+                                  int dayOfMonth) {
+                java.util.Calendar selectedCalendar = java.util.Calendar.getInstance();
+                // Assign the date that the user just picked
+                selectedCalendar.set(year, monthOfYear, dayOfMonth);
+                // Set the DueTime in our object
+                dataBiding.getData().setDueTime(selectedCalendar.getTimeInMillis());
+                // Get the users default Date format
+                String modifiedDate = FileDataUtil.getModifiedDate(Locale.getDefault(), dateSeleceted.getTime());
+                // Update the text
+                dataBiding.etAssignemntDueEndDate.setText(modifiedDate);
 
             }
 
         };
 
         // When the user clicks the date field
-        dataBiding.etDialogNewAssignmentDate.setOnClickListener(new View.OnClickListener() {
+        dataBiding.etAssignemntDueStartDate.setOnClickListener(new View.OnClickListener() {
+            @TargetApi(Build.VERSION_CODES.N)
             @Override
             public void onClick(View v) {
                 // Pass the arguments of calendarFromDate() to set the date on the picker to the selcted date on the calendar
-                new DatePickerDialog(getContext(), dateSetListener, calendarFromDate.get(Calendar.YEAR), calendarFromDate.get(Calendar.MONTH), calendarFromDate.get(Calendar.DAY_OF_MONTH)).show();
+                //noinspection WrongConstant
+                new DatePickerDialog(getContext(), dateSetListenerStart, calendarFromDate.get(Calendar.YEAR), calendarFromDate.get(Calendar.MONTH), calendarFromDate.get(Calendar.DAY_OF_MONTH)).show();
+            }
+        });
+
+        // When the user clicks the date field
+        dataBiding.etAssignemntDueEndDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Pass the arguments of calendarFromDate() to set the date on the picker to the selcted date on the calendar
+                //noinspection WrongConstant
+                new DatePickerDialog(getContext(), dateSetListenerEnd, calendarFromDate.get(Calendar.YEAR), calendarFromDate.get(Calendar.MONTH), calendarFromDate.get(Calendar.DAY_OF_MONTH)).show();
             }
         });
 
 
-
         // When the user clicks the time field
-        dataBiding.etDialogNewAssignmentTime.setOnClickListener(new View.OnClickListener() {
+        dataBiding.etAssignementDueEndTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 new TimePickerDialog(getContext(), new TimePickerDialog.OnTimeSetListener() {
@@ -256,13 +293,37 @@ public class NewAssignmentFragment extends DialogFragment {
                         // Set the time format to 00:00
                         // If it works it isn't stupid
                         if (selectedHour < 10) {
-                            dataBiding.etDialogNewAssignmentTime.setText("0" + selectedHour + ":" + selectedMinute);
+                            dataBiding.etAssignementDueEndTime.setText("0" + selectedHour + ":" + selectedMinute);
                         } else if (selectedMinute < 10) {
-                            dataBiding.etDialogNewAssignmentTime.setText(selectedHour + ":" + "0" + selectedMinute);
+                            dataBiding.etAssignementDueEndTime.setText(selectedHour + ":" + "0" + selectedMinute);
                         } else if (selectedHour < 10 && selectedMinute < 10) {
-                            dataBiding.etDialogNewAssignmentTime.setText("0" + selectedHour + "0" + selectedMinute);
+                            dataBiding.etAssignementDueEndTime.setText("0" + selectedHour + "0" + selectedMinute);
                         } else {
-                            dataBiding.etDialogNewAssignmentTime.setText(selectedHour + ":" + selectedMinute);
+                            dataBiding.etAssignementDueEndTime.setText(selectedHour + ":" + selectedMinute);
+                        }
+                        extraTime = selectedHour * 60 * 60 * 1000 + selectedMinute * 60 * 1000;
+                    }
+                }, java.util.Calendar.HOUR_OF_DAY, java.util.Calendar.MINUTE, false).show();
+            }
+        });
+
+        // When the user clicks the time field
+        dataBiding.etAssignmentDueStartTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new TimePickerDialog(getContext(), new TimePickerDialog.OnTimeSetListener() {
+                    @Override
+                    public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
+                        // Set the time format to 00:00
+                        // If it works it isn't stupid
+                        if (selectedHour < 10) {
+                            dataBiding.etAssignmentDueStartTime.setText("0" + selectedHour + ":" + selectedMinute);
+                        } else if (selectedMinute < 10) {
+                            dataBiding.etAssignmentDueStartTime.setText(selectedHour + ":" + "0" + selectedMinute);
+                        } else if (selectedHour < 10 && selectedMinute < 10) {
+                            dataBiding.etAssignmentDueStartTime.setText("0" + selectedHour + "0" + selectedMinute);
+                        } else {
+                            dataBiding.etAssignmentDueStartTime.setText(selectedHour + ":" + selectedMinute);
                         }
                         extraTime = selectedHour * 60 * 60 * 1000 + selectedMinute * 60 * 1000;
                     }
@@ -277,7 +338,7 @@ public class NewAssignmentFragment extends DialogFragment {
 
 
         // Add our classes to the list
-        ArrayList<String> mList = new ArrayList<>();
+        ArrayList<String> mList;
 
 
         // If we see that the user is in class right now,
@@ -290,8 +351,8 @@ public class NewAssignmentFragment extends DialogFragment {
         // Set our list
         mList = classTimeSensor.getInstance().getStringList();
 
-        ArrayAdapter<String> userEnteredDataAdapter = null;
-        ArrayAdapter<CharSequence> defaultListAdapter = null;
+        ArrayAdapter<String> userEnteredDataAdapter;
+        ArrayAdapter<CharSequence> defaultListAdapter;
 
         // If the user hasn't set up a list
         if (mList.size() == 0) {
@@ -323,25 +384,6 @@ public class NewAssignmentFragment extends DialogFragment {
             }
         });
 
-/*
-
-        // When the user clicks the cancel button
-        dataBiding.ivDialogNewAssignmentCancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mCallback.onUserDismiss();
-            }
-        });
-
-        // When the user clicks the done button
-        dataBiding.bDialogNewAssignmentDone.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mCallback.onUserComplete(generateAssignment());
-                mCallback.onUserDismiss();
-            }
-        });
-*/
     }
 
     private savedAssignment generateAssignment() {

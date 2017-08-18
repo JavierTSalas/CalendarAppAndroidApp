@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (c) 2017. Javier Salas
+  -->
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_add_new_assignment"
+        android:title="Add a new assignment"
+        app:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/action_add_new_class"
+        android:title="Add a new class"
+        app:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/action_add_new_reminder"
+        android:title="Add a reminder"
+        app:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/action_add_new_break"
+        android:title="Add a break"
+        app:showAsAction="ifRoom"/>
+</menu>

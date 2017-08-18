@@ -47,40 +47,42 @@ public class calendarFragmentReyclerAdapter extends RecyclerView.Adapter<calenda
         holder.setHandler(new childHandler());
         // All of the magic happens here
 
-        long nowInMs = (new Date()).getTime();
-        long dueTimeInMs = (dataBaseItemList.get(position)).getDueTime();
-        long timeAssigned = (dataBaseItemList.get(position)).getAssignedTime();
-        long timeUserHadToCompleteAnAssignment = (timeAssigned - dueTimeInMs) * -1;
-        long timeUserHasLeft = (timeAssigned - nowInMs) * -1;                         // Times negative one because
-        final int progressMax = 1000;
-        final long interval = timeUserHadToCompleteAnAssignment / progressMax;
+        final long nowInMs = (new Date()).getTime();
+        final long dueTimeInMs = (dataBaseItemList.get(position)).getDueTime();
+        final long timeAssigned = (dataBaseItemList.get(position)).getAssignedTime();
+        final long timeUserHadToCompleteAnAssignment = (dueTimeInMs - timeAssigned);
+        final long timeUserHasLeft = (dueTimeInMs - nowInMs);
+        final long progressMax = 100;
+        holder.mBinding.pbAssignmneDaysLeft.setMax((int) progressMax);
 
         Log.d("datadump", nowInMs + " " + dueTimeInMs + " " + timeAssigned + " " + timeUserHadToCompleteAnAssignment + " " + timeUserHasLeft + " ");
 
+        // This is probably scrapped but keeping it for now
         CountDownTimer countDownTimer = new CountDownTimer(timeUserHasLeft, 500) {
             // 500 means, onTick function will be called at every 500 milliseconds
 
             @Override
             public void onTick(long leftTimeInMilliseconds) {
-                int progess = (int) (leftTimeInMilliseconds / interval);
-                holder.mBinding.pbAssignmneDaysLeft.setMax(progressMax);
-                holder.mBinding.pbAssignmneDaysLeft.setProgress(progess);
+                int progress = (int) (progressMax - (leftTimeInMilliseconds * progressMax / timeUserHadToCompleteAnAssignment));
+                Log.d("progress", progress + " " + leftTimeInMilliseconds + "/" + timeUserHadToCompleteAnAssignment);
+                Log.d("progress", progress + " out of " + progressMax);
+                holder.mBinding.pbAssignmneDaysLeft.setProgress(progress * 50);
 
                 if (leftTimeInMilliseconds > 1000 * 60 * 60 * 24) { // If more than a day
-                    int days = (int) Math.floor(leftTimeInMilliseconds / 1000 * 60 * 60 * 24);
+                    int days = (int) Math.floor(leftTimeInMilliseconds / (1000 * 60 * 60 * 24));
                     holder.mBinding.tvAssignmentCount.setText(String.valueOf(days));
                     holder.mBinding.tvAssignmentIncrement.setText("Days");
                 } else if (leftTimeInMilliseconds > 1000 * 60 * 60 * 2) { // If more than an two hours but less than a day
-                    int hours = (int) Math.floor(leftTimeInMilliseconds / 1000 * 60 * 60);
+                    int hours = (int) Math.floor(leftTimeInMilliseconds / (1000 * 60 * 60));
                     holder.mBinding.tvAssignmentCount.setText(String.valueOf(hours));
                     holder.mBinding.tvAssignmentIncrement.setText("Hours");
                 } else { // If less than two hours show the user
-                    int minutes = (int) Math.floor(leftTimeInMilliseconds / 1000 * 60);
+                    int minutes = (int) Math.floor(leftTimeInMilliseconds / (1000 * 60));
                     holder.mBinding.tvAssignmentCount.setText(String.valueOf(minutes));
                     holder.mBinding.tvAssignmentIncrement.setText("Minutes");
                 }
                 // format the textview to show the easily readable format
-
+                //holder.mBinding.pbAssignmneDaysLeft.getProgressDrawable().setColorFilter(new PorterDuffColorFilter(Color.GREEN, PorterDuff.Mode.OVERLAY));
             }
 
             @Override
@@ -88,7 +90,9 @@ public class calendarFragmentReyclerAdapter extends RecyclerView.Adapter<calenda
                 holder.mBinding.tvAssignmentCount.setText("!");
                 holder.mBinding.tvAssignmentIncrement.setText("DUE");
             }
-        }.start();
+        };
+
+
 
     }
 

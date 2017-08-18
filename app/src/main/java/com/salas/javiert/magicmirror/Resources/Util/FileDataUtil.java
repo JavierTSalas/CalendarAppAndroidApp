@@ -37,7 +37,7 @@ public class FileDataUtil {
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
     public static String getDateFormat(Locale locale) {
-        return DateFormat.getBestDateTimePattern(locale, "MM/dd/yyyy");
+        return DateFormat.getBestDateTimePattern(locale, "EEE, d MMM ");
     }
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
