@@ -5,7 +5,7 @@
 package com.salas.javiert.magicmirror.Resources.Adapters;
 
 import android.databinding.DataBindingUtil;
-import android.os.CountDownTimer;
+import android.graphics.Color;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -15,11 +15,14 @@ import android.view.ViewGroup;
 
 import com.salas.javiert.magicmirror.Objects.bindableObjects.bindableAssignment;
 import com.salas.javiert.magicmirror.R;
+import com.salas.javiert.magicmirror.Resources.Room.assignments.savedAssignments.Entities.savedAssignment;
+import com.salas.javiert.magicmirror.Resources.Util.FileDataUtil;
 import com.salas.javiert.magicmirror.Views.DataBindingTest.DatabaseFragment.Fragment.RecyclerViewClasses.childHandler;
 import com.salas.javiert.magicmirror.databinding.RecyclerviewRowCalendarDataboundBinding;
 
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by javi6 on 8/12/2017.
@@ -27,12 +30,17 @@ import java.util.List;
 
 public class calendarFragmentReyclerAdapter extends RecyclerView.Adapter<calendarFragmentReyclerAdapter.bindingEventViewHolder> {
 
+    OnClickRecyclerChild mCallback;
     private List<bindableAssignment> dataBaseItemList;
 
     public calendarFragmentReyclerAdapter(List<bindableAssignment> myList) {
         this.dataBaseItemList = myList;
     }
 
+    public calendarFragmentReyclerAdapter(List<bindableAssignment> dataBaseItemList, OnClickRecyclerChild mCallback) {
+        this.mCallback = mCallback;
+        this.dataBaseItemList = dataBaseItemList;
+    }
 
     @Override
     public calendarFragmentReyclerAdapter.bindingEventViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -43,58 +51,38 @@ public class calendarFragmentReyclerAdapter extends RecyclerView.Adapter<calenda
 
     @Override
     public void onBindViewHolder(final calendarFragmentReyclerAdapter.bindingEventViewHolder holder, int position) {
+        Log.d("calendarAdapater", dataBaseItemList.get(position).toString());
         holder.bind(dataBaseItemList.get(position));
         holder.setHandler(new childHandler());
         // All of the magic happens here
 
-        final long nowInMs = (new Date()).getTime();
-        final long dueTimeInMs = (dataBaseItemList.get(position)).getDueTime();
-        final long timeAssigned = (dataBaseItemList.get(position)).getAssignedTime();
-        final long timeUserHadToCompleteAnAssignment = (dueTimeInMs - timeAssigned);
-        final long timeUserHasLeft = (dueTimeInMs - nowInMs);
-        final long progressMax = 100;
-        holder.mBinding.pbAssignmneDaysLeft.setMax((int) progressMax);
+        holder.mBinding.tvAssignmentHighlight.setBackgroundColor(getColorFromClassId(holder.mBinding.getData().getId()));
+        // Set the text by the imageview to the time that the assignment is due
+        holder.mBinding.tvAssignmentDueTime.setText(FileDataUtil.getModifiedTime(Locale.getDefault(), holder.mBinding.getData().getDueTime()));
+        holder.mBinding.tvAssignmentMM.setText(FileDataUtil.getModifiedMonthName(Locale.getDefault(), holder.mBinding.getData().getDueTime()));
+        holder.mBinding.tvAssignmentDD.setText(FileDataUtil.getModifiedCalendarDay(Locale.getDefault(), holder.mBinding.getData().getDueTime()));
 
-        Log.d("datadump", nowInMs + " " + dueTimeInMs + " " + timeAssigned + " " + timeUserHadToCompleteAnAssignment + " " + timeUserHasLeft + " ");
-
-        // This is probably scrapped but keeping it for now
-        CountDownTimer countDownTimer = new CountDownTimer(timeUserHasLeft, 500) {
-            // 500 means, onTick function will be called at every 500 milliseconds
-
+        holder.mBinding.getRoot().setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onTick(long leftTimeInMilliseconds) {
-                int progress = (int) (progressMax - (leftTimeInMilliseconds * progressMax / timeUserHadToCompleteAnAssignment));
-                Log.d("progress", progress + " " + leftTimeInMilliseconds + "/" + timeUserHadToCompleteAnAssignment);
-                Log.d("progress", progress + " out of " + progressMax);
-                holder.mBinding.pbAssignmneDaysLeft.setProgress(progress * 50);
-
-                if (leftTimeInMilliseconds > 1000 * 60 * 60 * 24) { // If more than a day
-                    int days = (int) Math.floor(leftTimeInMilliseconds / (1000 * 60 * 60 * 24));
-                    holder.mBinding.tvAssignmentCount.setText(String.valueOf(days));
-                    holder.mBinding.tvAssignmentIncrement.setText("Days");
-                } else if (leftTimeInMilliseconds > 1000 * 60 * 60 * 2) { // If more than an two hours but less than a day
-                    int hours = (int) Math.floor(leftTimeInMilliseconds / (1000 * 60 * 60));
-                    holder.mBinding.tvAssignmentCount.setText(String.valueOf(hours));
-                    holder.mBinding.tvAssignmentIncrement.setText("Hours");
-                } else { // If less than two hours show the user
-                    int minutes = (int) Math.floor(leftTimeInMilliseconds / (1000 * 60));
-                    holder.mBinding.tvAssignmentCount.setText(String.valueOf(minutes));
-                    holder.mBinding.tvAssignmentIncrement.setText("Minutes");
-                }
-                // format the textview to show the easily readable format
-                //holder.mBinding.pbAssignmneDaysLeft.getProgressDrawable().setColorFilter(new PorterDuffColorFilter(Color.GREEN, PorterDuff.Mode.OVERLAY));
+            public void onClick(View v) {
+                mCallback.editAssignment(new savedAssignment(holder.mBinding.getData()));
             }
-
-            @Override
-            public void onFinish() {
-                holder.mBinding.tvAssignmentCount.setText("!");
-                holder.mBinding.tvAssignmentIncrement.setText("DUE");
-            }
-        };
-
-
+        });
 
     }
+
+    private int getColorFromClassId(int id) {
+        // TODO get this form a database and read it on onAttach()
+        List<Integer> myColorList = new ArrayList<>();
+        myColorList.add(Color.RED);
+        myColorList.add(Color.BLUE);
+        myColorList.add(Color.YELLOW);
+        myColorList.add(Color.DKGRAY);
+        myColorList.add(Color.BLUE);
+
+        return myColorList.get(id);
+    }
+
 
     public void setItems(final List<bindableAssignment> argumentList) {
         Log.d("dataBindingAdapter", "Received a list with " + argumentList.size() + " elements");
@@ -140,6 +128,11 @@ public class calendarFragmentReyclerAdapter extends RecyclerView.Adapter<calenda
     public int getItemCount() {
         return (dataBaseItemList != null) ? dataBaseItemList.size() : 0;
     }
+
+    public interface OnClickRecyclerChild {
+        void editAssignment(savedAssignment savedAssignment);
+    }
+
 
     // Define our custom ViewHolder for the recycler view
     public class bindingEventViewHolder extends RecyclerView.ViewHolder {

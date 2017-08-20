@@ -29,7 +29,43 @@ public class FileDataUtil {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
             dateFormat = new SimpleDateFormat(getDateFormat(locale));
         } else {
-            dateFormat = new SimpleDateFormat("MMM/dd/yyyy hh:mm:ss aa");
+            dateFormat = new SimpleDateFormat("EEE, d MMM");
+        }
+
+        return dateFormat.format(new Date(modified));
+    }
+
+    public static String getModifiedTime(Locale locale, long modified) {
+        SimpleDateFormat dateFormat = null;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            dateFormat = new SimpleDateFormat(getTimeFormat(locale));
+        } else {
+            dateFormat = new SimpleDateFormat("hh:mm");
+        }
+
+        return dateFormat.format(new Date(modified));
+    }
+
+    public static String getModifiedMonthName(Locale locale, long modified) {
+        SimpleDateFormat dateFormat = null;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            dateFormat = new SimpleDateFormat(getMonthFormat(locale));
+        } else {
+            dateFormat = new SimpleDateFormat("MMM");
+        }
+
+        return dateFormat.format(new Date(modified));
+    }
+
+    public static String getModifiedCalendarDay(Locale locale, long modified) {
+        SimpleDateFormat dateFormat = null;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            dateFormat = new SimpleDateFormat(getCalendarDayFormat(locale));
+        } else {
+            dateFormat = new SimpleDateFormat("dd");
         }
 
         return dateFormat.format(new Date(modified));
@@ -42,6 +78,16 @@ public class FileDataUtil {
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
     public static String getTimeFormat(Locale locale) {
-        return DateFormat.getBestDateTimePattern(locale, "hh:mm:ss");
+        return DateFormat.getBestDateTimePattern(locale, "hh:mm");
+    }
+
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
+    public static String getMonthFormat(Locale locale) {
+        return DateFormat.getBestDateTimePattern(locale, "MMM");
+    }
+
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
+    public static String getCalendarDayFormat(Locale locale) {
+        return DateFormat.getBestDateTimePattern(locale, "dd");
     }
 }

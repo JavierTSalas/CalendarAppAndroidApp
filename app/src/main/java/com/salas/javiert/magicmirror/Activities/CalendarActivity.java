@@ -63,6 +63,7 @@ public class CalendarActivity extends AppCompatActivity implements NewAssignment
     private Toolbar mToolbar;
     private Date dateSeleceted;
 
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -88,6 +89,7 @@ public class CalendarActivity extends AppCompatActivity implements NewAssignment
                 List<Event> events = compactCalendarView.getEvents(dateClicked);
                 Log.d(TAG, "Sending events " + events.size());
                 mAdapter.setItems(getBindableAssignmentsFromEventList(events));
+
             }
 
             @Override
@@ -123,7 +125,12 @@ public class CalendarActivity extends AppCompatActivity implements NewAssignment
 
     private void setUpReyclerView() {
         mRecyclerView = (RecyclerView) findViewById(R.id.rvCalendarFragment);
-        mAdapter = new calendarFragmentReyclerAdapter(new ArrayList<bindableAssignment>());
+        mAdapter = new calendarFragmentReyclerAdapter(new ArrayList<bindableAssignment>(), new calendarFragmentReyclerAdapter.OnClickRecyclerChild() {
+            @Override
+            public void editAssignment(savedAssignment savedAssignment) {
+                openNewAssignmentFragment(createBundledFragmentFromArguments(new Date(savedAssignment.getDueTime()), savedAssignment, 0));
+            }
+        });
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.setAdapter(mAdapter);
 
@@ -221,7 +228,7 @@ public class CalendarActivity extends AppCompatActivity implements NewAssignment
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.calendar_fragment_toolbar_menu, menu);
-        return true;
+        return super.onCreateOptionsMenu(menu);
     }
 
     //Called when a menu option is selected
@@ -240,7 +247,7 @@ public class CalendarActivity extends AppCompatActivity implements NewAssignment
                                                        pum.getMenu().close();
 
                                                        onClickNewAssignment(dateSeleceted, new savedAssignment());
-                                                       break;
+                                                       return true;
                                                    case R.id.action_add_new_break:
                                                        break;
                                                    case R.id.action_add_new_class:
@@ -274,7 +281,8 @@ public class CalendarActivity extends AppCompatActivity implements NewAssignment
                 break;
         }
 
-        return true;
+        // Return unhandled event
+        return super.onOptionsItemSelected(item);
     }
 
     private void populateCalendarWithEventsFromRoom() {
@@ -343,7 +351,7 @@ public class CalendarActivity extends AppCompatActivity implements NewAssignment
     // CalendarFragment interface
     public void onClickNewAssignment(Date dateSelected, savedAssignment savedAssignment) {
 
-        NewAssignmentFragment bundledFragment = bundledFragment(dateSelected, savedAssignment);
+        NewAssignmentFragment bundledFragment = createBundledFragmentFromArguments(dateSelected, savedAssignment, 1);
 
         // Since our outerFragment (the view we want to inflate) is larger than the fragment that is already inflated
         // (The smaller frame in CalendarFragment.java) fragment. If we inflate our outerFragment we should hide the
@@ -379,7 +387,17 @@ public class CalendarActivity extends AppCompatActivity implements NewAssignment
     // Creates a NewAssignmentFragment with a bundle of a Date and savedAssignment GSON formatted strings
     // Date is used to set elements to a desired date (mainly today or a selected date on the calendar)
     // savedAssignment is used to create a new bindableAssignment(savedAssignment) to be bound to the layout
-    private NewAssignmentFragment bundledFragment(Date dateSeleceted, savedAssignment item) {
+    //Integer mode = savedInstanceState.getInt(MODE_KEY);
+    //    switch (mode){
+    //    case 0:
+    //        currentMode = MODES.EDIT;
+    //        break;
+    //    case 1:
+    //        currentMode = MODES.NEW;
+    //        break;
+    //}
+
+    private NewAssignmentFragment createBundledFragmentFromArguments(Date dateSeleceted, savedAssignment item, Integer mode) {
         // Pass the object as a gson string to NewAssignmentFragment
         // TODO make a bundle to do this but for prototyping this should be fine
 
@@ -391,12 +409,8 @@ public class CalendarActivity extends AppCompatActivity implements NewAssignment
 
         Bundle args = new Bundle();
         args.putString(NewAssignmentFragment.DATE_KEY, new Gson().toJson(dateSeleceted, Date.class));
-        Log.d(NewAssignmentFragment.DATE_KEY, "Put in bundle" + new Gson().toJson(dateSeleceted, Date.class));
-        Log.d(NewAssignmentFragment.DATE_KEY, "Put in bundle" + dateSeleceted.toString());
-
         args.putString(NewAssignmentFragment.ITEM_KEY, new Gson().toJson(item, savedAssignment.class));
-        Log.d(NewAssignmentFragment.ITEM_KEY, "Put in bundle" + new Gson().toJson(item, savedAssignment.class));
-        Log.d(NewAssignmentFragment.ITEM_KEY, "Put in bundle" + item.toString());
+        args.putInt(NewAssignmentFragment.MODE_KEY, mode);
 
         // Set our args
         Log.d("Inflater", "seting Arguments");

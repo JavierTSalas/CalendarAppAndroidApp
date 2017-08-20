@@ -90,7 +90,7 @@
                     app:layout_constraintTop_toBottomOf="@+id/tvAsssignmentDesc"/>
 
                 <EditText
-                    android:id="@+id/etAssignemntDueStartDate"
+                    android:id="@+id/etAssignmentDueStartDate"
                     android:layout_width="0dp"
                     android:layout_height="44dp"
                     android:layout_marginLeft="0dp"
@@ -100,7 +100,7 @@
                     app:layout_constraintLeft_toLeftOf="@+id/tvDialogNewAssignmentDue"/>
 
                 <EditText
-                    android:id="@+id/etAssignemntDueEndDate"
+                    android:id="@+id/etAssignmentDueEndDate"
                     android:layout_width="0dp"
                     android:layout_height="44dp"
                     android:layout_marginLeft="0dp"
@@ -111,7 +111,7 @@
                     app:layout_constraintTop_toBottomOf="@+id/tvAssignmentEnd"/>
 
                 <EditText
-                    android:id="@+id/etAssignementDueEndTime"
+                    android:id="@+id/etAssignmentDueEndTime"
                     android:layout_width="95dp"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="8dp"
@@ -121,8 +121,8 @@
                     android:ems="10"
                     android:focusable="false"
                     android:inputType="time"
-                    app:layout_constraintBaseline_toBaselineOf="@+id/etAssignemntDueEndDate"
-                    app:layout_constraintLeft_toRightOf="@+id/etAssignemntDueEndDate"
+                    app:layout_constraintBaseline_toBaselineOf="@+id/etAssignmentDueEndDate"
+                    app:layout_constraintLeft_toRightOf="@+id/etAssignmentDueEndDate"
                     app:layout_constraintRight_toRightOf="parent"/>
 
                 <TextView
@@ -141,7 +141,7 @@
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintLeft_toLeftOf="@+id/etDialogNewAssignmentName"
                     app:layout_constraintRight_toLeftOf="@+id/cbDialogNewAssignmentAllday"
-                    app:layout_constraintTop_toBottomOf="@+id/etAssignemntDueStartDate"/>
+                    app:layout_constraintTop_toBottomOf="@+id/etAssignmentDueStartDate"/>
 
                 <EditText
                     android:id="@+id/etAssignmentDueStartTime"
@@ -155,7 +155,7 @@
                     android:ems="10"
                     android:focusable="false"
                     android:inputType="time"
-                    app:layout_constraintLeft_toRightOf="@+id/etAssignemntDueStartDate"
+                    app:layout_constraintLeft_toRightOf="@+id/etAssignmentDueStartDate"
                     app:layout_constraintRight_toRightOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/tvDialogNewAssignmentDue"/>
 
@@ -190,7 +190,7 @@
                     android:textAlignment="textStart"
                     android:textSize="18sp"
                     app:layout_constraintLeft_toLeftOf="@+id/tvDialogNewAssignmentDue"
-                    app:layout_constraintTop_toBottomOf="@+id/etAssignemntDueEndDate"/>
+                    app:layout_constraintTop_toBottomOf="@+id/etAssignmentDueEndDate"/>
 
                 <Spinner
                     android:id="@+id/spDialogNewAssignmentClassSelector"
