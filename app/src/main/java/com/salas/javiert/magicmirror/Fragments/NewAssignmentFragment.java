@@ -303,8 +303,8 @@ public class NewAssignmentFragment extends DialogFragment {
         dataBiding.etAssignmentDueStartTime.setText(FileDataUtil.getModifiedTime(Locale.getDefault(), System.currentTimeMillis()));
 
         if (currentMode == MODES.EDIT) {
-            dataBiding.etAssignmentDueEndDate.setText(FileDataUtil.getModifiedDate(Locale.getDefault(), dateSeleceted.getTime()));
-            dataBiding.etAssignmentDueEndTime.setText(FileDataUtil.getModifiedTime(Locale.getDefault(), System.currentTimeMillis()));
+            dataBiding.etAssignmentDueEndDate.setText(FileDataUtil.getModifiedDate(Locale.getDefault(), dataBiding.getData().getDueTime()));
+            dataBiding.etAssignmentDueEndTime.setText(FileDataUtil.getModifiedTime(Locale.getDefault(), dataBiding.getData().getDueTime()));
 
         }
 
