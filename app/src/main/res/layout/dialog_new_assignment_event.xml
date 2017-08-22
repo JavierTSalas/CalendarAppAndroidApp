@@ -3,8 +3,9 @@
   ~ Copyright (c) 2017. Javier Salas
   -->
 
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     >
 
     <data>
@@ -22,21 +23,23 @@
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:layout_marginLeft="0dp"
+            android:layout_marginRight="0dp"
+            android:layout_marginTop="0dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/tbDialogNewAssignmentToolbar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="0dp"
-                android:layout_marginRight="0dp"
-                android:layout_marginTop="0dp"
+
                 android:background="?attr/colorPrimary"
                 android:minHeight="?attr/actionBarSize"
                 android:theme="?attr/actionBarTheme"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toTopOf="parent"/>
+                />
 
             <android.support.constraint.ConstraintLayout
                 android:layout_width="0dp"
@@ -52,42 +55,65 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tbDialogNewAssignmentToolbar"
-                app:layout_constraintVertical_bias="0.506">
+
+                app:layout_constraintTop_toBottomOf="@+id/tbDialogNewAssignmentToolbar">
 
 
-                <EditText
-                    android:id="@+id/etDialogNewAssignmentName"
-                    android:layout_width="0dp"
-                    android:layout_height="67dp"
-
-                    android:layout_marginLeft="0dp"
-                    android:layout_marginRight="8dp"
-                    android:layout_marginTop="4dp"
-                    android:hint="@string/DefaultAssignmentName"
-                    android:text="@={data.name}"
-                    android:textColor="@color/AlmostBlack"
-                    android:textSize="24sp"
-                    app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintLeft_toLeftOf="@+id/tvAssigmentTitle"
-                    app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tvAssigmentTitle"/>
-
-                <EditText
-                    android:id="@+id/etAssignmentDesc"
-                    android:layout_width="0dp"
-                    android:layout_height="67dp"
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/etDialogNewAssignmentNameContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_marginLeft="0dp"
                     android:layout_marginRight="0dp"
-                    android:layout_marginTop="4dp"
-                    android:hint="Enter a description"
-                    android:text="@={data.desc}"
-                    android:textColor="@color/AlmostBlack"
-                    android:textSize="24sp"
+                    android:layout_marginTop="0dp"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <EditText
+                        android:id="@+id/editText"
+                        android:layout_width="match_parent"
+
+                        android:layout_height="67dp"
+                        android:layout_marginLeft="0dp"
+                        android:layout_marginRight="8dp"
+                        android:layout_marginTop="4dp"
+                        android:hint="@string/DefaultAssignmentName"
+                        android:text="@={data.name}"
+                        android:textColor="@color/AlmostBlack"
+                        android:textSize="24sp"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintLeft_toLeftOf="@+id/tvAssigmentTitle"
+                        app:layout_constraintRight_toRightOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/tvAssigmentTitle"/>
+
+                </android.support.design.widget.TextInputLayout>
+
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/etAssignmentDescContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="0dp"
+                    android:layout_marginRight="0dp"
+                    android:layout_marginTop="8dp"
                     app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintLeft_toLeftOf="@+id/etDialogNewAssignmentName"
-                    app:layout_constraintRight_toRightOf="@+id/etDialogNewAssignmentName"
-                    app:layout_constraintTop_toBottomOf="@+id/tvAsssignmentDesc"/>
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="@+id/etDialogNewAssignmentNameContainer"
+                    app:layout_constraintTop_toBottomOf="@+id/etDialogNewAssignmentNameContainer"
+                    >
+
+                    <EditText
+                        android:id="@+id/etAssignmentDesc"
+                        android:layout_width="match_parent"
+                        android:layout_height="67dp"
+
+                        android:hint="Description"
+                        android:text="@={data.desc}"
+                        android:textColor="@color/AlmostBlack"
+                        android:textSize="24sp"
+                        />
+
+                </android.support.design.widget.TextInputLayout>
 
                 <EditText
                     android:id="@+id/etAssignmentDueStartDate"
@@ -139,8 +165,8 @@
                     android:textAlignment="inherit"
                     android:textSize="18sp"
                     app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintLeft_toLeftOf="@+id/etDialogNewAssignmentName"
-                    app:layout_constraintRight_toLeftOf="@+id/cbDialogNewAssignmentAllday"
+                    app:layout_constraintLeft_toLeftOf="@+id/etDialogNewAssignmentNameContainer"
+                    app:layout_constraintRight_toLeftOf="@+id/etDialogNewAssignmentNameContainer"
                     app:layout_constraintTop_toBottomOf="@+id/etAssignmentDueStartDate"/>
 
                 <EditText
@@ -165,7 +191,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="0dp"
                     android:layout_marginRight="8dp"
-                    android:layout_marginTop="-2dp"
+                    android:layout_marginTop="8dp"
                     android:ems="10"
                     android:gravity="start"
                     android:inputType="textPersonName"
@@ -173,9 +199,9 @@
                     android:textAlignment="inherit"
                     android:textSize="18sp"
                     app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintLeft_toLeftOf="@+id/etDialogNewAssignmentName"
+                    app:layout_constraintLeft_toLeftOf="@+id/etDialogNewAssignmentNameContainer"
                     app:layout_constraintRight_toLeftOf="@+id/cbDialogNewAssignmentAllday"
-                    app:layout_constraintTop_toBottomOf="@+id/etAssignmentDesc"/>
+                    app:layout_constraintTop_toBottomOf="@+id/etAssignmentDescContainer"/>
 
                 <TextView
                     android:id="@+id/tvDialogNewAssignmentClass"
@@ -228,17 +254,6 @@
                     app:layout_constraintRight_toRightOf="@+id/etAssignmentDueStartTime"
                     app:layout_constraintTop_toTopOf="@+id/tvDialogNewAssignmentDue"/>
 
-                <TextView
-                    android:id="@+id/tvAssigmentTitle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginTop="0dp"
-                    android:text="Title"
-                    android:textSize="18sp"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"/>
-
                 <ImageView
                     android:id="@+id/ivAssignmentPlusReminder"
                     android:layout_width="wrap_content"
@@ -250,18 +265,6 @@
                     app:layout_constraintRight_toRightOf="@+id/spDialogNewAssignmentClassSelector"
                     app:layout_constraintTop_toTopOf="@+id/tvDialogNewAssignmentNotificationText"
                     app:srcCompat="@drawable/ic_add_circle_outline_black_24dp"/>
-
-                <TextView
-                    android:id="@+id/tvAsssignmentDesc"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="0dp"
-                    android:layout_marginTop="4dp"
-                    android:text="Description"
-                    android:textSize="18sp"
-                    app:layout_constraintLeft_toLeftOf="@+id/etDialogNewAssignmentName"
-                    app:layout_constraintTop_toBottomOf="@+id/etDialogNewAssignmentName"
-                    />
 
 
             </android.support.constraint.ConstraintLayout>

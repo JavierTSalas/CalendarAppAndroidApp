@@ -92,7 +92,7 @@ public class NewAssignmentFragment extends DialogFragment {
             if (id == R.id.action_save) {
                 // handle confirmation button click here
                 if (userHasCorrectFields()) {
-                    mCallback.onUserComplete(generateAssignment());
+                    mCallback.onUserComplete(generateAssignment(), 0);
                     mCallback.onUserDismiss();
                 } else {
                     final AlertDialog.Builder missingFields = new AlertDialog.Builder(getContext());
@@ -127,29 +127,11 @@ public class NewAssignmentFragment extends DialogFragment {
             if (id == R.id.action_save) {
                 // handle confirmation button click here
                 if (userHasCorrectFields()) {
-                    mCallback.onUserComplete(generateAssignment());
+                    // User has finished editing the assignment. Sent a 1 so we know to sent it
+                    mCallback.onUserComplete(generateAssignment(), 1);
                     mCallback.onUserDismiss();
-                } else {
-                    if (changesMade) {
-                        final AlertDialog.Builder changesHaveBeenMade = new AlertDialog.Builder(getContext());
-                        changesHaveBeenMade.setTitle("You have made changes to the assignment. Would you like to save your edits?");
-                        changesHaveBeenMade.setPositiveButton("SAVE", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                mCallback.onUserComplete(generateAssignment());
-                                mCallback.onUserDismiss();
-                            }
-                        });
-                        changesHaveBeenMade.setNegativeButton("CLOSE", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                mCallback.onUserDismiss();
-                            }
-                        });
-                        changesHaveBeenMade.show();
-                    }
+                    return true;
                 }
-                return true;
             } else if (id == android.R.id.home) {
                 // handle close button click here
                 AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
@@ -279,14 +261,13 @@ public class NewAssignmentFragment extends DialogFragment {
         }
         dataBiding.setData(item);
 
-
         Integer mode = savedInstanceState.getInt(MODE_KEY);
         switch (mode) {
             case 0:
-                currentMode = MODES.EDIT;
+                currentMode = MODES.NEW;
                 break;
             case 1:
-                currentMode = MODES.NEW;
+                currentMode = MODES.EDIT;
                 break;
         }
     }
@@ -294,15 +275,17 @@ public class NewAssignmentFragment extends DialogFragment {
     private void bindViews() {
         // Create a Calendar object with the date from the dateSelected on the calendar
         calendarStartDate.setTimeInMillis(dateSeleceted.getTime());
-
+        Log.d(TAG, FileDataUtil.getModifiedDate(Locale.getDefault(), dateSeleceted.getTime()));
         dataBiding.getData().setAssignedTime(dateSeleceted.getTime());
 
         // Get the users default Date format
         // Set default format to the start date fields
-        dataBiding.etAssignmentDueStartDate.setText(FileDataUtil.getModifiedDate(Locale.getDefault(), dateSeleceted.getTime()));
-        dataBiding.etAssignmentDueStartTime.setText(FileDataUtil.getModifiedTime(Locale.getDefault(), System.currentTimeMillis()));
-
-        if (currentMode == MODES.EDIT) {
+        if (currentMode == MODES.NEW) {
+            dataBiding.etAssignmentDueStartDate.setText(FileDataUtil.getModifiedDate(Locale.getDefault(), dateSeleceted.getTime()));
+            dataBiding.etAssignmentDueStartTime.setText(FileDataUtil.getModifiedTime(Locale.getDefault(), System.currentTimeMillis()));
+        } else if (currentMode == MODES.EDIT) {
+            dataBiding.etAssignmentDueStartDate.setText(FileDataUtil.getModifiedDate(Locale.getDefault(), dataBiding.getData().getAssignedTime()));
+            dataBiding.etAssignmentDueStartTime.setText(FileDataUtil.getModifiedTime(Locale.getDefault(), dataBiding.getData().getAssignedTime()));
             dataBiding.etAssignmentDueEndDate.setText(FileDataUtil.getModifiedDate(Locale.getDefault(), dataBiding.getData().getDueTime()));
             dataBiding.etAssignmentDueEndTime.setText(FileDataUtil.getModifiedTime(Locale.getDefault(), dataBiding.getData().getDueTime()));
 
@@ -477,10 +460,10 @@ public class NewAssignmentFragment extends DialogFragment {
     private savedAssignment generateAssignment() {
         bindableAssignment boundData = dataBiding.getData();
         // Set the time in ms
-        boundData.setAssignedTime(calendarStartDate.getTimeInMillis());
-        boundData.setDueTime(calendarEndDate.getTimeInMillis());
         // Set the completion boolean
         boundData.setCompleted(false);
+        boundData.setAssignedTime(calendarStartDate.getTimeInMillis());
+        Log.d(TAG, FileDataUtil.getModifiedTime(Locale.getDefault(), calendarStartDate.getTimeInMillis()));
 
         // TODO Create a reminder oject
         // TODO Create a reoccuring field
@@ -495,7 +478,7 @@ public class NewAssignmentFragment extends DialogFragment {
     public interface newAssignmentFragmentListener {
         void onUserDismiss();
 
-        void onUserComplete(savedAssignment savedAssignment);
+        void onUserComplete(savedAssignment savedAssignment, int mode);
 
     }
 }

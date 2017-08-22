@@ -36,4 +36,7 @@ public interface savedAssignmentDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     void insertAll(List<savedAssignment> savedAssignments);
+
+    @Insert(onConflict = OnConflictStrategy.FAIL)
+    void insert(savedAssignment savedAssignment);
 }

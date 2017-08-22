@@ -4,6 +4,7 @@
 
 package com.salas.javiert.magicmirror.Activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.icu.util.Calendar;
@@ -12,6 +13,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -24,6 +26,7 @@ import android.util.SparseArray;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import com.github.sundeepk.compactcalendarview.CompactCalendarView;
@@ -55,6 +58,8 @@ public class CalendarActivity extends AppCompatActivity implements NewAssignment
     private static final String NEW_ASSIGNMENT_FRAGMENT_TAG = "NEW";
     private static final String TAG = "MainActivity";
     private static boolean isCalendarFragmentVisible = true; // Double checking never hurts right?
+    private List<Event> eventsToBeSaved = new ArrayList<>();
+    private int runningCountOfAssignments;
     private CompactCalendarView compactCalendarView;
     private RecyclerView mRecyclerView;
     private generatingTask generatingTask;
@@ -63,12 +68,33 @@ public class CalendarActivity extends AppCompatActivity implements NewAssignment
     private Toolbar mToolbar;
     private Date dateSeleceted;
 
+    private void getCountOfAssignments() {
+        new AsyncTask<Void, Void, Void>() {
+            final savedAssignmentDataBaseCreator creator = savedAssignmentDataBaseCreator.getInstance(getApplicationContext());
+
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+                if (creator.isDatabaseCreated().getValue().equals(Boolean.FALSE)) {
+                    creator.createDb(getApplicationContext());
+                }
+            }
+
+            @Override
+            protected Void doInBackground(Void... params) {
+                runningCountOfAssignments = (creator.getDatabase().savedAssignmentDao().getAll().size());
+                return null;
+            }
+        }.execute();
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_fragment_calendar);
 
+        // Find runningCountOfAssignments
+        getCountOfAssignments();
         setupBottomNavigationBar();
         setupTopNavigationBar();
         setUpReyclerView();
@@ -80,16 +106,14 @@ public class CalendarActivity extends AppCompatActivity implements NewAssignment
 
         // Set the default dateSelected so we don't get errors if the users doesn't click on another date and we need to use it
         dateSeleceted = new Date();
+        populateRecyclerWithEventsOnDate(dateSeleceted);
 
         // Set the listener
         compactCalendarView.setListener(new CompactCalendarView.CompactCalendarViewListener() {
             @Override
             public void onDayClick(Date dateClicked) {
                 dateSeleceted = dateClicked;
-                List<Event> events = compactCalendarView.getEvents(dateClicked);
-                Log.d(TAG, "Sending events " + events.size());
-                mAdapter.setItems(getBindableAssignmentsFromEventList(events));
-
+                populateRecyclerWithEventsOnDate(dateSeleceted);
             }
 
             @Override
@@ -100,6 +124,55 @@ public class CalendarActivity extends AppCompatActivity implements NewAssignment
         });
 
 
+    }
+
+    private void populateRecyclerWithEventsOnDate(Date dateSeleceted) {
+        List<Event> events = compactCalendarView.getEvents(dateSeleceted);
+        Log.d(TAG, "Sending events " + events.size());
+        mAdapter.setItems(getBindableAssignmentsFromEventList(events));
+
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        saveEventsFromRoom();
+    }
+
+    private void saveEventsFromRoom() {
+        new AsyncTask<Void, Void, Void>() {
+            final savedAssignmentDataBaseCreator assignmentCreator = savedAssignmentDataBaseCreator.getInstance(getApplicationContext());
+
+
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+                if (assignmentCreator.isDatabaseCreated().getValue().equals(Boolean.FALSE)) {
+                    assignmentCreator.createDb(getApplicationContext());
+                }
+
+            }
+
+
+            @Override
+            protected Void doInBackground(Void... params) {
+                List<savedEvent> savedEvents = new ArrayList<>();
+                List<savedAssignment> savedAssignments = new ArrayList<>();
+                for (Event e : eventsToBeSaved) {
+                    // Safe typecasting
+                    if (e.getData() instanceof savedAssignment) {
+                        savedAssignment innerObject = (savedAssignment) e.getData();
+                        // Add our savedAssignment object to a list
+                        savedAssignments.add(innerObject);
+                        eventsToBeSaved.remove(e);
+                    }
+                }
+                assignmentCreator.getDatabase().savedAssignmentDao().insertAll(savedAssignments);
+                return null;
+            }
+
+
+        }.execute();
     }
 
     private void generateEventList() {
@@ -122,13 +195,12 @@ public class CalendarActivity extends AppCompatActivity implements NewAssignment
         return mList;
     }
 
-
     private void setUpReyclerView() {
         mRecyclerView = (RecyclerView) findViewById(R.id.rvCalendarFragment);
         mAdapter = new calendarFragmentReyclerAdapter(new ArrayList<bindableAssignment>(), new calendarFragmentReyclerAdapter.OnClickRecyclerChild() {
             @Override
             public void editAssignment(savedAssignment savedAssignment) {
-                openNewAssignmentFragment(createBundledFragmentFromArguments(new Date(savedAssignment.getDueTime()), savedAssignment, 0));
+                inflateNewAssignmentFragment(new Date(savedAssignment.getAssignedTime()), savedAssignment, 1);
             }
         });
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -168,7 +240,7 @@ public class CalendarActivity extends AppCompatActivity implements NewAssignment
                                                            public boolean onMenuItemClick(MenuItem item) {
                                                                switch (item.getItemId()) {
                                                                    case R.id.action_add_new_assignment:
-                                                                       onClickNewAssignment(dateSeleceted, new savedAssignment());
+                                                                       inflateNewAssignmentFragment(dateSeleceted, new savedAssignment(), 0);
                                                                        break;
                                                                    case R.id.action_add_new_break:
                                                                        break;
@@ -245,8 +317,7 @@ public class CalendarActivity extends AppCompatActivity implements NewAssignment
                                                        // Hack to immediately hide the popup
                                                        // I tried to use a loop for this but it didnt work for whatever reason
                                                        pum.getMenu().close();
-
-                                                       onClickNewAssignment(dateSeleceted, new savedAssignment());
+                                                       inflateNewAssignmentFragment(dateSeleceted, new savedAssignment(), 0);
                                                        return true;
                                                    case R.id.action_add_new_break:
                                                        break;
@@ -340,27 +411,34 @@ public class CalendarActivity extends AppCompatActivity implements NewAssignment
         }.execute();
     }
 
-
-    public void makeEventFromAssignment(savedAssignment savedAssignment) {
+    public void makeEventFromAssignment(final savedAssignment savedAssignment) {
         // TODO get color code for a class
         int color = Color.GREEN;
         compactCalendarView.addEvent(new Event(color, savedAssignment.getDueTime(), savedAssignment), true);
+
+        new AsyncTask<Void, Void, Void>() {
+            final savedAssignmentDataBaseCreator creator = savedAssignmentDataBaseCreator.getInstance(getApplicationContext());
+
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+                if (creator.isDatabaseCreated().getValue().equals(Boolean.FALSE)) {
+                    creator.createDb(getApplicationContext());
+                }
+            }
+
+            @Override
+            protected Void doInBackground(Void... params) {
+                creator.getDatabase().savedAssignmentDao().insert(savedAssignment);
+                return null;
+            }
+        }.execute();
     }
 
+    public void inflateNewAssignmentFragment(Date calendarStartDate, savedAssignment savedAssignment, int mode) {
 
-    // CalendarFragment interface
-    public void onClickNewAssignment(Date dateSelected, savedAssignment savedAssignment) {
+        NewAssignmentFragment bundledFragment = createBundledFragmentFromArguments(calendarStartDate, savedAssignment, mode);
 
-        NewAssignmentFragment bundledFragment = createBundledFragmentFromArguments(dateSelected, savedAssignment, 1);
-
-        // Since our outerFragment (the view we want to inflate) is larger than the fragment that is already inflated
-        // (The smaller frame in CalendarFragment.java) fragment. If we inflate our outerFragment we should hide the
-        // other one since the user shouldn't be interacting with it.
-        openNewAssignmentFragment(bundledFragment);
-
-    }
-
-    private void openNewAssignmentFragment(final NewAssignmentFragment bundledFragment) {
         FragmentManager fragmentManager = getSupportFragmentManager();
         // Inflate fragment
         fragmentManager.beginTransaction()
@@ -369,8 +447,8 @@ public class CalendarActivity extends AppCompatActivity implements NewAssignment
                 .addToBackStack(null)
                 .commit();
 
-    }
 
+    }
 
     private void fragmentPop() {
         FragmentManager fragmentManager = getSupportFragmentManager();
@@ -387,16 +465,13 @@ public class CalendarActivity extends AppCompatActivity implements NewAssignment
     // Creates a NewAssignmentFragment with a bundle of a Date and savedAssignment GSON formatted strings
     // Date is used to set elements to a desired date (mainly today or a selected date on the calendar)
     // savedAssignment is used to create a new bindableAssignment(savedAssignment) to be bound to the layout
-    //Integer mode = savedInstanceState.getInt(MODE_KEY);
-    //    switch (mode){
+    // Integer mode = savedInstanceState.getInt(MODE_KEY);
     //    case 0:
     //        currentMode = MODES.EDIT;
     //        break;
     //    case 1:
     //        currentMode = MODES.NEW;
     //        break;
-    //}
-
     private NewAssignmentFragment createBundledFragmentFromArguments(Date dateSeleceted, savedAssignment item, Integer mode) {
         // Pass the object as a gson string to NewAssignmentFragment
         // TODO make a bundle to do this but for prototyping this should be fine
@@ -424,10 +499,44 @@ public class CalendarActivity extends AppCompatActivity implements NewAssignment
     @Override
     public void onUserDismiss() {
         fragmentPop();
+        InputMethodManager inputMethodManager = (InputMethodManager) this.getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+
     }
 
-    public void onUserComplete(savedAssignment savedAssignment) {
-        makeEventFromAssignment(savedAssignment);
+    public void onUserComplete(savedAssignment savedAssignment, int mode) {
+        if (mode == 0) {
+            makeEventFromAssignment(savedAssignment);
+            Snackbar.make(findViewById(android.R.id.content), "Assignment added", Snackbar.LENGTH_SHORT).show();
+        } else if (mode == 1) {
+            updateAssignmentInRoom(savedAssignment);
+            Snackbar.make(findViewById(android.R.id.content), "Your edits have been saved", Snackbar.LENGTH_SHORT).show();
+        }
+    }
+
+    private void updateAssignmentInRoom(final savedAssignment savedAssignment) {
+        List<Event> eventsForDay = compactCalendarView.getEvents(savedAssignment.getDueTime());
+
+        // Get livedata savedAssignment
+        // have livedata boundableassigment observer the livedata
+        // update recyclerview
+        new AsyncTask<Void, Void, Void>() {
+            final savedAssignmentDataBaseCreator creator = savedAssignmentDataBaseCreator.getInstance(getApplicationContext());
+
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+                if (creator.isDatabaseCreated().getValue().equals(Boolean.FALSE)) {
+                    creator.createDb(getApplicationContext());
+                }
+            }
+
+            @Override
+            protected Void doInBackground(Void... params) {
+                creator.getDatabase().savedAssignmentDao().updateAssignment(savedAssignment);
+                return null;
+            }
+        }.execute();
     }
 
     private class generatingTask extends AsyncTask<Void, Void, Void> {

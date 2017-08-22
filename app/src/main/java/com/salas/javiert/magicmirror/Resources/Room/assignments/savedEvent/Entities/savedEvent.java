@@ -20,6 +20,13 @@ public class savedEvent {
     private int color;
     private long eventTime;
 
+    public savedEvent(int id, int savedAsssignmentId, int color, long eventTime) {
+        this.id = id;
+        this.savedAsssignmentId = savedAsssignmentId;
+        this.color = color;
+        this.eventTime = eventTime;
+    }
+
     public int getId() {
         return id;
     }
