@@ -65,7 +65,6 @@ public class CalendarActivity extends AppCompatActivity implements NewAssignment
     private generatingTask generatingTask;
     private calendarFragmentReyclerAdapter mAdapter;
     private PopupMenu pum;
-    private Toolbar mToolbar;
     private Date dateSeleceted;
 
     private void getCountOfAssignments() {
@@ -93,13 +92,14 @@ public class CalendarActivity extends AppCompatActivity implements NewAssignment
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_fragment_calendar);
 
+        Toolbar mToolbar = (Toolbar) findViewById(R.id.tbCalendarFragment);
+        setSupportActionBar(mToolbar);
+
         // Find runningCountOfAssignments
         getCountOfAssignments();
         setupBottomNavigationBar();
-        setupTopNavigationBar();
         setUpReyclerView();
         populateCalendarWithEventsFromRoom();
-
         // Setup? Really should have added more comments
         generateEventList();
 
@@ -200,7 +200,7 @@ public class CalendarActivity extends AppCompatActivity implements NewAssignment
         mAdapter = new calendarFragmentReyclerAdapter(new ArrayList<bindableAssignment>(), new calendarFragmentReyclerAdapter.OnClickRecyclerChild() {
             @Override
             public void editAssignment(savedAssignment savedAssignment) {
-                inflateNewAssignmentFragment(new Date(savedAssignment.getAssignedTime()), savedAssignment, 1);
+                inflateNewAssignmentFragment(new Date(savedAssignment.getAssignedTime()), savedAssignment.getClassId(), 1);
             }
         });
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -219,47 +219,7 @@ public class CalendarActivity extends AppCompatActivity implements NewAssignment
     private void updateTitle(Date firstDayOfNewMonth) {
         SimpleDateFormat sdf = new SimpleDateFormat("MMMM - yyyy", Locale.getDefault());
         String formattedDate = sdf.format(firstDayOfNewMonth);
-        mToolbar.setTitle(formattedDate);
-    }
-
-    private void setupTopNavigationBar() {
-        // Set our toolbar
-        mToolbar = (Toolbar) findViewById(R.id.tbCalendarFragment);
-        mToolbar.inflateMenu(R.menu.calendar_fragment_toolbar_menu);
-        mToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.calendar_fragment_today:
-                        break;
-                    case R.id.calendar_fragment_add:
-                        // Define our popup
-                        pum.show();
-                        pum.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                                                           @Override
-                                                           public boolean onMenuItemClick(MenuItem item) {
-                                                               switch (item.getItemId()) {
-                                                                   case R.id.action_add_new_assignment:
-                                                                       inflateNewAssignmentFragment(dateSeleceted, new savedAssignment(), 0);
-                                                                       break;
-                                                                   case R.id.action_add_new_break:
-                                                                       break;
-                                                                   case R.id.action_add_new_class:
-                                                                       break;
-                                                                   case R.id.action_add_new_reminder:
-                                                                       break;
-                                                               }
-                                                               return false;
-                                                           }
-                                                       }
-                        );
-                        break;
-                }
-                return false;
-            }
-        });
-
-        setSupportActionBar(mToolbar);
+        getSupportActionBar().setTitle(formattedDate);
     }
 
     private void setupBottomNavigationBar() {
@@ -317,7 +277,8 @@ public class CalendarActivity extends AppCompatActivity implements NewAssignment
                                                        // Hack to immediately hide the popup
                                                        // I tried to use a loop for this but it didnt work for whatever reason
                                                        pum.getMenu().close();
-                                                       inflateNewAssignmentFragment(dateSeleceted, new savedAssignment(), 0);
+                                                       // we use count + 1 as a possible new index in our table
+                                                       inflateNewAssignmentFragment(dateSeleceted, runningCountOfAssignments + 1, 0);
                                                        return true;
                                                    case R.id.action_add_new_break:
                                                        break;
@@ -435,9 +396,9 @@ public class CalendarActivity extends AppCompatActivity implements NewAssignment
         }.execute();
     }
 
-    public void inflateNewAssignmentFragment(Date calendarStartDate, savedAssignment savedAssignment, int mode) {
+    public void inflateNewAssignmentFragment(Date calendarStartDate, Integer index, int mode) {
 
-        NewAssignmentFragment bundledFragment = createBundledFragmentFromArguments(calendarStartDate, savedAssignment, mode);
+        NewAssignmentFragment bundledFragment = createBundledFragmentFromArguments(calendarStartDate, index, mode);
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         // Inflate fragment
@@ -472,7 +433,7 @@ public class CalendarActivity extends AppCompatActivity implements NewAssignment
     //    case 1:
     //        currentMode = MODES.NEW;
     //        break;
-    private NewAssignmentFragment createBundledFragmentFromArguments(Date dateSeleceted, savedAssignment item, Integer mode) {
+    private NewAssignmentFragment createBundledFragmentFromArguments(Date dateSeleceted, Integer index, Integer mode) {
         // Pass the object as a gson string to NewAssignmentFragment
         // TODO make a bundle to do this but for prototyping this should be fine
 
@@ -484,7 +445,7 @@ public class CalendarActivity extends AppCompatActivity implements NewAssignment
 
         Bundle args = new Bundle();
         args.putString(NewAssignmentFragment.DATE_KEY, new Gson().toJson(dateSeleceted, Date.class));
-        args.putString(NewAssignmentFragment.ITEM_KEY, new Gson().toJson(item, savedAssignment.class));
+        args.putInt(NewAssignmentFragment.COLUMN_INDEX_KEY, index);
         args.putInt(NewAssignmentFragment.MODE_KEY, mode);
 
         // Set our args
@@ -497,13 +458,17 @@ public class CalendarActivity extends AppCompatActivity implements NewAssignment
 
     // NewAssignmentFragment Interface
     @Override
-    public void onUserDismiss() {
+    public void onUserDismiss(boolean shouldIncrement) {
+        if (shouldIncrement) {
+            runningCountOfAssignments++;
+        }
         fragmentPop();
         InputMethodManager inputMethodManager = (InputMethodManager) this.getSystemService(Context.INPUT_METHOD_SERVICE);
         inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
 
     }
 
+    // Snackbar to tell the user that we've processed the data
     public void onUserComplete(savedAssignment savedAssignment, int mode) {
         if (mode == 0) {
             makeEventFromAssignment(savedAssignment);

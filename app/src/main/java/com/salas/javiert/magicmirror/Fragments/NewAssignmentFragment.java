@@ -34,12 +34,14 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.salas.javiert.magicmirror.Objects.SingletonObjects.myTimeSensorClasses.classTimeSensor;
 import com.salas.javiert.magicmirror.Objects.bindableObjects.bindableAssignment;
 import com.salas.javiert.magicmirror.R;
 import com.salas.javiert.magicmirror.Resources.Room.assignments.savedAssignments.Entities.savedAssignment;
+import com.salas.javiert.magicmirror.Resources.Room.assignments.savedAssignments.savedAssignmentDataBaseCreator;
 import com.salas.javiert.magicmirror.Resources.Util.FileDataUtil;
 import com.salas.javiert.magicmirror.databinding.DialogNewAssignmentEventBinding;
 
@@ -55,7 +57,7 @@ import java.util.Locale;
 
 public class NewAssignmentFragment extends DialogFragment {
 
-    public final static String ITEM_KEY = "myBindableAssignment";
+    public final static String COLUMN_INDEX_KEY = "myBindableAssignment";
     public final static String DATE_KEY = "myDate";
     public final static String MODE_KEY = "mode";
     public final static String TAG = "NewAssignmentFragment";
@@ -92,8 +94,9 @@ public class NewAssignmentFragment extends DialogFragment {
             if (id == R.id.action_save) {
                 // handle confirmation button click here
                 if (userHasCorrectFields()) {
+                    // Tell our activity to
                     mCallback.onUserComplete(generateAssignment(), 0);
-                    mCallback.onUserDismiss();
+                    mCallback.onUserDismiss(true);
                 } else {
                     final AlertDialog.Builder missingFields = new AlertDialog.Builder(getContext());
                     missingFields.setTitle("Please completely fill out the required elements to save");
@@ -117,7 +120,7 @@ public class NewAssignmentFragment extends DialogFragment {
                 builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        mCallback.onUserDismiss();
+                        mCallback.onUserDismiss(true);
                     }
                 });
                 builder.show();
@@ -129,25 +132,13 @@ public class NewAssignmentFragment extends DialogFragment {
                 if (userHasCorrectFields()) {
                     // User has finished editing the assignment. Sent a 1 so we know to sent it
                     mCallback.onUserComplete(generateAssignment(), 1);
-                    mCallback.onUserDismiss();
+                    mCallback.onUserDismiss(false);
                     return true;
                 }
             } else if (id == android.R.id.home) {
                 // handle close button click here
                 AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                builder.setTitle("Discard this assignment?");
-                builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                    }
-                });
-                builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        mCallback.onUserDismiss();
-                    }
-                });
-                builder.show();
+                mCallback.onUserDismiss(false);
                 return true;
             }
         }
@@ -245,22 +236,52 @@ public class NewAssignmentFragment extends DialogFragment {
         //  If the string is not "" , try to get our date for the view
         if (!dateJson.equals("")) {
             dateSeleceted = new Gson().fromJson(dateJson, Date.class);
-            Log.d(DATE_KEY, "Loaded from bundle" + dateJson);
-            Log.d(DATE_KEY, "Loaded from bundle" + dateSeleceted.toString());
         }
 
         // Try to get the bindableAssignment that was sent as a string
-        String savedAssignmentJSON = savedInstanceState.getString(ITEM_KEY, "");
-        //  If the string is not "" , try to get our bindableAssignment for the view
-        if (!savedAssignmentJSON.equals("")) {
-            Gson gson = new Gson();
-            // Converting form savedAssignment since the bound data is too fancy to save as a gson formatted text
-            item = new bindableAssignment(gson.fromJson(savedAssignmentJSON, savedAssignment.class));
-            Log.d(ITEM_KEY, "Loaded from bundle" + savedAssignmentJSON);
-            Log.d(ITEM_KEY, "Loaded from bundle" + item.toString());
-        }
-        dataBiding.setData(item);
+        final Integer index = savedInstanceState.getInt(COLUMN_INDEX_KEY);
 
+        Log.d(COLUMN_INDEX_KEY, "Loaded from bundle " + index);
+        // The item at index
+        // change this to use a bindable assigment
+        new AsyncTask<Integer, Void, Void>() {
+            final savedAssignmentDataBaseCreator creator = savedAssignmentDataBaseCreator.getInstance(getContext());
+
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+                if (creator.isDatabaseCreated().getValue().equals(Boolean.FALSE)) {
+                    creator.createDb(getContext());
+                }
+            }
+
+            @Override
+            protected Void doInBackground(Integer... params) {
+                // Fetch the item from the database
+                savedAssignment fetchedItem = creator.getDatabase().savedAssignmentDao().getIndex(params[0]);
+                // If the item exists
+                if (fetchedItem != null) {
+                    Log.d(TAG, fetchedItem.getName());
+                    item = new bindableAssignment(fetchedItem);
+                } else {
+                    // Make a new bindableAssignment with the give id
+                    item = new bindableAssignment();
+                    item.setId(params[0]);
+                }
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                super.onPostExecute(aVoid);
+                dataBiding.setData(item);
+                Toast.makeText(getContext(), dataBiding.getData().getId(), Toast.LENGTH_SHORT);
+
+            }
+
+        }.execute(index);
+
+        // Determine the mode of the fragment
         Integer mode = savedInstanceState.getInt(MODE_KEY);
         switch (mode) {
             case 0:
@@ -476,7 +497,7 @@ public class NewAssignmentFragment extends DialogFragment {
 
     // Container Activity must implement this interface
     public interface newAssignmentFragmentListener {
-        void onUserDismiss();
+        void onUserDismiss(boolean shouldIcrement);
 
         void onUserComplete(savedAssignment savedAssignment, int mode);
 

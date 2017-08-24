@@ -23,6 +23,9 @@ public interface savedAssignmentDao {
     @Query("SELECT * FROM saved_assignments")
     List<savedAssignment> getAll();
 
+    @Query("SELECT * FROM saved_assignments WHERE  id = :id")
+    savedAssignment getIndex(int id);
+
     @Query("SELECT * FROM saved_assignments WHERE completed = :status")
     List<savedAssignment> getAllWhereCompleteIs(boolean status);
 
