@@ -6,7 +6,6 @@ package com.salas.javiert.magicmirror.Fragments;
 
 import android.annotation.TargetApi;
 import android.app.DatePickerDialog;
-import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -15,10 +14,9 @@ import android.icu.util.Calendar;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
-import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -29,14 +27,13 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.TimePicker;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
+import com.salas.javiert.magicmirror.Activities.MainActivity;
 import com.salas.javiert.magicmirror.Objects.SingletonObjects.myTimeSensorClasses.classTimeSensor;
 import com.salas.javiert.magicmirror.Objects.bindableObjects.bindableAssignment;
 import com.salas.javiert.magicmirror.R;
@@ -55,7 +52,7 @@ import java.util.Locale;
  * Created by javi6 on 8/9/2017.
  */
 
-public class NewAssignmentFragment extends DialogFragment {
+public class NewAssignmentFragment extends Fragment {
 
     public final static String COLUMN_INDEX_KEY = "myBindableAssignment";
     public final static String DATE_KEY = "myDate";
@@ -65,12 +62,13 @@ public class NewAssignmentFragment extends DialogFragment {
     DialogNewAssignmentEventBinding dataBiding;
     bindableAssignment item = new bindableAssignment();
     Date dateSeleceted = new Date();
-    newAssignmentFragmentListener mCallback;
+    OnBackPressedListener mCallback;
     java.util.Calendar calendarStartDate = java.util.Calendar.getInstance();
     java.util.Calendar calendarEndDate = java.util.Calendar.getInstance();
     MODES currentMode;
     private boolean changesMade = false;
 
+    /*
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -78,6 +76,7 @@ public class NewAssignmentFragment extends DialogFragment {
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         return dialog;
     }
+    */
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -94,11 +93,17 @@ public class NewAssignmentFragment extends DialogFragment {
             if (id == R.id.action_save) {
                 // handle confirmation button click here
                 if (userHasCorrectFields()) {
-                    // Tell our activity to
-                    mCallback.onUserComplete(generateAssignment(), 0);
-                    mCallback.onUserDismiss(true);
+                    // Find the CalendarFragment
+                    CalendarFragment invoker = (CalendarFragment) getTargetFragment();
+                    if (invoker != null) {
+                        // Call our method
+                        invoker.onUserComplete(generateAssignment(), 0);
+                        invoker.onUserDismiss(true);
+                    }
+
+
                 } else {
-                    final AlertDialog.Builder missingFields = new AlertDialog.Builder(getContext());
+                    final AlertDialog.Builder missingFields = new AlertDialog.Builder(getActivity());
                     missingFields.setTitle("Please completely fill out the required elements to save");
                     missingFields.setPositiveButton("CLOSE", new DialogInterface.OnClickListener() {
                         @Override
@@ -110,7 +115,7 @@ public class NewAssignmentFragment extends DialogFragment {
                 return true;
             } else if (id == android.R.id.home) {
                 // handle close button click here
-                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                 builder.setTitle("Discard this assignment?");
                 builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
                     @Override
@@ -120,9 +125,16 @@ public class NewAssignmentFragment extends DialogFragment {
                 builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        mCallback.onUserDismiss(true);
+
+                        // Find the CalendarFragment
+                        CalendarFragment invoker = (CalendarFragment) getTargetFragment();
+                        if (invoker != null) {
+                            // Call our method
+                            invoker.onUserDismiss(false);
+                        }
                     }
                 });
+
                 builder.show();
                 return true;
             }
@@ -130,15 +142,27 @@ public class NewAssignmentFragment extends DialogFragment {
             if (id == R.id.action_save) {
                 // handle confirmation button click here
                 if (userHasCorrectFields()) {
-                    // User has finished editing the assignment. Sent a 1 so we know to sent it
-                    mCallback.onUserComplete(generateAssignment(), 1);
-                    mCallback.onUserDismiss(false);
+
+                    // Find the CalendarFragment
+                    CalendarFragment invoker = (CalendarFragment) getTargetFragment();
+                    if (invoker != null) {
+                        // User has finished editing the assignment. Sent a 1 so we know to sent it
+                        // Call our method
+                        invoker.onUserComplete(generateAssignment(), 1);
+                        invoker.onUserDismiss(false);
+                    }
                     return true;
                 }
             } else if (id == android.R.id.home) {
                 // handle close button click here
-                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                mCallback.onUserDismiss(false);
+
+                // Find the CalendarFragment
+                CalendarFragment invoker = (CalendarFragment) getTargetFragment();
+                if (invoker != null) {
+                    // Call our method
+                    invoker.onUserDismiss(false);
+                }
+
                 return true;
             }
         }
@@ -160,21 +184,29 @@ public class NewAssignmentFragment extends DialogFragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+
+
+        /*
         // This makes sure that the container activity has implemented
         // the callback interface. If not, it throws an exception
         try {
             mCallback = (newAssignmentFragmentListener) context;
         } catch (ClassCastException e) {
             throw new ClassCastException(context.toString()
-                    + " must implement OnHeadlineSelectedListener");
+                    + " must implement newAssignmentFragmentListener");
         }
+        */
+        setUpFragmentCommunication();
 
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
+
+        /*
         mCallback = null;
+        */
     }
 
     @Nullable
@@ -202,6 +234,8 @@ public class NewAssignmentFragment extends DialogFragment {
             @Override
             protected void onPostExecute(Void aVoid) {
                 super.onPostExecute(aVoid);
+                // Lock and hide the drawer
+                ((MainActivity) getActivity()).setDrawerState(false);
                 // Bind our views
                 bindViews();
             }
@@ -209,19 +243,21 @@ public class NewAssignmentFragment extends DialogFragment {
 
 
         // Set our title
+        String titleText = "";
         if (currentMode == MODES.EDIT) {
-            dataBiding.tbDialogNewAssignmentToolbar.setTitle("Edit assignment");
+            titleText = "Edit assignment";
         } else if (currentMode == MODES.NEW) {
-            dataBiding.tbDialogNewAssignmentToolbar.setTitle("New Assignment");
+            titleText = "New Assignment";
         }
 
-        ((AppCompatActivity) getActivity()).setSupportActionBar(dataBiding.tbDialogNewAssignmentToolbar);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(titleText);
 
         ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setHomeButtonEnabled(true);
         }
+
 
         return dataBiding.getRoot();
     }
@@ -245,13 +281,13 @@ public class NewAssignmentFragment extends DialogFragment {
         // The item at index
         // change this to use a bindable assigment
         new AsyncTask<Integer, Void, Void>() {
-            final savedAssignmentDataBaseCreator creator = savedAssignmentDataBaseCreator.getInstance(getContext());
+            final savedAssignmentDataBaseCreator creator = savedAssignmentDataBaseCreator.getInstance(getActivity().getApplicationContext());
 
             @Override
             protected void onPreExecute() {
                 super.onPreExecute();
                 if (creator.isDatabaseCreated().getValue().equals(Boolean.FALSE)) {
-                    creator.createDb(getContext());
+                    creator.createDb(getActivity().getApplicationContext());
                 }
             }
 
@@ -260,11 +296,12 @@ public class NewAssignmentFragment extends DialogFragment {
                 // Fetch the item from the database
                 savedAssignment fetchedItem = creator.getDatabase().savedAssignmentDao().getIndex(params[0]);
                 // If the item exists
-                if (fetchedItem != null) {
-                    Log.d(TAG, fetchedItem.getName());
+                try {
                     item = new bindableAssignment(fetchedItem);
-                } else {
+                } catch (NullPointerException e) {
+                    // We were not able to get a item at index params[0]
                     // Make a new bindableAssignment with the give id
+                    Log.d(TAG, "Object not found in index " + params[0]);
                     item = new bindableAssignment();
                     item.setId(params[0]);
                 }
@@ -275,7 +312,6 @@ public class NewAssignmentFragment extends DialogFragment {
             protected void onPostExecute(Void aVoid) {
                 super.onPostExecute(aVoid);
                 dataBiding.setData(item);
-                Toast.makeText(getContext(), dataBiding.getData().getId(), Toast.LENGTH_SHORT);
 
             }
 
@@ -296,6 +332,7 @@ public class NewAssignmentFragment extends DialogFragment {
     private void bindViews() {
         // Create a Calendar object with the date from the dateSelected on the calendar
         calendarStartDate.setTimeInMillis(dateSeleceted.getTime());
+        Log.d(TAG, "Opening index " + String.valueOf(dataBiding.getData().getId()));
         Log.d(TAG, FileDataUtil.getModifiedDate(Locale.getDefault(), dateSeleceted.getTime()));
         dataBiding.getData().setAssignedTime(dateSeleceted.getTime());
 
@@ -372,7 +409,7 @@ public class NewAssignmentFragment extends DialogFragment {
                 changesMade = true;
                 // Pass the arguments of calendarFromDate() to set the date on the picker to the selected date on the calendar
                 //noinspection WrongConstant
-                new DatePickerDialog(getContext(), dateSetListenerEnd, calendarEndDate.get(Calendar.YEAR), calendarEndDate.get(Calendar.MONTH), calendarEndDate.get(Calendar.DAY_OF_MONTH)).show();
+                new DatePickerDialog(getActivity().getApplicationContext(), dateSetListenerEnd, calendarEndDate.get(Calendar.YEAR), calendarEndDate.get(Calendar.MONTH), calendarEndDate.get(Calendar.DAY_OF_MONTH)).show();
             }
         });
 
@@ -381,7 +418,7 @@ public class NewAssignmentFragment extends DialogFragment {
         dataBiding.etAssignmentDueStartTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new TimePickerDialog(getContext(), new TimePickerDialog.OnTimeSetListener() {
+                new TimePickerDialog(getActivity().getApplicationContext(), new TimePickerDialog.OnTimeSetListener() {
                     @RequiresApi(api = Build.VERSION_CODES.N)
                     @Override
                     public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
@@ -405,7 +442,7 @@ public class NewAssignmentFragment extends DialogFragment {
         dataBiding.etAssignmentDueEndTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new TimePickerDialog(getContext(), new TimePickerDialog.OnTimeSetListener() {
+                new TimePickerDialog(getActivity().getApplicationContext(), new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
                         changesMade = true;
@@ -451,12 +488,12 @@ public class NewAssignmentFragment extends DialogFragment {
         // If the user hasn't set up a list
         if (mList.size() == 0) {
             // Make the arrayAdapter from the default class list
-            defaultListAdapter = ArrayAdapter.createFromResource(getContext(), R.array.class_list_default, android.R.layout.simple_spinner_item);
+            defaultListAdapter = ArrayAdapter.createFromResource(getActivity().getApplicationContext(), R.array.class_list_default, android.R.layout.simple_spinner_item);
             // Set the adapter
             dataBiding.spDialogNewAssignmentClassSelector.setAdapter(defaultListAdapter);
         } else {
             // Make the arrayAdapter from items that the user created
-            userEnteredDataAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_dropdown_item, mList);
+            userEnteredDataAdapter = new ArrayAdapter<>(getActivity().getApplicationContext(), android.R.layout.simple_spinner_dropdown_item, mList);
             // Set the adapter
             dataBiding.spDialogNewAssignmentClassSelector.setAdapter(userEnteredDataAdapter);
 
@@ -491,15 +528,20 @@ public class NewAssignmentFragment extends DialogFragment {
         return new savedAssignment(boundData);
     }
 
+    private void setUpFragmentCommunication() {
+        CalendarFragment calendarFragment = (CalendarFragment) getFragmentManager().findFragmentByTag(CalendarFragment.FRAGMENT_TAG);
+        setTargetFragment(calendarFragment, calendarFragment.getTargetRequestCode());
+        getTargetFragment();
+        getTargetRequestCode();
+    }
+
     private enum MODES {
         NEW, EDIT
     }
 
-    // Container Activity must implement this interface
-    public interface newAssignmentFragmentListener {
-        void onUserDismiss(boolean shouldIcrement);
 
-        void onUserComplete(savedAssignment savedAssignment, int mode);
-
+    public interface OnBackPressedListener {
+        public void doBack();
     }
+
 }

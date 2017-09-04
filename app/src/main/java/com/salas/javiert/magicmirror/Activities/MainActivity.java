@@ -19,7 +19,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.loopj.android.http.TextHttpResponseHandler;
-import com.salas.javiert.magicmirror.Fragments.AssignmentsFragment;
+import com.salas.javiert.magicmirror.Fragments.CalendarFragment;
 import com.salas.javiert.magicmirror.Fragments.ConnectionFragment;
 import com.salas.javiert.magicmirror.Fragments.DatabaseFragment;
 import com.salas.javiert.magicmirror.Fragments.DoneCheckFragment;
@@ -75,9 +75,9 @@ public class MainActivity extends AppCompatActivity {
                 // Handle action buttons
                 switch (item.getItemId()) {
                     case R.id.nav_Assignments:
-                        Toast.makeText(getApplicationContext(), "Assignments Selected", Toast.LENGTH_SHORT).show();
-                        AssignmentsFragment view_fragment = new AssignmentsFragment();
-                        fragmentTransaction.replace(R.id.frame, view_fragment);
+                        Toast.makeText(getApplicationContext(), "Calendar Selected", Toast.LENGTH_SHORT).show();
+                        CalendarFragment view_fragment = new CalendarFragment();
+                        fragmentTransaction.replace(R.id.frame, view_fragment, CalendarFragment.FRAGMENT_TAG);
                         fragmentTransaction.commit();
                         break;
                     case R.id.nav_TODOCheck:
@@ -162,6 +162,23 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
+
+
+    public void setDrawerState(boolean isEnabled) {
+        if (isEnabled) {
+            mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+            mToggle.onDrawerStateChanged(DrawerLayout.LOCK_MODE_UNLOCKED);
+            mToggle.setDrawerIndicatorEnabled(true);
+            mToggle.syncState();
+
+        } else {
+            mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+            mToggle.onDrawerStateChanged(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+            mToggle.setDrawerIndicatorEnabled(false);
+            mToggle.syncState();
+        }
+    }
+
 
     private void updateQueueCount() {
 

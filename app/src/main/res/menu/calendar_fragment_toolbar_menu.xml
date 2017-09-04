@@ -17,7 +17,7 @@
         android:actionViewClass="android.widget.Spinner"
         android:icon="@drawable/ic_add_circle_outline_black_24dp"
         android:title="Calendar Preferences"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="never"/>
 
 
 </menu>

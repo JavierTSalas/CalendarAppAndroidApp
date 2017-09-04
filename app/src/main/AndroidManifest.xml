@@ -26,11 +26,6 @@
             android:name=".Activities.MainActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar"/>
-        <activity
-            android:name=".Activities.CalendarActivity"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait"
             android:theme="@style/AppTheme"/>
     </application>
 
