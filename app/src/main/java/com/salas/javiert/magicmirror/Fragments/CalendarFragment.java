@@ -27,6 +27,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.github.sundeepk.compactcalendarview.CompactCalendarView;
@@ -40,6 +41,7 @@ import com.salas.javiert.magicmirror.Resources.Room.assignments.savedAssignments
 import com.salas.javiert.magicmirror.Resources.Room.assignments.savedAssignments.savedAssignmentDataBaseCreator;
 import com.salas.javiert.magicmirror.Resources.Room.assignments.savedEvent.Entities.savedEvent;
 import com.salas.javiert.magicmirror.Resources.Room.assignments.savedEvent.savedEventDatabaseCreator;
+import com.salas.javiert.magicmirror.Resources.Util.FileDataUtil;
 import com.wangjie.androidbucket.utils.ABTextUtil;
 import com.wangjie.rapidfloatingactionbutton.RapidFloatingActionButton;
 import com.wangjie.rapidfloatingactionbutton.RapidFloatingActionHelper;
@@ -57,12 +59,11 @@ import java.util.Locale;
  * Created by javi6 on 8/3/2017.
  */
 
-public class CalendarFragment extends Fragment implements NewAssignmentFragment.newAssignmentFragmentListener {
+public class CalendarFragment extends Fragment {
 
     public static final String FRAGMENT_TAG = "CALENDAR";
     private static final String NEW_ASSIGNMENT_FRAGMENT_TAG = "NEW";
     private static final String TAG = "CalendarFragment";
-    private static boolean isCalendarFragmentVisible = true; // Double checking never hurts right?
     private List<Event> eventsToBeSaved = new ArrayList<>();
     private int runningCountOfAssignments;
     private CompactCalendarView compactCalendarView;
@@ -77,25 +78,7 @@ public class CalendarFragment extends Fragment implements NewAssignmentFragment.
     private RapidFloatingActionLayout rapidFloatingActionLayout;
     private RapidFloatingActionButton rapidFloatingActionButton;
 
-    private void getCountOfAssignments() {
-        new AsyncTask<Void, Void, Void>() {
-            final savedAssignmentDataBaseCreator creator = savedAssignmentDataBaseCreator.getInstance(getActivity().getApplicationContext());
 
-            @Override
-            protected void onPreExecute() {
-                super.onPreExecute();
-                if (creator.isDatabaseCreated().getValue().equals(Boolean.FALSE)) {
-                    creator.createDb(getActivity().getApplicationContext());
-                }
-            }
-
-            @Override
-            protected Void doInBackground(Void... params) {
-                runningCountOfAssignments = (creator.getDatabase().savedAssignmentDao().getAll().size());
-                return null;
-            }
-        }.execute();
-    }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -117,12 +100,12 @@ public class CalendarFragment extends Fragment implements NewAssignmentFragment.
 
 
         // Find runningCountOfAssignments
-        getCountOfAssignments();
-        setUpReyclerView();
+        updateAssignmentRunningCount();
+        initializeRecyclerView();
         populateCalendarWithEventsFromRoom();
         // Setup? Really should have added more comments
-        generateEventList();
-        setUpFAB();
+        executeGeneratingTask();
+        initializeFAB();
 
 
 
@@ -148,153 +131,10 @@ public class CalendarFragment extends Fragment implements NewAssignmentFragment.
         return view;
     }
 
-    private void setUpFAB() {
-        rfaContent = new RapidFloatingActionContentLabelList(getContext());
-
-        rfaContent.setOnRapidFloatingActionContentLabelListListener(new RapidFloatingActionContentLabelList.OnRapidFloatingActionContentLabelListListener() {
-            @Override
-            public void onRFACItemLabelClick(int i, RFACLabelItem rfacLabelItem) {
-                Toast.makeText(getContext(), "clicked label: " + i, Toast.LENGTH_SHORT).show();
-                rfabHelper.toggleContent();
-                rapidFloatingActionLayout.setVisibility(View.GONE);
-
-                switch (i) {
-                    case 0:
-                        // we use count + 1 as a possible new index in our table
-                        inflateNewAssignmentFragment(dateSeleceted, runningCountOfAssignments + 1, 0);
-                        break;
-                }
-            }
-
-            @Override
-            public void onRFACItemIconClick(int i, RFACLabelItem rfacLabelItem) {
-                Toast.makeText(getContext(), "clicked icon: " + i, Toast.LENGTH_SHORT).show();
-                rfabHelper.toggleContent();
-            }
-        });
-
-
-        List<RFACLabelItem> items = new ArrayList<>();
-        items.add(new RFACLabelItem<Integer>()
-                .setLabel("New event")
-                .setResId(R.drawable.ic_calendar)
-                .setIconNormalColor(0xffd84315)
-                .setIconPressedColor(0xffbf360c)
-                .setWrapper(0)
-        );
-
-        rapidFloatingActionLayout = (RapidFloatingActionLayout) view.findViewById(R.id.activity_main_rfal);
-        rapidFloatingActionButton = (RapidFloatingActionButton) view.findViewById(R.id.activity_main_rfab);
-
-        rfaContent
-                .setItems(items)
-                .setIconShadowRadius(ABTextUtil.dip2px(getContext(), 5))
-                .setIconShadowColor(0xff888888)
-                .setIconShadowDy(ABTextUtil.dip2px(getContext(), 5))
-        ;
-        rfabHelper = new RapidFloatingActionHelper(
-                getActivity(),
-                rapidFloatingActionLayout,
-                rapidFloatingActionButton,
-                rfaContent
-        ).build();
-    }
-
-
-    private void populateRecyclerWithEventsOnDate(Date dateSeleceted) {
-        List<Event> events = compactCalendarView.getEvents(dateSeleceted);
-        Log.d(TAG, "Sending events " + events.size());
-        mAdapter.setItems(getBindableAssignmentsFromEventList(events));
-
-    }
-
     @Override
     public void onDetach() {
         super.onDetach();
         saveEventsFromRoom();
-    }
-
-    private void saveEventsFromRoom() {
-        new AsyncTask<Void, Void, Void>() {
-            final savedAssignmentDataBaseCreator assignmentCreator = savedAssignmentDataBaseCreator.getInstance(getActivity().getApplicationContext());
-
-
-            @Override
-            protected void onPreExecute() {
-                super.onPreExecute();
-                if (assignmentCreator.isDatabaseCreated().getValue().equals(Boolean.FALSE)) {
-                    assignmentCreator.createDb(getActivity().getApplicationContext());
-                }
-
-            }
-
-
-            @Override
-            protected Void doInBackground(Void... params) {
-                List<savedEvent> savedEvents = new ArrayList<>();
-                List<savedAssignment> savedAssignments = new ArrayList<>();
-                for (Event e : eventsToBeSaved) {
-                    // Safe typecasting
-                    if (e.getData() instanceof savedAssignment) {
-                        savedAssignment innerObject = (savedAssignment) e.getData();
-                        // Add our savedAssignment object to a list
-                        savedAssignments.add(innerObject);
-                        eventsToBeSaved.remove(e);
-                    }
-                }
-                assignmentCreator.getDatabase().savedAssignmentDao().insertAll(savedAssignments);
-                return null;
-            }
-
-
-        }.execute();
-    }
-
-    private void generateEventList() {
-        generatingTask = new generatingTask();
-        generatingTask.execute();
-    }
-
-    private List<bindableAssignment> getBindableAssignmentsFromEventList(List<Event> EventList) {
-        List<bindableAssignment> mList = new ArrayList<>();
-        if (EventList != null || EventList.size() != 0) {
-            for (Event e : EventList) {
-                // Safe casting
-                if (e.getData() instanceof savedAssignment) {
-                    mList.add(new bindableAssignment((savedAssignment) e.getData()));
-                    Log.d(TAG, "Converting event to bindableassignment");
-                }
-
-            }
-        }
-        return mList;
-    }
-
-    private void setUpReyclerView() {
-        mRecyclerView = (RecyclerView) view.findViewById(R.id.rvCalendarFragment);
-        mAdapter = new calendarFragmentReyclerAdapter(new ArrayList<bindableAssignment>(), new calendarFragmentReyclerAdapter.OnClickRecyclerChild() {
-            @Override
-            public void editAssignment(savedAssignment savedAssignment) {
-                inflateNewAssignmentFragment(new Date(savedAssignment.getAssignedTime()), savedAssignment.getClassId(), 1);
-            }
-        });
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
-        mRecyclerView.setAdapter(mAdapter);
-
-        // Define our calendar
-        compactCalendarView = (CompactCalendarView) view.findViewById(R.id.compactcalendar_view);
-        // Set first day of week to Monday, defaults to Monday so calling setFirstDayOfWeek is not necessary
-        // Use constants provided by Java Calendar class
-        compactCalendarView.setFirstDayOfWeek(Calendar.MONDAY);
-        // Update the title
-        updateToolbarWithMMMMYYYY(compactCalendarView.getFirstDayOfCurrentMonth());
-
-    }
-
-    private void updateToolbarWithMMMMYYYY(Date firstDayOfNewMonth) {
-        SimpleDateFormat sdf = new SimpleDateFormat("MMMM - yyyy", Locale.getDefault());
-        String formattedDate = sdf.format(firstDayOfNewMonth);
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(formattedDate);
     }
 
     //Called when a menu option is selected
@@ -337,12 +177,6 @@ public class CalendarFragment extends Fragment implements NewAssignmentFragment.
                 updateToolbarWithMMMMYYYY(new Date());
 
                 break;
-            case R.id.calendar_fragment_add:
-
-
-                // Show our popup
-                pum.show();
-                break;
 
             default:
                 break;
@@ -352,6 +186,168 @@ public class CalendarFragment extends Fragment implements NewAssignmentFragment.
         return super.onOptionsItemSelected(item);
     }
 
+    // Updates runningCountOfAssignments for indexing
+    private void updateAssignmentRunningCount() {
+        new AsyncTask<Void, Void, Void>() {
+            final savedAssignmentDataBaseCreator creator = savedAssignmentDataBaseCreator.getInstance(getActivity().getApplicationContext());
+
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+                if (creator.isDatabaseCreated().getValue().equals(Boolean.FALSE)) {
+                    creator.createDb(getActivity().getApplicationContext());
+                }
+            }
+
+            @Override
+            protected Void doInBackground(Void... params) {
+                runningCountOfAssignments = (creator.getDatabase().savedAssignmentDao().getAll().size());
+                return null;
+            }
+        }.execute();
+    }
+
+    // Setup our RapidFloatingActionButton
+    private void initializeFAB() {
+        rfaContent = new RapidFloatingActionContentLabelList(getContext());
+        rfaContent.setOnRapidFloatingActionContentLabelListListener(new RapidFloatingActionContentLabelList.OnRapidFloatingActionContentLabelListListener() {
+            @Override
+            public void onRFACItemLabelClick(int i, RFACLabelItem rfacLabelItem) {
+                Toast.makeText(getContext(), "clicked label: " + i, Toast.LENGTH_SHORT).show();
+                rfabHelper.toggleContent();
+
+                switch (i) {
+                    case 0:
+                        // we use count + 1 as a possible new index in our table
+                        inflateNewAssignmentFragment(dateSeleceted, runningCountOfAssignments + 1, 0);
+                        break;
+                }
+                //rapidFloatingActionLayout.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onRFACItemIconClick(int i, RFACLabelItem rfacLabelItem) {
+                Toast.makeText(getContext(), "clicked icon: " + i, Toast.LENGTH_SHORT).show();
+                rfabHelper.toggleContent();
+            }
+        });
+
+
+        List<RFACLabelItem> items = new ArrayList<>();
+        items.add(new RFACLabelItem<Integer>()
+                .setLabel("New event")
+                .setResId(R.drawable.ic_calendar)
+                .setIconNormalColor(0xffd84315)
+                .setIconPressedColor(0xffbf360c)
+                .setWrapper(0)
+        );
+
+        rapidFloatingActionLayout = (RapidFloatingActionLayout) view.findViewById(R.id.activity_main_rfal);
+        rapidFloatingActionButton = (RapidFloatingActionButton) view.findViewById(R.id.activity_main_rfab);
+
+        rfaContent
+                .setItems(items)
+                .setIconShadowRadius(ABTextUtil.dip2px(getContext(), 5))
+                .setIconShadowColor(0xff888888)
+                .setIconShadowDy(ABTextUtil.dip2px(getContext(), 5))
+        ;
+        rfabHelper = new RapidFloatingActionHelper(
+                getActivity(),
+                rapidFloatingActionLayout,
+                rapidFloatingActionButton,
+                rfaContent
+        ).build();
+    }
+
+
+    // Fetch the events from our calendar and populate our recyclerview with the events from a date
+    private void populateRecyclerWithEventsOnDate(Date dateSeleceted) {
+        List<Event> events = compactCalendarView.getEvents(dateSeleceted);
+        Log.d(TAG, "Sending events " + events.size());
+        mAdapter.setItems(getBindableAssignmentsFromEventList(events));
+        ((TextView) view.findViewById(R.id.tvRecyclerViewHeaderDate)).setText(FileDataUtil.getRecyclerDate(Locale.getDefault(), dateSeleceted.getTime()));
+
+    }
+
+    // Save the events
+    private void saveEventsFromRoom() {
+        new AsyncTask<Void, Void, Void>() {
+            final savedAssignmentDataBaseCreator assignmentCreator = savedAssignmentDataBaseCreator.getInstance(getActivity().getApplicationContext());
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+                if (assignmentCreator.isDatabaseCreated().getValue().equals(Boolean.FALSE)) {
+                    assignmentCreator.createDb(getActivity().getApplicationContext());
+                }
+
+            }
+            @Override
+            protected Void doInBackground(Void... params) {
+                List<savedAssignment> savedAssignments = new ArrayList<>();
+                for (Event e : eventsToBeSaved) {
+                    // Safe typecasting
+                    if (e.getData() instanceof savedAssignment) {
+                        savedAssignment innerObject = (savedAssignment) e.getData();
+                        // Add our savedAssignment object to a list
+                        savedAssignments.add(innerObject);
+                        eventsToBeSaved.remove(e);
+                    }
+                }
+                assignmentCreator.getDatabase().savedAssignmentDao().insertAll(savedAssignments);
+                return null;
+            }
+
+
+        }.execute();
+    }
+
+    // Conversion from lists
+    private List<bindableAssignment> getBindableAssignmentsFromEventList(List<Event> EventList) {
+        List<bindableAssignment> mList = new ArrayList<>();
+        if (EventList != null || EventList.size() != 0) {
+            for (Event e : EventList) {
+                // Safe casting
+                if (e.getData() instanceof savedAssignment) {
+                    mList.add(new bindableAssignment((savedAssignment) e.getData()));
+                    Log.d(TAG, "Converting event to bindableassignment");
+                }
+
+            }
+        }
+        return mList;
+    }
+
+    // Initialization
+    private void initializeRecyclerView() {
+        mRecyclerView = (RecyclerView) view.findViewById(R.id.rvCalendarFragment);
+        mAdapter = new calendarFragmentReyclerAdapter(new ArrayList<bindableAssignment>(), new calendarFragmentReyclerAdapter.OnClickRecyclerChild() {
+            @Override
+            public void editAssignment(savedAssignment savedAssignment) {
+                inflateNewAssignmentFragment(new Date(savedAssignment.getAssignedTime()), savedAssignment.getId(), 1);
+            }
+        });
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
+        mRecyclerView.setAdapter(mAdapter);
+
+        // Define our calendar
+        compactCalendarView = (CompactCalendarView) view.findViewById(R.id.compactcalendar_view);
+        // Set first day of week to Monday, defaults to Monday so calling setFirstDayOfWeek is not necessary
+        // Use constants provided by Java Calendar class
+        compactCalendarView.setFirstDayOfWeek(Calendar.MONDAY);
+        // Update the title
+        updateToolbarWithMMMMYYYY(compactCalendarView.getFirstDayOfCurrentMonth());
+
+    }
+
+    // Update our title
+    private void updateToolbarWithMMMMYYYY(Date firstDayOfNewMonth) {
+        SimpleDateFormat sdf = new SimpleDateFormat("MMMM - yyyy", Locale.getDefault());
+        String formattedDate = sdf.format(firstDayOfNewMonth);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(formattedDate);
+    }
+
+    // Fill our calendar with old entries
+    // TODO not load all at once? maybe put some bounds on a month before and a month after?
     private void populateCalendarWithEventsFromRoom() {
         // Creators used in the task below
         final savedEventDatabaseCreator savedEventDBCreator = savedEventDatabaseCreator.getInstance(getActivity().getApplicationContext());
@@ -431,6 +427,7 @@ public class CalendarFragment extends Fragment implements NewAssignmentFragment.
         }.execute();
     }
 
+    // Add a layer in our stack
     public void inflateNewAssignmentFragment(Date calendarStartDate, Integer index, int mode) {
 
         NewAssignmentFragment bundledFragment = createBundledFragmentFromArguments(calendarStartDate, index, mode);
@@ -447,7 +444,8 @@ public class CalendarFragment extends Fragment implements NewAssignmentFragment.
 
     }
 
-    private void fragmentPop() {
+    // Remove the layer from our stack
+    public void fragmentPop() {
         FragmentManager fragmentManager = getFragmentManager();
 
         // Then remove the outerFrame. We remove it instead of hiding it since
@@ -489,7 +487,8 @@ public class CalendarFragment extends Fragment implements NewAssignmentFragment.
         args.putInt(NewAssignmentFragment.MODE_KEY, mode);
 
         // Set our args
-        Log.d("Inflater", "seting Arguments");
+        Log.d("Inflater", "setting Arguments");
+        Log.d("Inflater", "setting index " + index);
         newAssignmentFragment.setArguments(args);
 
 
@@ -497,32 +496,31 @@ public class CalendarFragment extends Fragment implements NewAssignmentFragment.
     }
 
     // NewAssignmentFragment Interface
-    @Override
     public void onUserDismiss(boolean shouldIncrement) {
         if (shouldIncrement) {
             runningCountOfAssignments++;
         }
-        fragmentPop();
         InputMethodManager inputMethodManager = (InputMethodManager) getActivity().getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         inputMethodManager.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(), 0);
+        fragmentPop();
 
     }
 
     // Snackbar to tell the user that we've processed the data
-    @Override
     public void onUserComplete(savedAssignment savedAssignment, int mode) {
+        // Get the rootView of the fragment on top of our stack and get its view
+        // View rootView = getFragmentManager().getFragments().get(getFragmentManager().getBackStackEntryCount() - 1).getView();
         if (mode == 0) {
             makeEventFromAssignment(savedAssignment);
-            Snackbar.make(view.findViewById(android.R.id.content), "Assignment added", Snackbar.LENGTH_SHORT).show();
+            Snackbar.make(view, "Assignment added", Snackbar.LENGTH_SHORT).show();
         } else if (mode == 1) {
             updateAssignmentInRoom(savedAssignment);
-            Snackbar.make(view.findViewById(android.R.id.content), "Your edits have been saved", Snackbar.LENGTH_SHORT).show();
+            Snackbar.make(view, "Your edits have been saved", Snackbar.LENGTH_SHORT).show();
         }
     }
 
+    // Update our table with our object
     private void updateAssignmentInRoom(final savedAssignment savedAssignment) {
-        List<Event> eventsForDay = compactCalendarView.getEvents(savedAssignment.getDueTime());
-
         // Get livedata savedAssignment
         // have livedata boundableassigment observer the livedata
         // update recyclerview
@@ -540,17 +538,45 @@ public class CalendarFragment extends Fragment implements NewAssignmentFragment.
             @Override
             protected Void doInBackground(Void... params) {
                 creator.getDatabase().savedAssignmentDao().updateAssignment(savedAssignment);
+
                 return null;
             }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                List<Event> eventList = compactCalendarView.getEvents(savedAssignment.getDueTime());
+                // Since getEvents returns a list<Event>, we need to step through it to find the element that we want to "update"
+                for (Event e : eventList) {
+                    if (((savedAssignment) e.getData()).getId() == savedAssignment.getId()) {
+                        // TODO instead of attaching an object we just send the ID and we use a LiveData list to show our data from room
+                        compactCalendarView.removeEvent(e, true);
+                        compactCalendarView.addEvent(new Event(savedAssignment.getId(), savedAssignment.getDueTime(), savedAssignment), true);
+                    }
+                }
+                // Update our RecyclerView
+                mAdapter.setItems(getBindableAssignmentsFromEventList(compactCalendarView.getEvents(savedAssignment.getDueTime())));
+                super.onPostExecute(aVoid);
+            }
         }.execute();
+    }
+
+
+    private void executeGeneratingTask() {
+        generatingTask = new generatingTask();
+        generatingTask.execute();
     }
 
     private class generatingTask extends AsyncTask<Void, Void, Void> {
         List<Event> myEvents = new ArrayList<Event>();
 
         @Override
+        protected void onPreExecute() {
+
+            super.onPreExecute();
+        }
+
+        @Override
         protected Void doInBackground(Void... params) {
-            //myEvents = null;  TODO Get event from Google Cal or Room Database
             return null;
         }
 

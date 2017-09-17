@@ -58,25 +58,17 @@ public class NewAssignmentFragment extends Fragment {
     public final static String DATE_KEY = "myDate";
     public final static String MODE_KEY = "mode";
     public final static String TAG = "NewAssignmentFragment";
+    public final static String FRAGMENT_TAG = "NewAssignmentFragment";
 
     DialogNewAssignmentEventBinding dataBiding;
     bindableAssignment item = new bindableAssignment();
     Date dateSeleceted = new Date();
-    OnBackPressedListener mCallback;
     java.util.Calendar calendarStartDate = java.util.Calendar.getInstance();
     java.util.Calendar calendarEndDate = java.util.Calendar.getInstance();
     MODES currentMode;
     private boolean changesMade = false;
+    private int index;
 
-    /*
-    @NonNull
-    @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
-        Dialog dialog = super.onCreateDialog(savedInstanceState);
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        return dialog;
-    }
-    */
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -89,72 +81,91 @@ public class NewAssignmentFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
+        // If we are opening the 
         if (currentMode == MODES.NEW) {
-            if (id == R.id.action_save) {
-                // handle confirmation button click here
-                if (userHasCorrectFields()) {
-                    // Find the CalendarFragment
-                    CalendarFragment invoker = (CalendarFragment) getTargetFragment();
-                    if (invoker != null) {
-                        // Call our method
-                        invoker.onUserComplete(generateAssignment(), 0);
-                        invoker.onUserDismiss(true);
-                    }
+            return processUserInputNewAssignmentMode(id);
+        } else if (currentMode == MODES.EDIT) {
+            return processUserInputEditAssignmentMode(id);
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
+    private boolean processUserInputEditAssignmentMode(int id) {
+        if (id == R.id.action_save) {
+            // handle confirmation button click here
+            if (userHasCorrectFields()) {
 
-                } else {
-                    final AlertDialog.Builder missingFields = new AlertDialog.Builder(getActivity());
-                    missingFields.setTitle("Please completely fill out the required elements to save");
-                    missingFields.setPositiveButton("CLOSE", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                        }
-                    });
-                    missingFields.show();
+                // Find the CalendarFragment
+                CalendarFragment invoker = (CalendarFragment) getTargetFragment();
+                if (invoker != null) {
+                    // User has finished editing the assignment. Sent a 1 so we know to sent it
+                    // Call our method
+                    invoker.onUserDismiss(false);
+                    invoker.onUserComplete(generateAssignment(), 1);
                 }
-                return true;
-            } else if (id == android.R.id.home) {
-                // handle close button click here
-                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                builder.setTitle("Discard this assignment?");
-                builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                    }
-                });
-                builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-
-                        // Find the CalendarFragment
-                        CalendarFragment invoker = (CalendarFragment) getTargetFragment();
-                        if (invoker != null) {
-                            // Call our method
-                            invoker.onUserDismiss(false);
-                        }
-                    }
-                });
-
-                builder.show();
                 return true;
             }
-        } else if (currentMode == MODES.EDIT) {
-            if (id == R.id.action_save) {
-                // handle confirmation button click here
-                if (userHasCorrectFields()) {
+        } else if (id == android.R.id.home) {
+            // handle close button click here
 
-                    // Find the CalendarFragment
-                    CalendarFragment invoker = (CalendarFragment) getTargetFragment();
-                    if (invoker != null) {
-                        // User has finished editing the assignment. Sent a 1 so we know to sent it
-                        // Call our method
-                        invoker.onUserComplete(generateAssignment(), 1);
-                        invoker.onUserDismiss(false);
-                    }
-                    return true;
+            // Find the CalendarFragment
+            CalendarFragment invoker = (CalendarFragment) getTargetFragment();
+            if (invoker != null) {
+                // Call our method
+                invoker.onUserDismiss(false);
+            }
+
+            return true;
+        }
+        return false;
+    }
+
+    private boolean processUserInputNewAssignmentMode(int id) {
+        if (id == R.id.action_save) {
+            // handle confirmation button click here
+            if (userHasCorrectFields()) {
+                // Find the CalendarFragment
+                CalendarFragment invoker = (CalendarFragment) getTargetFragment();
+                if (invoker != null) {
+                    // Call our method
+                    invoker.onUserDismiss(true);
+                    invoker.onUserComplete(generateAssignment(), 0);
                 }
-            } else if (id == android.R.id.home) {
-                // handle close button click here
+
+
+            } else {
+                final AlertDialog.Builder missingFields = new AlertDialog.Builder(getActivity());
+                missingFields.setTitle("Please completely fill out the required elements to save");
+                missingFields.setPositiveButton("CLOSE", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                });
+                missingFields.show();
+            }
+            return true;
+        } else if (id == android.R.id.home) {
+            showDiscardDialog();
+            return true;
+
+        }
+        // This is never called
+        return false;
+    }
+
+    public void showDiscardDialog() {
+
+        // handle close button click here
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle("Discard this assignment?");
+        builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+            }
+        });
+        builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
 
                 // Find the CalendarFragment
                 CalendarFragment invoker = (CalendarFragment) getTargetFragment();
@@ -162,12 +173,10 @@ public class NewAssignmentFragment extends Fragment {
                     // Call our method
                     invoker.onUserDismiss(false);
                 }
-
-                return true;
             }
-        }
+        });
 
-        return super.onOptionsItemSelected(item);
+        builder.show();
     }
 
     private boolean userHasCorrectFields() {
@@ -186,16 +195,18 @@ public class NewAssignmentFragment extends Fragment {
         super.onAttach(context);
 
 
-        /*
+/*
+
         // This makes sure that the container activity has implemented
         // the callback interface. If not, it throws an exception
         try {
-            mCallback = (newAssignmentFragmentListener) context;
+            mCallback = (OnBackPressedListener) context;
         } catch (ClassCastException e) {
             throw new ClassCastException(context.toString()
-                    + " must implement newAssignmentFragmentListener");
+                    + " must implement OnBackPressedListener");
         }
-        */
+*/
+
         setUpFragmentCommunication();
 
     }
@@ -208,6 +219,7 @@ public class NewAssignmentFragment extends Fragment {
         mCallback = null;
         */
     }
+
 
     @Nullable
     @Override
@@ -245,9 +257,9 @@ public class NewAssignmentFragment extends Fragment {
         // Set our title
         String titleText = "";
         if (currentMode == MODES.EDIT) {
-            titleText = "Edit assignment";
+            titleText = "Edit assignment" + " ID:" + index;
         } else if (currentMode == MODES.NEW) {
-            titleText = "New Assignment";
+            titleText = "New Assignment" + " ID:" + index;
         }
 
         ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(titleText);
@@ -275,7 +287,7 @@ public class NewAssignmentFragment extends Fragment {
         }
 
         // Try to get the bindableAssignment that was sent as a string
-        final Integer index = savedInstanceState.getInt(COLUMN_INDEX_KEY);
+        index = savedInstanceState.getInt(COLUMN_INDEX_KEY);
 
         Log.d(COLUMN_INDEX_KEY, "Loaded from bundle " + index);
         // The item at index
@@ -409,7 +421,7 @@ public class NewAssignmentFragment extends Fragment {
                 changesMade = true;
                 // Pass the arguments of calendarFromDate() to set the date on the picker to the selected date on the calendar
                 //noinspection WrongConstant
-                new DatePickerDialog(getActivity().getApplicationContext(), dateSetListenerEnd, calendarEndDate.get(Calendar.YEAR), calendarEndDate.get(Calendar.MONTH), calendarEndDate.get(Calendar.DAY_OF_MONTH)).show();
+                new DatePickerDialog(getActivity(), dateSetListenerEnd, calendarEndDate.get(Calendar.YEAR), calendarEndDate.get(Calendar.MONTH), calendarEndDate.get(Calendar.DAY_OF_MONTH)).show();
             }
         });
 
@@ -418,7 +430,7 @@ public class NewAssignmentFragment extends Fragment {
         dataBiding.etAssignmentDueStartTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new TimePickerDialog(getActivity().getApplicationContext(), new TimePickerDialog.OnTimeSetListener() {
+                new TimePickerDialog(getActivity(), new TimePickerDialog.OnTimeSetListener() {
                     @RequiresApi(api = Build.VERSION_CODES.N)
                     @Override
                     public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
@@ -442,7 +454,7 @@ public class NewAssignmentFragment extends Fragment {
         dataBiding.etAssignmentDueEndTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new TimePickerDialog(getActivity().getApplicationContext(), new TimePickerDialog.OnTimeSetListener() {
+                new TimePickerDialog(getActivity(), new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
                         changesMade = true;
@@ -521,6 +533,11 @@ public class NewAssignmentFragment extends Fragment {
         // Set the completion boolean
         boundData.setCompleted(false);
         boundData.setAssignedTime(calendarStartDate.getTimeInMillis());
+        // If we are making a new item we should assign it an ID
+        if (currentMode == MODES.NEW)
+            boundData.setId(index);
+
+
         Log.d(TAG, FileDataUtil.getModifiedTime(Locale.getDefault(), calendarStartDate.getTimeInMillis()));
 
         // TODO Create a reminder oject
@@ -539,9 +556,5 @@ public class NewAssignmentFragment extends Fragment {
         NEW, EDIT
     }
 
-
-    public interface OnBackPressedListener {
-        public void doBack();
-    }
 
 }

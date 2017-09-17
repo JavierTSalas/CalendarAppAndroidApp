@@ -80,7 +80,7 @@ public class calendarFragmentReyclerAdapter extends RecyclerView.Adapter<calenda
         myColorList.add(Color.DKGRAY);
         myColorList.add(Color.BLUE);
 
-        return myColorList.get(id);
+        return myColorList.get(id % 4);
     }
 
 

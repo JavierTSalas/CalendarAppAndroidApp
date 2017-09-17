@@ -12,12 +12,5 @@
         android:title="Add"
         app:showAsAction="ifRoom"/>
 
-    <item
-        android:id="@+id/calendar_fragment_add"
-        android:actionViewClass="android.widget.Spinner"
-        android:icon="@drawable/ic_add_circle_outline_black_24dp"
-        android:title="Calendar Preferences"
-        app:showAsAction="never"/>
-
 
 </menu>

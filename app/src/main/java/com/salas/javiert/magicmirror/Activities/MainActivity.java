@@ -7,37 +7,27 @@ package com.salas.javiert.magicmirror.Activities;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
-import com.loopj.android.http.TextHttpResponseHandler;
 import com.salas.javiert.magicmirror.Fragments.CalendarFragment;
 import com.salas.javiert.magicmirror.Fragments.ConnectionFragment;
 import com.salas.javiert.magicmirror.Fragments.DatabaseFragment;
 import com.salas.javiert.magicmirror.Fragments.DoneCheckFragment;
 import com.salas.javiert.magicmirror.Fragments.MultiCheckActivity;
+import com.salas.javiert.magicmirror.Fragments.NewAssignmentFragment;
 import com.salas.javiert.magicmirror.Fragments.QueueFragment;
 import com.salas.javiert.magicmirror.Fragments.UpdateFragment;
 import com.salas.javiert.magicmirror.Objects.SingletonObjects.myQueueClasses.myQueue;
-import com.salas.javiert.magicmirror.Objects.helperObjects.assignment_class;
 import com.salas.javiert.magicmirror.R;
-import com.salas.javiert.magicmirror.Resources.DatabaseRestClient;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.UnsupportedEncodingException;
-
-import cz.msebera.android.httpclient.entity.StringEntity;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -47,12 +37,12 @@ public class MainActivity extends AppCompatActivity {
     private NavigationView navigationView;
     private Toolbar mToolbar;
 
-
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_activity_main);
         updateQueueCount();
-        myQueue.getInstance().loadMyQueue(this);
+        myQueue.getInstance().loadMyQueue(getApplicationContext());
 
 
         navigationView = (NavigationView) findViewById(R.id.navigation_view);
@@ -163,7 +153,18 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
 
+        if (mToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+
+    }
+
+    // Toggle the navigation drawer
     public void setDrawerState(boolean isEnabled) {
         if (isEnabled) {
             mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
@@ -179,7 +180,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
+    // Update our item title
     private void updateQueueCount() {
 
         navigationView = (NavigationView) findViewById(R.id.navigation_view);
@@ -197,41 +198,21 @@ public class MainActivity extends AppCompatActivity {
 
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public void onBackPressed() {
 
-        if (mToggle.onOptionsItemSelected(item)) {
-            return true;
+        int count = getSupportFragmentManager().getBackStackEntryCount();
+        // If there is stuff in our fragmentManager then we are probably looking at a fragment
+        if (count > 0) {
+            Fragment fragment = getSupportFragmentManager().getFragments().get(count);
+            if (fragment instanceof NewAssignmentFragment) {
+                ((NewAssignmentFragment) fragment).showDiscardDialog();
+            }
+        } else {
+            //  super.onBackPressed();
         }
 
-        return super.onOptionsItemSelected(item);
 
     }
-
-    public void InsertAssignment() throws JSONException, UnsupportedEncodingException {
-        assignment_class newAssign = new assignment_class(10, "Test123", 2, "2017-08-23", "2017-08-23 13:34:54", "0", 65);
-        TextHttpResponseHandler response = new TextHttpResponseHandler() {
-            @Override
-            public void onFailure(int statusCode, cz.msebera.android.httpclient.Header[] headers, String responseString, Throwable throwable) {
-
-            }
-
-            @Override
-            public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, String responseString) {
-                Log.d("suc", responseString);
-            }
-        };
-        JSONArray Assignments = new JSONArray();
-        Assignments.put(newAssign.toJSONObject());
-        JSONObject ParamObject = new JSONObject();
-        ParamObject.put("Assignments", Assignments);
-        StringEntity myEntitiy = new StringEntity(ParamObject.toString());
-        myEntitiy.setContentEncoding("UTF-8");
-        myEntitiy.setContentType("application/json");
-
-
-        DatabaseRestClient.post(this, "input.php", myEntitiy, "application/x-www-form-urlencoded", response);
-    }
-
 
 }
 

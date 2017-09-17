@@ -71,6 +71,18 @@ public class FileDataUtil {
         return dateFormat.format(new Date(modified));
     }
 
+
+    public static String getRecyclerDate(Locale locale, long modified) {
+        SimpleDateFormat dateFormat = null;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            dateFormat = new SimpleDateFormat(getRecyclerDateJellyBean(locale));
+        } else {
+            dateFormat = new SimpleDateFormat("EEEE, MMM d");
+        }
+        return dateFormat.format(new Date(modified));
+    }
+
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
     public static String getDateFormat(Locale locale) {
         return DateFormat.getBestDateTimePattern(locale, "EEE, d MMM ");
@@ -89,5 +101,10 @@ public class FileDataUtil {
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
     public static String getCalendarDayFormat(Locale locale) {
         return DateFormat.getBestDateTimePattern(locale, "dd");
+    }
+
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
+    public static String getRecyclerDateJellyBean(Locale locale) {
+        return DateFormat.getBestDateTimePattern(locale, "EEEE, MMM d");
     }
 }
