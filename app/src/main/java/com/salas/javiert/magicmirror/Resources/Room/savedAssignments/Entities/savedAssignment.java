@@ -2,7 +2,7 @@
  * Copyright (c) 2017. Javier Salas
  */
 
-package com.salas.javiert.magicmirror.Resources.Room.assignments.savedAssignments.Entities;
+package com.salas.javiert.magicmirror.Resources.Room.savedAssignments.Entities;
 
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;

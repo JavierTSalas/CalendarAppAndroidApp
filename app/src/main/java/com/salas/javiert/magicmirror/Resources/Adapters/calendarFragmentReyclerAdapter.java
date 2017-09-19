@@ -15,7 +15,7 @@ import android.view.ViewGroup;
 
 import com.salas.javiert.magicmirror.Objects.bindableObjects.bindableAssignment;
 import com.salas.javiert.magicmirror.R;
-import com.salas.javiert.magicmirror.Resources.Room.assignments.savedAssignments.Entities.savedAssignment;
+import com.salas.javiert.magicmirror.Resources.Room.savedAssignments.Entities.savedAssignment;
 import com.salas.javiert.magicmirror.Resources.Util.FileDataUtil;
 import com.salas.javiert.magicmirror.Views.DataBindingTest.DatabaseFragment.Fragment.RecyclerViewClasses.childHandler;
 import com.salas.javiert.magicmirror.databinding.RecyclerviewRowCalendarDataboundBinding;

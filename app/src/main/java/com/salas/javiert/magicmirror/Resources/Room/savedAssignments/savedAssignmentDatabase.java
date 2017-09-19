@@ -2,13 +2,13 @@
  * Copyright (c) 2017. Javier Salas
  */
 
-package com.salas.javiert.magicmirror.Resources.Room.assignments.savedAssignments;
+package com.salas.javiert.magicmirror.Resources.Room.savedAssignments;
 
 import android.arch.persistence.room.Database;
 import android.arch.persistence.room.RoomDatabase;
 
-import com.salas.javiert.magicmirror.Resources.Room.assignments.savedAssignments.Dao.savedAssignmentDao;
-import com.salas.javiert.magicmirror.Resources.Room.assignments.savedAssignments.Entities.savedAssignment;
+import com.salas.javiert.magicmirror.Resources.Room.savedAssignments.Dao.savedAssignmentDao;
+import com.salas.javiert.magicmirror.Resources.Room.savedAssignments.Entities.savedAssignment;
 
 /**
  * Created by javi6 on 8/4/2017.

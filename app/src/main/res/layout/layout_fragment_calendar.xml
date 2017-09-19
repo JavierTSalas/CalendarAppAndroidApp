@@ -42,35 +42,76 @@
             tools:layout_constraintRight_creator="1"/>
 
 
-        <LinearLayout
+        <android.support.constraint.ConstraintLayout
             android:id="@+id/llCalendarFragment"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintHorizontal_bias="0.0"
+            android:layout_marginLeft="0dp"
+            android:layout_marginRight="0dp"
+            android:layout_marginTop="0dp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/compactcalendar_view">
 
+            <View
+                android:id="@+id/sLeft"
+                android:layout_width="0dp"
+                android:layout_height="3dp"
+                android:layout_alignParentLeft="false"
+                android:layout_alignParentStart="false"
+                android:layout_centerVertical="false"
+                android:layout_marginBottom="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:background="@color/colorGrey"
+                android:padding="8dp"
+                app:layout_constraintBottom_toTopOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toLeftOf="@+id/tvRecyclerViewHeaderDate"
+                app:layout_constraintTop_toBottomOf="parent"
+                />
+
             <TextView
                 android:id="@+id/tvRecyclerViewHeaderDate"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="32dp"
-                android:background="@color/ab__gray_light"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="0dp"
+                android:fontFamily="sans-serif-condensed"
                 android:gravity="center"
-                android:paddingBottom="8dp"
-                android:paddingTop="8dp"
                 android:text="Sat. Aug. 17th"
                 android:textAppearance="@style/TextAppearance.AppCompat.Caption"
-                android:textColor="@color/AlmostBlack"/>
+                android:textColor="@color/AlmostBlack"
+                android:textSize="15dp"
+                app:layout_constraintBottom_toTopOf="parent"
+                app:layout_constraintLeft_toLeftOf="@+id/sLeft"
+                app:layout_constraintRight_toRightOf="@+id/sRight"
+                app:layout_constraintTop_toBottomOf="parent"/>
 
-        </LinearLayout>
+            <View
+                android:id="@+id/sRight"
+                android:layout_width="0dp"
+                android:layout_height="3dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginStart="8dp"
+                android:background="@color/colorGrey"
+                android:padding="8dp"
+                app:layout_constraintBottom_toTopOf="parent"
+                app:layout_constraintLeft_toRightOf="@+id/tvRecyclerViewHeaderDate"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="parent"
+                tools:layout_editor_absoluteY="14dp"/>
+        </android.support.constraint.ConstraintLayout>
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/rvCalendarFragment"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginTop="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintLeft_toLeftOf="parent"
@@ -86,7 +127,7 @@
 
     <com.wangjie.rapidfloatingactionbutton.RapidFloatingActionLayout
         android:id="@+id/activity_main_rfal"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
@@ -115,5 +156,6 @@
             rfab:rfab_shadow_radius="7dp"
             rfab:rfab_size="normal"
             />
+
     </com.wangjie.rapidfloatingactionbutton.RapidFloatingActionLayout>
 </FrameLayout>

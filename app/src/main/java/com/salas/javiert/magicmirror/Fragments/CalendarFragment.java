@@ -19,7 +19,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -37,10 +36,8 @@ import com.salas.javiert.magicmirror.Activities.MainActivity;
 import com.salas.javiert.magicmirror.Objects.bindableObjects.bindableAssignment;
 import com.salas.javiert.magicmirror.R;
 import com.salas.javiert.magicmirror.Resources.Adapters.calendarFragmentReyclerAdapter;
-import com.salas.javiert.magicmirror.Resources.Room.assignments.savedAssignments.Entities.savedAssignment;
-import com.salas.javiert.magicmirror.Resources.Room.assignments.savedAssignments.savedAssignmentDataBaseCreator;
-import com.salas.javiert.magicmirror.Resources.Room.assignments.savedEvent.Entities.savedEvent;
-import com.salas.javiert.magicmirror.Resources.Room.assignments.savedEvent.savedEventDatabaseCreator;
+import com.salas.javiert.magicmirror.Resources.Room.savedAssignments.Entities.savedAssignment;
+import com.salas.javiert.magicmirror.Resources.Room.savedAssignments.savedAssignmentDataBaseCreator;
 import com.salas.javiert.magicmirror.Resources.Util.FileDataUtil;
 import com.wangjie.androidbucket.utils.ABTextUtil;
 import com.wangjie.rapidfloatingactionbutton.RapidFloatingActionButton;
@@ -124,6 +121,7 @@ public class CalendarFragment extends Fragment {
             @Override
             public void onMonthScroll(Date firstDayOfNewMonth) {
                 updateToolbarWithMMMMYYYY(firstDayOfNewMonth);
+                populateRecyclerWithEventsOnDate(firstDayOfNewMonth);
                 dateSeleceted = firstDayOfNewMonth;
             }
         });
@@ -333,7 +331,7 @@ public class CalendarFragment extends Fragment {
         compactCalendarView = (CompactCalendarView) view.findViewById(R.id.compactcalendar_view);
         // Set first day of week to Monday, defaults to Monday so calling setFirstDayOfWeek is not necessary
         // Use constants provided by Java Calendar class
-        compactCalendarView.setFirstDayOfWeek(Calendar.MONDAY);
+        compactCalendarView.setFirstDayOfWeek(Calendar.SUNDAY);
         // Update the title
         updateToolbarWithMMMMYYYY(compactCalendarView.getFirstDayOfCurrentMonth());
 
@@ -350,7 +348,6 @@ public class CalendarFragment extends Fragment {
     // TODO not load all at once? maybe put some bounds on a month before and a month after?
     private void populateCalendarWithEventsFromRoom() {
         // Creators used in the task below
-        final savedEventDatabaseCreator savedEventDBCreator = savedEventDatabaseCreator.getInstance(getActivity().getApplicationContext());
         final savedAssignmentDataBaseCreator savedAssignmentDBCreator = savedAssignmentDataBaseCreator.getInstance(getActivity().getApplicationContext());
 
         new AsyncTask<Void, Void, Void>() {
@@ -361,8 +358,6 @@ public class CalendarFragment extends Fragment {
             protected void onPreExecute() {
                 if (savedAssignmentDBCreator.isDatabaseCreated().getValue() == Boolean.FALSE)
                     savedAssignmentDBCreator.createDb(getActivity().getApplicationContext());
-                if (savedEventDBCreator.isDatabaseCreated().getValue() == Boolean.FALSE)
-                    savedEventDBCreator.createDb(getActivity().getApplicationContext());
                 super.onPreExecute();
             }
 
@@ -370,23 +365,10 @@ public class CalendarFragment extends Fragment {
             protected Void doInBackground(Void... params) {
                 // Get the list of assignment that the user has created
                 List<savedAssignment> assignmentList = savedAssignmentDBCreator.getDatabase().savedAssignmentDao().getAll();
-                // Associate the assignments to a unique ID
-                // Put in a map so we can find it when needed
-                SparseArray<savedAssignment> assignmentMap = new SparseArray<savedAssignment>();
-                // Make the map of IDs
                 for (savedAssignment assignment : assignmentList) {
-                    assignmentMap.put(assignment.getId(), assignment);
-                }
-
-                // Get a list of the events that the user has created
-                List<savedEvent> eventList = savedEventDBCreator.getDatabase().savedEventDao().getAll();
-                for (savedEvent savedEvent : eventList) {
-
-                    // Find the corresponding assignment
-                    savedAssignment assignment = assignmentMap.get(savedEvent.getId());
                     // Add it to the list if we haven't completed it
                     if (!assignment.isCompleted())
-                        myEvents.add(new Event(savedEvent.getColor(), assignment.getDueTime(), assignment));
+                        myEvents.add(new Event(Color.MAGENTA, assignment.getDueTime(), assignment));
                 }
 
                 return null;

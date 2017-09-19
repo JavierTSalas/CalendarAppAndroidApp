@@ -6,7 +6,7 @@ package com.salas.javiert.magicmirror.Objects.bindableObjects;
 
 import android.databinding.BaseObservable;
 
-import com.salas.javiert.magicmirror.Resources.Room.assignments.savedAssignments.Entities.savedAssignment;
+import com.salas.javiert.magicmirror.Resources.Room.savedAssignments.Entities.savedAssignment;
 
 /**
  * Created by javi6 on 8/6/2017.

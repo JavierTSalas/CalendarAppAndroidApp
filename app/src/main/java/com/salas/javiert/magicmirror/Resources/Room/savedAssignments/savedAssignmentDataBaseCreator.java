@@ -2,7 +2,7 @@
  * Copyright (c) 2017. Javier Salas
  */
 
-package com.salas.javiert.magicmirror.Resources.Room.assignments.savedEvent;
+package com.salas.javiert.magicmirror.Resources.Room.savedAssignments;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
@@ -18,22 +18,22 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Created by javi6 on 8/4/2017.
  */
 
-public class savedEventDatabaseCreator { // For Singleton instantiation
+public class savedAssignmentDataBaseCreator {  // For Singleton instantiation
     private static final Object LOCK = new Object();
-    private static savedEventDatabaseCreator sInstance;
+    private static savedAssignmentDataBaseCreator sInstance;
     private final MutableLiveData<Boolean> mIsDatabaseCreated = new MutableLiveData<>();
     private final AtomicBoolean mInitializing = new AtomicBoolean(true);
-    private savedEventDatabase mDb;
+    private savedAssignmentDatabase mDb;
 
-    private savedEventDatabaseCreator() {
+    private savedAssignmentDataBaseCreator() {
         mIsDatabaseCreated.setValue(false);
     }
 
-    public synchronized static savedEventDatabaseCreator getInstance(Context context) {
+    public synchronized static savedAssignmentDataBaseCreator getInstance(Context context) {
         if (sInstance == null) {
             synchronized (LOCK) {
                 if (sInstance == null) {
-                    sInstance = new savedEventDatabaseCreator();
+                    sInstance = new savedAssignmentDataBaseCreator();
                 }
             }
         }
@@ -48,7 +48,7 @@ public class savedEventDatabaseCreator { // For Singleton instantiation
     }
 
     @Nullable
-    public savedEventDatabase getDatabase() {
+    public savedAssignmentDatabase getDatabase() {
         return mDb;
     }
 
@@ -80,11 +80,11 @@ public class savedEventDatabaseCreator { // For Singleton instantiation
                     // context.deleteDatabase(serverAddressDatabase.DATABASE_NAME);
 
                     // Build the database!
-                    savedEventDatabase db = Room.databaseBuilder(context.getApplicationContext(),
-                            savedEventDatabase.class, savedEventDatabase.DATABASE_NAME).build();
+                    savedAssignmentDatabase db = Room.databaseBuilder(context.getApplicationContext(),
+                            savedAssignmentDatabase.class, savedAssignmentDatabase.DATABASE_NAME).build();
 
 
-                    Log.d("savedEventDB",
+                    Log.d("savedAssignmentDB",
                             "DB was populated in thread " + Thread.currentThread().getName());
 
                     mDb = db;

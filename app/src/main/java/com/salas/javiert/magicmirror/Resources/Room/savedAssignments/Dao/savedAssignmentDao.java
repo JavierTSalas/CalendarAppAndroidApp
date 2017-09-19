@@ -2,7 +2,7 @@
  * Copyright (c) 2017. Javier Salas
  */
 
-package com.salas.javiert.magicmirror.Resources.Room.assignments.savedAssignments.Dao;
+package com.salas.javiert.magicmirror.Resources.Room.savedAssignments.Dao;
 
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Delete;
@@ -11,7 +11,7 @@ import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.Query;
 import android.arch.persistence.room.Update;
 
-import com.salas.javiert.magicmirror.Resources.Room.assignments.savedAssignments.Entities.savedAssignment;
+import com.salas.javiert.magicmirror.Resources.Room.savedAssignments.Entities.savedAssignment;
 
 import java.util.List;
 
