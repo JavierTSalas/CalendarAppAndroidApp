@@ -67,7 +67,6 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:background="@color/colorGrey"
-                android:padding="8dp"
                 app:layout_constraintBottom_toTopOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toLeftOf="@+id/tvRecyclerViewHeaderDate"
@@ -79,6 +78,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="32dp"
                 android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
                 android:layout_marginTop="0dp"
                 android:fontFamily="sans-serif-condensed"
                 android:gravity="center"
@@ -95,17 +95,17 @@
                 android:id="@+id/sRight"
                 android:layout_width="0dp"
                 android:layout_height="3dp"
+                android:layout_marginBottom="8dp"
                 android:layout_marginEnd="8dp"
                 android:layout_marginLeft="8dp"
                 android:layout_marginRight="8dp"
                 android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
                 android:background="@color/colorGrey"
-                android:padding="8dp"
                 app:layout_constraintBottom_toTopOf="parent"
                 app:layout_constraintLeft_toRightOf="@+id/tvRecyclerViewHeaderDate"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="parent"
-                tools:layout_editor_absoluteY="14dp"/>
+                app:layout_constraintTop_toBottomOf="parent"/>
         </android.support.constraint.ConstraintLayout>
 
         <android.support.v7.widget.RecyclerView

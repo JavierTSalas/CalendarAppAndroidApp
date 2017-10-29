@@ -65,7 +65,6 @@ public class CalendarFragment extends Fragment {
     private int runningCountOfAssignments;
     private CompactCalendarView compactCalendarView;
     private RecyclerView mRecyclerView;
-    private generatingTask generatingTask;
     private calendarFragmentReyclerAdapter mAdapter;
     private PopupMenu pum;
     private View view;
@@ -99,11 +98,12 @@ public class CalendarFragment extends Fragment {
         // Find runningCountOfAssignments
         updateAssignmentRunningCount();
         initializeRecyclerView();
-        populateCalendarWithEventsFromRoom();
-        // Setup? Really should have added more comments
-        executeGeneratingTask();
-        initializeFAB();
 
+        // Start the ASyncTask that will read the data from room and populate our CompactView
+        populateCalendarWithEventsFromRoom myTask = new populateCalendarWithEventsFromRoom();
+        myTask.execute();
+
+        initializeFAB();
 
 
         // Set the default dateSelected so we don't get errors if the users doesn't click on another date and we need to use it
@@ -262,8 +262,16 @@ public class CalendarFragment extends Fragment {
     private void populateRecyclerWithEventsOnDate(Date dateSeleceted) {
         List<Event> events = compactCalendarView.getEvents(dateSeleceted);
         Log.d(TAG, "Sending events " + events.size());
-        mAdapter.setItems(getBindableAssignmentsFromEventList(events));
+        List<Integer> indexesOfEvents = new ArrayList<>();
+        for (Event e : events) {
+            if (e.getData() instanceof savedAssignment) {
+                indexesOfEvents.add(((savedAssignment) e.getData()).getId());
+            }
+        }
+        Integer[] indexes = indexesOfEvents.toArray(new Integer[indexesOfEvents.size()]);
+        mAdapter.setItems(indexes, getContext());
         ((TextView) view.findViewById(R.id.tvRecyclerViewHeaderDate)).setText(FileDataUtil.getRecyclerDate(Locale.getDefault(), dateSeleceted.getTime()));
+
 
     }
 
@@ -344,46 +352,6 @@ public class CalendarFragment extends Fragment {
         ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(formattedDate);
     }
 
-    // Fill our calendar with old entries
-    // TODO not load all at once? maybe put some bounds on a month before and a month after?
-    private void populateCalendarWithEventsFromRoom() {
-        // Creators used in the task below
-        final savedAssignmentDataBaseCreator savedAssignmentDBCreator = savedAssignmentDataBaseCreator.getInstance(getActivity().getApplicationContext());
-
-        new AsyncTask<Void, Void, Void>() {
-
-            List<Event> myEvents = new ArrayList<>();
-
-            @Override
-            protected void onPreExecute() {
-                if (savedAssignmentDBCreator.isDatabaseCreated().getValue() == Boolean.FALSE)
-                    savedAssignmentDBCreator.createDb(getActivity().getApplicationContext());
-                super.onPreExecute();
-            }
-
-            @Override
-            protected Void doInBackground(Void... params) {
-                // Get the list of assignment that the user has created
-                List<savedAssignment> assignmentList = savedAssignmentDBCreator.getDatabase().savedAssignmentDao().getAll();
-                for (savedAssignment assignment : assignmentList) {
-                    // Add it to the list if we haven't completed it
-                    if (!assignment.isCompleted())
-                        myEvents.add(new Event(Color.MAGENTA, assignment.getDueTime(), assignment));
-                }
-
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Void aVoid) {
-                super.onPostExecute(aVoid);
-                // Add all of events that we fetched
-                compactCalendarView.addEvents(myEvents);
-                // Update the calendar
-                compactCalendarView.invalidate();
-            }
-        }.execute();
-    }
 
     public void makeEventFromAssignment(final savedAssignment savedAssignment) {
         // TODO get color code for a class
@@ -543,32 +511,43 @@ public class CalendarFragment extends Fragment {
     }
 
 
-    private void executeGeneratingTask() {
-        generatingTask = new generatingTask();
-        generatingTask.execute();
-    }
+    // Fill our calendar with old entries
+    // TODO not load all at once? maybe put some bounds on a month before and a month after?
+    private class populateCalendarWithEventsFromRoom extends AsyncTask<Void, Void, Void> {
+        // Creators used in the task below
+        final savedAssignmentDataBaseCreator savedAssignmentDBCreator = savedAssignmentDataBaseCreator.getInstance(getActivity().getApplicationContext());
 
-    private class generatingTask extends AsyncTask<Void, Void, Void> {
-        List<Event> myEvents = new ArrayList<Event>();
+        List<Event> myEvents = new ArrayList<>();
 
         @Override
         protected void onPreExecute() {
-
+            if (savedAssignmentDBCreator.isDatabaseCreated().getValue() == Boolean.FALSE)
+                savedAssignmentDBCreator.createDb(getActivity().getApplicationContext());
             super.onPreExecute();
         }
 
         @Override
         protected Void doInBackground(Void... params) {
+            // Get the list of assignment that the user has created
+            List<savedAssignment> assignmentList = savedAssignmentDBCreator.getDatabase().savedAssignmentDao().getAll();
+            for (savedAssignment assignment : assignmentList) {
+                // Add it to the list if we haven't completed it
+                if (!assignment.isCompleted())
+                    myEvents.add(new Event(Color.MAGENTA, assignment.getDueTime(), assignment));
+            }
+
             return null;
         }
 
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
+            // Add all of events that we fetched
             compactCalendarView.addEvents(myEvents);
+            // Update the calendar
             compactCalendarView.invalidate();
-            Toast.makeText(compactCalendarView.getContext(), "Done", Toast.LENGTH_SHORT).show();
-
         }
     }
+
+
 }

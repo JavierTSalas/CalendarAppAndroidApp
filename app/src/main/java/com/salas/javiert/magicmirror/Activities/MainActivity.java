@@ -205,7 +205,7 @@ public class MainActivity extends AppCompatActivity {
         if (count > 0) {
             Fragment fragment = getSupportFragmentManager().getFragments().get(count);
             if (fragment instanceof NewAssignmentFragment) {
-                ((NewAssignmentFragment) fragment).showDiscardDialog();
+                ((NewAssignmentFragment) fragment).confirmClosingAction();
             }
         } else {
             //  super.onBackPressed();

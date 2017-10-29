@@ -69,7 +69,6 @@ public class NewAssignmentFragment extends Fragment {
     private boolean changesMade = false;
     private int index;
 
-
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         menu.clear();
@@ -81,7 +80,7 @@ public class NewAssignmentFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        // If we are opening the 
+        // If we are opening the
         if (currentMode == MODES.NEW) {
             return processUserInputNewAssignmentMode(id);
         } else if (currentMode == MODES.EDIT) {
@@ -98,7 +97,7 @@ public class NewAssignmentFragment extends Fragment {
                 // Find the CalendarFragment
                 CalendarFragment invoker = (CalendarFragment) getTargetFragment();
                 if (invoker != null) {
-                    // User has finished editing the assignment. Sent a 1 so we know to sent it
+                    // User has finished editing the assignment. Sent a 1 to indicate the mode EDIT
                     // Call our method
                     invoker.onUserDismiss(false);
                     invoker.onUserComplete(generateAssignment(), 1);
@@ -127,7 +126,7 @@ public class NewAssignmentFragment extends Fragment {
                 // Find the CalendarFragment
                 CalendarFragment invoker = (CalendarFragment) getTargetFragment();
                 if (invoker != null) {
-                    // Call our method
+                    // User has finished editing the assignment. Sent a 0 to indicate the mode NEW
                     invoker.onUserDismiss(true);
                     invoker.onUserComplete(generateAssignment(), 0);
                 }
@@ -145,7 +144,7 @@ public class NewAssignmentFragment extends Fragment {
             }
             return true;
         } else if (id == android.R.id.home) {
-            showDiscardDialog();
+            confirmClosingAction();
             return true;
 
         }
@@ -153,11 +152,18 @@ public class NewAssignmentFragment extends Fragment {
         return false;
     }
 
-    public void showDiscardDialog() {
+    public void confirmClosingAction() {
 
         // handle close button click here
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle("Discard this assignment?");
+        String titleText = "";
+        if (currentMode == MODES.NEW) {
+            titleText = "Discard this assignment?";
+        }
+        if (currentMode == MODES.EDIT) {
+            titleText = "Discard your edits?";
+        }
+        builder.setTitle(titleText);
         builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -170,7 +176,7 @@ public class NewAssignmentFragment extends Fragment {
                 // Find the CalendarFragment
                 CalendarFragment invoker = (CalendarFragment) getTargetFragment();
                 if (invoker != null) {
-                    // Call our method
+                    // Call our method with false since we do not want to increment the count
                     invoker.onUserDismiss(false);
                 }
             }
@@ -185,14 +191,18 @@ public class NewAssignmentFragment extends Fragment {
         boolean userHasStartTime = (data.getAssignedTime() > 0);
         // TODO Make sure the user cannot set an end date before the start date
         boolean userHasEndTime = (data.getDueTime() > data.getAssignedTime());
-        boolean alloweUserToContinue = userHasTitle && userHasStartTime && userHasEndTime;
-        Log.d(TAG, " " + userHasTitle + " " + userHasStartTime + " " + userHasEndTime + " " + alloweUserToContinue);
-        return alloweUserToContinue;
+        boolean allowUserToContinue = userHasTitle && userHasStartTime && userHasEndTime;
+        Log.d(TAG, " " + userHasTitle + " " + userHasStartTime + " " + userHasEndTime + " " + allowUserToContinue);
+
+        // TODO Tell the user which fields need to be filled to continue
+
+        return allowUserToContinue;
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        setUpFragmentCommunication();
 
 
 /*
@@ -207,7 +217,6 @@ public class NewAssignmentFragment extends Fragment {
         }
 */
 
-        setUpFragmentCommunication();
 
     }
 
@@ -220,13 +229,13 @@ public class NewAssignmentFragment extends Fragment {
         */
     }
 
-
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable final Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         dataBiding = DataBindingUtil.inflate(inflater, R.layout.dialog_new_assignment_event, container, false);
 
+        // For using a toolbar with fragments
         setHasOptionsMenu(true);
 
         new AsyncTask<Void, Void, Void>() {
@@ -286,7 +295,7 @@ public class NewAssignmentFragment extends Fragment {
             dateSeleceted = new Gson().fromJson(dateJson, Date.class);
         }
 
-        // Try to get the bindableAssignment that was sent as a string
+        // Try to get the index of the savedAssignment that was sent as a string
         index = savedInstanceState.getInt(COLUMN_INDEX_KEY);
 
         Log.d(COLUMN_INDEX_KEY, "Loaded from bundle " + index);
@@ -309,6 +318,7 @@ public class NewAssignmentFragment extends Fragment {
                 savedAssignment fetchedItem = creator.getDatabase().savedAssignmentDao().getIndex(params[0]);
                 // If the item exists
                 try {
+                    // Convert from savedAssignment to bindableAssignment
                     item = new bindableAssignment(fetchedItem);
                 } catch (NullPointerException e) {
                     // We were not able to get a item at index params[0]
@@ -481,7 +491,7 @@ public class NewAssignmentFragment extends Fragment {
 
 
         // Add our classes to the list
-        ArrayList<String> mList;
+        ArrayList<String> classListFromRoom;
 
 
         // If we see that the user is in class right now,
@@ -491,21 +501,23 @@ public class NewAssignmentFragment extends Fragment {
         // TODO Set a option to display both
         // put this in a toggle in the Toolbar of adding classes
         classTimeSensor.getInstance().refreshFromRoom();
+
+
         // Set our list
-        mList = classTimeSensor.getInstance().getStringList();
+        classListFromRoom = classTimeSensor.getInstance().getStringList();
 
         ArrayAdapter<String> userEnteredDataAdapter;
         ArrayAdapter<CharSequence> defaultListAdapter;
 
         // If the user hasn't set up a list
-        if (mList.size() == 0) {
+        if (classListFromRoom.size() == 0) {
             // Make the arrayAdapter from the default class list
             defaultListAdapter = ArrayAdapter.createFromResource(getActivity().getApplicationContext(), R.array.class_list_default, android.R.layout.simple_spinner_item);
             // Set the adapter
             dataBiding.spDialogNewAssignmentClassSelector.setAdapter(defaultListAdapter);
         } else {
             // Make the arrayAdapter from items that the user created
-            userEnteredDataAdapter = new ArrayAdapter<>(getActivity().getApplicationContext(), android.R.layout.simple_spinner_dropdown_item, mList);
+            userEnteredDataAdapter = new ArrayAdapter<>(getActivity().getApplicationContext(), android.R.layout.simple_spinner_dropdown_item, classListFromRoom);
             // Set the adapter
             dataBiding.spDialogNewAssignmentClassSelector.setAdapter(userEnteredDataAdapter);
 
@@ -516,7 +528,6 @@ public class NewAssignmentFragment extends Fragment {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 dataBiding.getData().setClassId(position);
-
             }
 
             @Override
@@ -534,11 +545,10 @@ public class NewAssignmentFragment extends Fragment {
         boundData.setCompleted(false);
         boundData.setAssignedTime(calendarStartDate.getTimeInMillis());
         // If we are making a new item we should assign it an ID
-        if (currentMode == MODES.NEW)
+        if (currentMode == MODES.NEW) {
             boundData.setId(index);
+        }
 
-
-        Log.d(TAG, FileDataUtil.getModifiedTime(Locale.getDefault(), calendarStartDate.getTimeInMillis()));
 
         // TODO Create a reminder oject
         // TODO Create a reoccuring field

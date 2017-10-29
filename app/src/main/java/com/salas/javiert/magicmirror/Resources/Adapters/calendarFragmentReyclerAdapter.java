@@ -4,8 +4,10 @@
 
 package com.salas.javiert.magicmirror.Resources.Adapters;
 
+import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -16,6 +18,7 @@ import android.view.ViewGroup;
 import com.salas.javiert.magicmirror.Objects.bindableObjects.bindableAssignment;
 import com.salas.javiert.magicmirror.R;
 import com.salas.javiert.magicmirror.Resources.Room.savedAssignments.Entities.savedAssignment;
+import com.salas.javiert.magicmirror.Resources.Room.savedAssignments.savedAssignmentDataBaseCreator;
 import com.salas.javiert.magicmirror.Resources.Util.FileDataUtil;
 import com.salas.javiert.magicmirror.Views.DataBindingTest.DatabaseFragment.Fragment.RecyclerViewClasses.childHandler;
 import com.salas.javiert.magicmirror.databinding.RecyclerviewRowCalendarDataboundBinding;
@@ -30,6 +33,7 @@ import java.util.Locale;
 
 public class calendarFragmentReyclerAdapter extends RecyclerView.Adapter<calendarFragmentReyclerAdapter.bindingEventViewHolder> {
 
+    private final String TAG = "calendarRecycler";
     OnClickRecyclerChild mCallback;
     private List<bindableAssignment> dataBaseItemList;
 
@@ -40,6 +44,43 @@ public class calendarFragmentReyclerAdapter extends RecyclerView.Adapter<calenda
     public calendarFragmentReyclerAdapter(List<bindableAssignment> dataBaseItemList, OnClickRecyclerChild mCallback) {
         this.mCallback = mCallback;
         this.dataBaseItemList = dataBaseItemList;
+    }
+
+    public calendarFragmentReyclerAdapter(Integer[] dataBaseItemList, OnClickRecyclerChild mCallback, Context context) {
+        this.mCallback = mCallback;
+        fetchAndSetDataBaseItemsEntries(dataBaseItemList, context);
+    }
+
+    private void fetchAndSetDataBaseItemsEntries(final Integer[] dataBaseItemList, final Context context) {
+        final savedAssignmentDataBaseCreator savedAssignmentDBCreator = savedAssignmentDataBaseCreator.getInstance(context);
+        new AsyncTask<Void, Void, Void>() {
+
+            List<bindableAssignment> bindableAssignments = new ArrayList<>();
+
+            @Override
+            protected void onPreExecute() {
+                if (savedAssignmentDBCreator.isDatabaseCreated().getValue() == Boolean.FALSE)
+                    savedAssignmentDBCreator.createDb(context);
+                super.onPreExecute();
+            }
+
+            @Override
+            protected Void doInBackground(Void... params) {
+                // Get the list of assignment that the user has created
+                for (Integer i : dataBaseItemList) {
+                    bindableAssignments.add(new bindableAssignment(savedAssignmentDBCreator.getDatabase().savedAssignmentDao().getIndex(i)));
+                    Log.d(TAG, i.toString());
+                }
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                super.onPostExecute(aVoid);
+                // Add all of events that we fetched
+                setItems(bindableAssignments);
+            }
+        }.execute();
     }
 
     @Override
@@ -81,6 +122,11 @@ public class calendarFragmentReyclerAdapter extends RecyclerView.Adapter<calenda
         myColorList.add(Color.BLUE);
 
         return myColorList.get(id % 4);
+    }
+
+
+    public void setItems(final Integer[] integers, Context context) {
+        fetchAndSetDataBaseItemsEntries(integers, context);
     }
 
 
